@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/events', [EventController::class, 'getListOfEvents']);
+Route::get('/event', [EventController::class, 'getListOfEvents']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
