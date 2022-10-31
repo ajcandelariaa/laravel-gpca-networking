@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/events', [EventController::class, 'getListOfEvents']);
-Route::get('/speakers', [SpeakerController::class, 'getListOfSpeakers']);
+Route::get('/event', [EventController::class, 'getListOfEvents']);
+Route::get('/speaker', [SpeakerController::class, 'getListOfSpeakers']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
