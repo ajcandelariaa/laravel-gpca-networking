@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ExhibitorController;
 use App\Http\Controllers\SpeakerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/event', [EventController::class, 'getListOfEvents']);
 Route::get('/speaker', [SpeakerController::class, 'getListOfSpeakers']);
+Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
