@@ -4,6 +4,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
 use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\SpeakerController;
+use App\Http\Controllers\SponsorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,7 @@ Route::get('/event', [EventController::class, 'getListOfEvents']);
 Route::get('/speaker', [SpeakerController::class, 'getListOfSpeakers']);
 Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
 Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
+Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
