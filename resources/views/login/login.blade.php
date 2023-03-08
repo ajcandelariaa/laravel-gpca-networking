@@ -7,7 +7,7 @@
     <title>GPCA Networking 2023</title>
 </head>
 <body>
-    <div>
+    <div class="bg-[url('/images/login-bg.png')]">
         
     </div>
 </body>
