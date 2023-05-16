@@ -6,6 +6,24 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
+    public function mainDashboardView(){
+        return view('admin.home.dashboard', [
+            "pageTitle" => "Dashboard"
+        ]);
+    }
+
+    public function eventsView(){
+        return view('admin.home.events', [
+            "pageTitle" => "Events"
+        ]);
+    }
+
+    public function eventDashboardView($eventCategory, $eventId){
+        return view('admin.event.dashboard', [
+            "pageTitle" => "Dashboard"
+        ]);
+    }
+
     public function getListOfEvents()
     {
         return response()->json(array(

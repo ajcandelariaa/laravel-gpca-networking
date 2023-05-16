@@ -1,0 +1,18 @@
+.swal-button--confirm {
+    background-color: #034889;
+    color: #fff;
+}
+
+.swal-button--cancel {
+    background-color: #dd3333;
+    color: #fff;
+}
+
+
+.swal-button--confirm:hover {
+    background-color: #033e75 !important;
+}
+
+.swal-button--cancel:hover {
+    background-color: #cb2e2e !important;
+}
