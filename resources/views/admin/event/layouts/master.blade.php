@@ -28,26 +28,54 @@
 
 <body>
     <div class="flex">
-        <div class="bg-primaryColor h-screen p-5 pt-8 duration-300 sidebar-full" id="sidebar">
+        <div class="bg-primaryColor h-full min-h-screen p-5 pt-8 duration-300 sidebar-full" id="sidebar">
             <div class="flex justify-center">
                 <img src="{{ asset('assets/images/gpca-networking-logo-inverted.png') }}" class="duration-300 sidebar-full-image" alt="logo" id="sidebar-image">
             </div>
-            <div class="mt-10 text-white flex flex-col gap-1">
-                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md">
-                    <i class="fa-solid fa-bars ml-1"></i>
-                    <p class="sidebar-title duration-300">Dashboard</p>
+            <div class="mt-10 text-white flex flex-col gap-3" id="main-navigation">
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                    <p>Dashboard</p>
                 </a>
-                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md">
-                    <i class="fa-solid fa-bars ml-1"></i>
-                    <p class="sidebar-title duration-300">Dashboarawdawdd</p>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-calendar-days  w-5 text-center"></i>
+                    <p>Event</p>
                 </a>
-                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md">
-                    <i class="fa-solid fa-bars ml-1"></i>
-                    <p class="sidebar-title duration-300">Dashb23oard</p>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-people-group w-5 text-center"></i>
+                    <p>Attendees</p>
                 </a>
-                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md">
-                    <i class="fa-solid fa-bars ml-1"></i>
-                    <p class="sidebar-title duration-300">Dasdwahboard</p>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-microphone w-5 text-center"></i>
+                    <p>Speakers</p>
+                </a>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-regular fa-newspaper w-5 text-center"></i>
+                    <p>Agenda</p>
+                </a>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-handshake w-5 text-center"></i>
+                    <p>Sponsors</p>
+                </a>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-building-user w-5 text-center"></i>
+                    <p>Exhibitors</p>
+                </a>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-users-between-lines w-5 text-center"></i>
+                    <p>Meeting room partners</p>
+                </a>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-photo-film w-5 text-center"></i>
+                    <p>Media partners</p>
+                </a>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-location-dot w-5 text-center"></i>
+                    <p>Venue</p>
+                </a>
+                <a href="#" class="flex items-center gap-5 p-2 hover:bg-sideBarBGColorHover rounded-md duration-500">
+                    <i class="fa-solid fa-map-location-dot w-5 text-center"></i>
+                    <p>Floor plan</p>
                 </a>
             </div>
         </div>

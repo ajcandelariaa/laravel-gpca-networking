@@ -13,6 +13,7 @@ module.exports = {
         headerBGColor: '#003249',
         sideBarBGColorHover: '#034C6F',
         dashboardNavItemHoverColor: '#F9BC35',
+        headingTextColor: '#A87123',
       },
       backgroundImage: {
         loginBg: "url('/public/assets/images/loginbg.png')",

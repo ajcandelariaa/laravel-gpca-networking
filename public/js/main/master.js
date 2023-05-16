@@ -1,7 +1,9 @@
 function menuButtonClicked(){
     let sideBar = document.getElementById('sidebar');
     let gpcaNetworkingLogo = document.getElementById('sidebar-image');
-    let sideBarTitles = document.querySelectorAll('.sidebar-title');
+    let mainNavigation = document.getElementById('main-navigation');
+    let sideBarTitles = mainNavigation.querySelectorAll('p');
+    let sideBarAnchor = mainNavigation.querySelectorAll('a');
 
     if(sideBar.classList.contains('sidebar-full')){
         sideBar.classList.remove("sidebar-full");
@@ -11,7 +13,11 @@ function menuButtonClicked(){
         gpcaNetworkingLogo.classList.add('sidebar-half-image');
 
         sideBarTitles.forEach(element =>  {
-            element.classList.add('scale-0');
+            element.classList.add('sidebar-title');
+        });
+
+        sideBarAnchor.forEach(element =>  {
+            element.classList.add('justify-center');
         });
         
     } else {
@@ -22,7 +28,11 @@ function menuButtonClicked(){
         gpcaNetworkingLogo.classList.remove('sidebar-half-image');
 
         sideBarTitles.forEach(element =>  {
-            element.classList.remove('scale-0');
+            element.classList.remove('sidebar-title');
+        });
+
+        sideBarAnchor.forEach(element =>  {
+            element.classList.remove('justify-center');
         });
     }
 }

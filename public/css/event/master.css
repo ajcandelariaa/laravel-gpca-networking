@@ -34,3 +34,8 @@
     width: 100%;
 }
 
+.sidebar-title {
+    display: none;
+    transition-duration: 300ms;
+    transition: ease-in-out;
+}
