@@ -9,7 +9,8 @@ module.exports = {
     extend: {
       colors: {
         primaryColor: '#013E5B',
-        primaryColorHover: '#0358a8',
+        primaryColorHover: '#012D42',
+        primaryColorHover2: '#0358a8',
         headerBGColor: '#003249',
         sideBarBGColorHover: '#034C6F',
         dashboardNavItemHoverColor: '#F9BC35',

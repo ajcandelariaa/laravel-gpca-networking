@@ -2,23 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    public function mainDashboardView(){
+    public function mainDashboardView()
+    {
         return view('admin.home.dashboard', [
             "pageTitle" => "Dashboard"
         ]);
     }
 
-    public function eventsView(){
+    public function eventsView()
+    {
+        $events = Event::all();
         return view('admin.home.events', [
-            "pageTitle" => "Events"
+            "pageTitle" => "Events",
+            "events" => $events,
         ]);
     }
 
-    public function eventDashboardView($eventCategory, $eventId){
+    public function addEventView(){
+        return view('admin.home.add_event', [
+            "pageTitle" => "Add event",
+        ]);
+    }
+
+    public function eventDashboardView($eventCategory, $eventId)
+    {
         return view('admin.event.dashboard.dashboard', [
             "pageTitle" => "Dashboard",
             "eventName" => "14th GPCA Supply Chain Conference",
@@ -26,8 +38,9 @@ class EventController extends Controller
             "eventId" => $eventId,
         ]);
     }
-    
-    public function eventDetailsView($eventCategory, $eventId){
+
+    public function eventDetailsView($eventCategory, $eventId)
+    {
         return view('admin.event.details.details', [
             "pageTitle" => "Event details",
             "eventName" => "14th GPCA Supply Chain Conference",

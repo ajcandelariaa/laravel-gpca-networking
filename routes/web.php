@@ -29,6 +29,7 @@ Route::prefix('admin')->group(function (){
         Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
         Route::get('/dashboard', [EventController::class, 'mainDashboardView'])->name('admin.main-dashboard.view');
         Route::get('/event', [EventController::class, 'eventsView'])->name('admin.events.view');
+        Route::get('/event/add', [EventController::class, 'addEventView'])->name('admin.add-event.view');
         Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
             Route::get('/dashboard', [EventController::class, 'eventDashboardView'])->name('admin.event-dashboard.view');
             Route::get('/details', [EventController::class, 'eventDetailsView'])->name('admin.event-details.view');
