@@ -6,6 +6,14 @@ use Illuminate\Http\Request;
 
 class SpeakerController extends Controller
 {
+    public function eventSpeakersView($eventCategory, $eventId){
+        return view('admin.event.speakers.speakers', [
+            "pageTitle" => "Speakers",
+            "eventName" => "14th GPCA Supply Chain Conference",
+            "eventCategory" => $eventCategory,
+            "eventId" => $eventId,
+        ]);
+    }
     
     public function getListOfEvents()
     {

@@ -19,8 +19,20 @@ class EventController extends Controller
     }
 
     public function eventDashboardView($eventCategory, $eventId){
-        return view('admin.event.dashboard', [
-            "pageTitle" => "Dashboard"
+        return view('admin.event.dashboard.dashboard', [
+            "pageTitle" => "Dashboard",
+            "eventName" => "14th GPCA Supply Chain Conference",
+            "eventCategory" => $eventCategory,
+            "eventId" => $eventId,
+        ]);
+    }
+    
+    public function eventDetailsView($eventCategory, $eventId){
+        return view('admin.event.details.details', [
+            "pageTitle" => "Event details",
+            "eventName" => "14th GPCA Supply Chain Conference",
+            "eventCategory" => $eventCategory,
+            "eventId" => $eventId,
         ]);
     }
 

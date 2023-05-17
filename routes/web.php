@@ -5,6 +5,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AttendeesController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
+use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\MeetingRoomPartnerController;
 use App\Http\Controllers\SpeakerController;
