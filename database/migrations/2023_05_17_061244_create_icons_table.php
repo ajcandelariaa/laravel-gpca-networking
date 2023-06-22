@@ -15,20 +15,14 @@ return new class extends Migration
     {
         Schema::create('icons', function (Blueprint $table) {
             $table->id();
-
             $table->unsignedBigInteger('event_id');
-            $table->string('category');
 
             $table->string('icon');
-            $table->string('icon_color');
-            $table->string('icon_bg_color');
-
             $table->string('title');
-            $table->string('title_color');
-            $table->string('title_bg_color');
-
-            $table->integer('sequence');
-            $table->string('hidden');
+            $table->integer('sequence')->default(0);
+            $table->boolean('hidden')->default(false);
+            $table->boolean('deletable')->default(false);
+            $table->boolean('default_icon')->default(true);
 
             $table->timestamps();
             $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');

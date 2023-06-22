@@ -53,6 +53,7 @@
     </div>
 
     @livewireScripts()
+    <script src="{{ asset('js/home/master.js') }}"></script>
 </body>
 
 </html>

@@ -2,4 +2,6 @@
 
 @section('content')
     <h1 class="text-headingTextColor text-2xl font-bold">Attendees</h1>
+    
+    @livewire('attendees', ['eventId' => $eventId, 'eventCategory' => $eventCategory])
 @endsection

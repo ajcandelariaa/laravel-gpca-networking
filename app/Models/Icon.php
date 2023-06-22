@@ -11,16 +11,11 @@ class Icon extends Model
 
     protected $fillable = [
         'event_id',
-        'event_category',
-
         'icon',
-        'icon_color',
-        'icon_bg_color',
         'title',
-        'title_color',
-        'title_bg_color',
-
         'sequence',
         'hidden',
+        'deletable',
+        'default_icon',
     ];
 }

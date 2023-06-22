@@ -33,47 +33,47 @@
                 <img src="{{ asset('assets/images/gpca-networking-logo-inverted.png') }}" class="duration-300 sidebar-full-image" alt="logo" id="sidebar-image">
             </div>
             <div class="mt-10 text-white flex flex-col gap-3" id="main-navigation">
-                <a href="{{ route('admin.event-dashboard.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/dashboard*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.dashboard.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/dashboard*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                     <p>Dashboard</p>
                 </a>
-                <a href="{{ route('admin.event-details.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/details*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.details.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/details*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-calendar-days  w-5 text-center"></i>
                     <p>Event</p>
                 </a>
-                <a href="{{ route('admin.event-attendees.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/attendees*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.attendees.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/attendees*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-people-group w-5 text-center"></i>
                     <p>Attendees</p>
                 </a>
-                <a href="{{ route('admin.event-speakers.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/speakers*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.speakers.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/speakers*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-microphone w-5 text-center"></i>
                     <p>Speakers</p>
                 </a>
-                <a href="{{ route('admin.event-agenda.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/agenda*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.agenda.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/agenda*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-regular fa-newspaper w-5 text-center"></i>
                     <p>Agenda</p>
                 </a>
-                <a href="{{ route('admin.event-sponsors.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/sponsors*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.sponsors.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/sponsors*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-handshake w-5 text-center"></i>
                     <p>Sponsors</p>
                 </a>
-                <a href="{{ route('admin.event-exhibitors.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/exhibitors*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.exhibitors.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/exhibitors*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-building-user w-5 text-center"></i>
                     <p>Exhibitors</p>
                 </a>
-                <a href="{{ route('admin.event-meeting-room-partners.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/meeting-room-partners*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.meeting-room-partners.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/meeting-room-partners*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-users-between-lines w-5 text-center"></i>
                     <p>Meeting room partners</p>
                 </a>
-                <a href="{{ route('admin.event-media-partners.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/media-partners*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.media-partners.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/media-partners*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-photo-film w-5 text-center"></i>
                     <p>Media partners</p>
                 </a>
-                <a href="{{ route('admin.event-venue.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/venue*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.venue.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/venue*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-location-dot w-5 text-center"></i>
                     <p>Venue</p>
                 </a>
-                <a href="{{ route('admin.event-floor-plan.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/floor-plan*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.floor-plan.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/floor-plan*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-map-location-dot w-5 text-center"></i>
                     <p>Floor plan</p>
                 </a>
@@ -97,7 +97,7 @@
     </div>
 
     @livewireScripts()
-    <script src="{{ asset('js/main/master.js') }}"></script>
+    <script src="{{ asset('js/event/master.js') }}"></script>
 </body>
 
 </html>

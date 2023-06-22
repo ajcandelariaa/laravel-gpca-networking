@@ -16,18 +16,16 @@ class Event extends Model
         'description',
         'event_full_link',
         'event_short_link',
-        'start_date',
-        'end_date',
+        'event_start_date',
+        'event_end_date',
 
-        'splash_screen',
         'event_logo',
         'event_logo_inverted',
-        'event_banner',
         'app_sponsor_logo',
+        
+        'event_splash_screen',
+        'event_banner',
         'app_sponsor_banner',
-
-        'color_primary',
-        'color_secondary',
 
         'year',
         'active',
