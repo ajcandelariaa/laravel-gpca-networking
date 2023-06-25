@@ -37,7 +37,7 @@ return new class extends Migration
 
             $table->string('badge_number')->nullable();
             $table->string('pass_type');
-            $table->string('registration_type')->nullable('Delegate');
+            $table->string('registration_type')->default('Delegate');
 
             $table->timestamps();
             $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');

@@ -16,4 +16,15 @@ class AttendeesController extends Controller
             "eventId" => $eventId,
         ]);
     }
+
+    public function eventAttendeeView($eventCategory, $eventId){
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+
+        return view('admin.event.attendees.attendees', [
+            "pageTitle" => "Attendees",
+            "eventName" => $eventName,
+            "eventCategory" => $eventCategory,
+            "eventId" => $eventId,
+        ]);
+    }
 }

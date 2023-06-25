@@ -16,6 +16,7 @@ module.exports = {
         dashboardNavItemHoverColor: '#F9BC35',
         headingTextColor: '#A87123',
         registrationInputFieldsBGColor: '#F5F5F5',
+        registrationCardBGColor: '#E3EDF6',
       },
       backgroundImage: {
         loginBg: "url('/public/assets/images/loginbg.png')",
