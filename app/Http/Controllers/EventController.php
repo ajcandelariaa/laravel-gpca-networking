@@ -33,7 +33,7 @@ class EventController extends Controller
 
                 array_push($finalEvents, [
                     'eventId' => $event->id,
-                    'eventLogo' => $event->logo,
+                    'eventLogo' => $event->event_logo,
                     'eventName' => $event->name,
                     'eventCategory' => $event->category,
                     'eventDate' => $eventFormattedDate,

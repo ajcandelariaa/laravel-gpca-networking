@@ -281,10 +281,21 @@
         </div>
     </div>
 
-    <div class="text-center mt-10">
-        <button wire:click.prevent="addAttendeeConfirmation"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white font-medium py-2 px-5 rounded inline-flex items-center text-sm">
-            <span>Add attendee</span>
+    <div class="mt-5">
+        <div class="text-registrationPrimaryColor">
+            Biography
+        </div>
+        <div>
+            <textarea wire:model.lazy="biography" cols="30" rows="5" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $biography }}</textarea>
+        </div>
+    </div>
+
+    <div class="text-center mt-10 flex gap-5 place-content-center">
+        <button wire:click.prevent="editAttendeeConfirmation"
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">
+            <span>Update</span>
         </button>
+
+        <button type="button" wire:click.prevent="cancelEditAttendee" wire:key="cancelEditAttendee" class="bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm w-40 h-10">Cancel</button>
     </div>
 </div>

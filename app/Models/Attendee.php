@@ -28,9 +28,15 @@ class Attendee extends Model
         'country',
         
         'image',
+        'biography',
 
         'badge_number',
         'pass_type',
         'registration_type',
+
+        'joined_date_time',
+        
+        'password_changed_date_time',
+        'password_changed_count',
     ];
 }

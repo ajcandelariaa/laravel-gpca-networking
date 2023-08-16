@@ -6,7 +6,7 @@
         @else
             <div class="flex gap-3">
                 <button type="button" wire:click.prevent="showAddAttendee" wire:key="showAddAttendee" class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Add
-                    attendees</button>
+                    attendee</button>
                 <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Import
                     attendees</button>
                 <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Export
@@ -38,10 +38,11 @@
                 There are no attendees yet.
             </div>
         @else
-            <div class="shadow-lg my-5 pt-5 bg-white rounded-md">
-                <p>Total attendees: {{ count($finalListOfAttendees) }}</p>
+            <p class="mt-5">Total attendees: {{ count($finalListOfAttendees) }}</p>
+            <div class="shadow-lg my-5 bg-white rounded-md">
                 <div
-                    class="grid grid-cols-7 pt-2 pb-2 mt-3 text-center items-center gap-10 text-sm text-white bg-primaryColor rounded-tl-md rounded-tr-md">
+                    class="grid grid-cols-8 pt-2 pb-2 mt-3 text-center items-center gap-10 text-sm text-white bg-primaryColor rounded-tl-md rounded-tr-md">
+                    <div class="col-span-1">Badge number</div>
                     <div class="col-span-1">Name</div>
                     <div class="col-span-1">Job title</div>
                     <div class="col-span-1">Company</div>
@@ -52,7 +53,8 @@
                 </div>
                 @foreach ($finalListOfAttendees as $index => $finalListOfAttendee)
                     <div
-                        class="grid grid-cols-7 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
+                        class="grid grid-cols-8 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
+                        <div class="col-span-1">{{ $finalListOfAttendee['badge_number'] }}</div>
                         <div class="col-span-1">{{ $finalListOfAttendee['name'] }}</div>
                         <div class="col-span-1">{{ $finalListOfAttendee['job_title'] }}</div>
                         <div class="col-span-1">{{ $finalListOfAttendee['company_name'] }}</div>
@@ -61,7 +63,7 @@
                         <div class="col-span-1">{{ $finalListOfAttendee['registration_type'] }}</div>
                         <div class="col-span-1">
                             <a href="{{ route('admin.event.attendee.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'attendeeId' => $finalListOfAttendee['id']]) }}"
-                                class="cursor-pointer hover:text-gray-600 text-gray-500" target="_blank">
+                                class="cursor-pointer hover:text-gray-600 text-gray-500">
                                 <i class="fa-solid fa-eye"></i> View
                             </a>
                         </div>

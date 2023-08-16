@@ -27,7 +27,7 @@
 </head>
 
 <body>
-    <div class="flex">
+    <div class="main-grid-full duration-300" id="main-container">
         <div class="bg-primaryColor h-full min-h-screen p-5 pt-8 duration-300 sidebar-full" id="sidebar">
             <div class="flex justify-center">
                 <img src="{{ asset('assets/images/gpca-networking-logo-inverted.png') }}" class="duration-300 sidebar-full-image" alt="logo" id="sidebar-image">
@@ -79,7 +79,7 @@
                 </a>
             </div>
         </div>
-        <div class="flex-auto">
+        <div>
             <div class="bg-headerBGColor text-white flex items-center justify-between py-5 px-7">
                 <div class="flex items-center gap-5">
                     <i class="fa-solid fa-bars cursor-pointer mt-1" onclick="menuButtonClicked()"></i>
@@ -98,6 +98,7 @@
 
     @livewireScripts()
     <script src="{{ asset('js/event/master.js') }}"></script>
+    <script src="{{ asset('js/allswal.js') }}"></script>
 </body>
 
 </html>

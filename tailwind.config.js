@@ -21,6 +21,10 @@ module.exports = {
       backgroundImage: {
         loginBg: "url('/public/assets/images/loginbg.png')",
       },
+      gridTemplateColumns: {
+        attendeeDetailGrid: '320px auto',
+        attendeeDetailGrid2: '200px auto',
+      },
     },
   },
   plugins: [],

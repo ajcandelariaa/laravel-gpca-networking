@@ -19,15 +19,25 @@
 
 
 .sidebar-full {
-    width: 18rem;
+    width: 288px;
 }
 
 .sidebar-half {
-    width: 5rem;
+    width: 80px;
+}
+
+.main-grid-full{
+    display: grid;
+    grid-template-columns: 288px auto;
+}
+
+.main-grid-half{
+    display: grid;
+    grid-template-columns: 80px auto;
 }
 
 .sidebar-full-image{
-    width: 10rem;
+    width: 160px;
 }
 
 .sidebar-half-image{
