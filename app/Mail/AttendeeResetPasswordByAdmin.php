@@ -8,19 +8,22 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Address;
 
 class AttendeeResetPasswordByAdmin extends Mailable
 {
     use Queueable, SerializesModels;
+
+    public $details;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($details)
     {
-        //
+        $this->details = $details;
     }
 
     /**
@@ -30,8 +33,11 @@ class AttendeeResetPasswordByAdmin extends Mailable
      */
     public function envelope()
     {
+        $subject = 'Password reset for the ' . $this->details['eventName'];
+
         return new Envelope(
-            subject: 'Attendee Reset Password By Admin',
+            from: new Address('forumregistration@gpca.org.ae', 'GPCA Networking App'),
+            subject: $subject,
         );
     }
 

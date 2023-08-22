@@ -138,10 +138,12 @@ class AttendeesList extends Component
         }
 
         if ($this->emailExistingError == null && $this->usernameExistingError == null) {
-            $this->dispatchBrowserEvent('swal:add-attendee-confirmation', [
+            $this->dispatchBrowserEvent('swal:confirmation', [
                 'type' => 'warning',
                 'message' => 'Are you sure?',
                 'text' => "",
+                'buttonConfirmText' => "Yes, add it!",
+                'livewireEmit' => "addAttendeeConfirmed",
             ]);
         }
     }
@@ -216,7 +218,7 @@ class AttendeesList extends Component
         $this->finalListOfAttendeesConst = $this->finalListOfAttendees;
 
         $this->resetAddAttendeeFields();
-        $this->dispatchBrowserEvent('swal:attendee-added', [
+        $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'Attendee added successfully!',
             'text' => ''

@@ -452,4 +452,10 @@ return [
         'AFS' => "61",
         'AFV' => "62",
     ],
+
+    // 'ccEmailNotif' => [
+    //     'jhoanna@gpca.org.ae', 'wesam@gpca.org.ae', 'aj@gpca.org.ae',
+    // ],
+
+    'ccEmailNotif' => ['aj@gpca.org.ae'],
 ];

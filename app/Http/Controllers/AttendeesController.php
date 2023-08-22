@@ -50,6 +50,7 @@ class AttendeesController extends Controller
             "attendeeBiography" => $attendee->biography,
             "attendeeImage" => $attendeeImage,
             "attendeeAddedDateTime" => Carbon::parse($attendee->joined_date_time)->format('M j, Y g:i A'),
+            "attendeeLastPasswordChangeDateTime" => Carbon::parse($attendee->password_changed_date_time)->format('M j, Y g:i A'),
         ];
 
         return view('admin.event.attendees.attendee', [

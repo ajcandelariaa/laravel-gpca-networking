@@ -2,17 +2,25 @@
 
 namespace App\Http\Livewire;
 
+use App\Mail\AttendeeResetPasswordByAdmin;
 use Livewire\Component;
 use Illuminate\Support\Facades\Http;
 use App\Models\Event as Events;
 use App\Models\Attendee as Attendees;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Livewire\WithFileUploads;
 
 class AttendeeDetails extends Component
 {
+    use WithFileUploads;
+
     public $event, $salutations, $countries, $attendeeData;
     public $registrationTypes, $members;
 
-    public $editAttendeeForm, $resetPasswordForm;
+    public $editAttendeeForm, $resetPasswordForm, $editAttendeeImageForm;
 
     // Attendee details
     public $attendee_id, $registration_type, $username, $email_address, $pass_type, $company_name, $job_title, $salutation, $first_name, $middle_name, $last_name, $mobile_number, $landline_number, $country, $image, $biography, $password;
@@ -21,7 +29,7 @@ class AttendeeDetails extends Component
 
     public $emailExistingError, $usernameExistingError;
 
-    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee'];
+    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeeImageConfirmed' => 'editImageAttendee'];
 
     public function mount($eventId, $eventCategory, $attendeeData)
     {
@@ -30,6 +38,8 @@ class AttendeeDetails extends Component
 
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
         $this->attendeeData = $attendeeData;
+        $this->editAttendeeForm = false;
+        $this->resetPasswordForm = false;
         $this->editAttendeeForm = false;
 
         // dd($this->attendeeData);
@@ -127,10 +137,12 @@ class AttendeeDetails extends Component
         }
 
         if ($this->emailExistingError == null && $this->usernameExistingError == null) {
-            $this->dispatchBrowserEvent('swal:edit-attendee-confirmation', [
+            $this->dispatchBrowserEvent('swal:confirmation', [
                 'type' => 'warning',
                 'message' => 'Are you sure?',
                 'text' => "",
+                'buttonConfirmText' => "Yes, update it!",
+                'livewireEmit' => "editAttendeeConfirmed",
             ]);
         }
     }
@@ -143,7 +155,7 @@ class AttendeeDetails extends Component
             'salutation' => $this->salutation,
             'first_name' => $this->first_name,
             'middle_name' => $this->middle_name,
-            'last_name' => $this->username,
+            'last_name' => $this->last_name,
 
             'email_address' => $this->email_address,
             'mobile_number' => $this->mobile_number,
@@ -179,13 +191,12 @@ class AttendeeDetails extends Component
         $this->attendeeData['attendeeBiography'] = $this->biography;
 
         $this->resetEditAttendeeFields();
-        $this->dispatchBrowserEvent('swal:attendee-updated', [
+        $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'Attendee updated successfully!',
             'text' => ''
         ]);
     }
-
 
 
 
@@ -219,10 +230,12 @@ class AttendeeDetails extends Component
 
         if ($this->newPassword == $this->confirmPassword) {
             $this->passwordError = null;
-            $this->dispatchBrowserEvent('swal:reset-password-attendee-confirmation', [
+            $this->dispatchBrowserEvent('swal:confirmation', [
                 'type' => 'warning',
                 'message' => 'Are you sure?',
                 'text' => "",
+                'buttonConfirmText' => "Yes, reset it!",
+                'livewireEmit' => "resetPasswordAttendeeConfirmed",
             ]);
         } else {
             $this->passwordError = "Password does not match!";
@@ -232,13 +245,79 @@ class AttendeeDetails extends Component
     public function resetPasswordAttendee()
     {
         Attendees::where('id', $this->attendee_id)->update([
-            'password' => $this->newPassword,
+            'password' => Hash::make($this->newPassword),
+            'password_changed_date_time' => Carbon::now(),
         ]);
+        
+        Attendees::where('id', $this->attendee_id)->increment('password_changed_count');
+        
+        $details = [
+            'name' => $this->attendeeData['attendeeSalutation'] . ' ' . $this->attendeeData['attendeeFirstName'] . ' ' . $this->attendeeData['attendeeMiddleName'] . ' ' . $this->attendeeData['attendeeLastName'],
+            'eventName' => $this->event->name,
+            'username' => $this->attendeeData['attendeeUsername'],
+            'newPassword' => $this->newPassword,
+        ];
+
+        Mail::to($this->attendeeData['attendeeEmail'])->cc(config('app.ccEmailNotif'))->queue(new AttendeeResetPasswordByAdmin($details));
+
+        $this->attendeeData['attendeeLastPasswordChangeDateTime'] = Carbon::parse(Carbon::now())->format('M j, Y g:i A');
 
         $this->resetResetPasswordAttendeeFields();
-        $this->dispatchBrowserEvent('swal:attendee-password-updated', [
+        $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'Password reset successfully!',
+            'text' => ''
+        ]);
+    }
+
+
+    // EDIT ATTENDEE IMAGE
+    public function showUpdateImageAttendee(){
+        $this->editAttendeeImageForm = true;
+        $this->attendee_id = $this->attendeeData['attendeeId'];
+    }
+
+    public function cancelEditImageAttendee(){
+        $this->resetImageAttendeeFields();
+    }
+
+    public function resetImageAttendeeFields()
+    {
+        $this->editAttendeeImageForm = false;
+        $this->attendee_id = null;
+        $this->image = null;
+    }
+
+    public function editImageAttendeeConfirmation(){
+        $this->validate([
+            'image' => 'required|mimes:jpeg,jpg,png',
+        ]);
+
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, update it!",
+            'livewireEmit' => "editAttendeeImageConfirmed",
+        ]);
+    }
+
+    public function editImageAttendee(){
+        
+        $currentYear = strval(Carbon::parse($this->event->event_start_date)->year);
+        $fileName = time() . '-' . $this->image->getClientOriginalName();
+        $path = $this->image->storeAs('public/event/' . $currentYear . '/attendees/' . $this->event->category, $fileName);
+
+        Attendees::where('id', $this->attendee_id)->update([
+            'image' => $path,
+        ]);
+
+        $this->attendeeData['attendeeImage'] = Storage::url($path);
+        
+        $this->resetImageAttendeeFields();
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Image updated successfully!',
             'text' => ''
         ]);
     }

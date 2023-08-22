@@ -8,7 +8,7 @@
             <div class="mt-5">
                 <div class="relative">
                     <img src="{{ $attendeeData['attendeeImage'] }}" class="w-80 h-80">
-                    <div class="absolute -bottom-4 -right-3 cursor-pointer">
+                    <div class="absolute -bottom-4 -right-3 cursor-pointer" wire:click.prevent="showUpdateImageAttendee" wire:key="showUpdateImageAttendee">
                         <i class="fa-solid fa-pen bg-primaryColor text-white rounded-full p-3"></i>
                     </div>
                 </div>
@@ -71,6 +71,9 @@
 
                     <p class="font-bold">Joined:</p>
                     <p>{{ $attendeeData['attendeeAddedDateTime'] }}</p>
+
+                    <p class="font-bold">Last password changed:</p>
+                    <p>{{ $attendeeData['attendeeLastPasswordChangeDateTime'] }}</p>
                 </div>
 
                 <div class="mt-5 flex gap-7">
@@ -92,6 +95,10 @@
 
         @if ($resetPasswordForm)
             @include('livewire.event.attendees.attendee_reset_password')
+        @endif
+
+        @if ($editAttendeeImageForm)
+            @include('livewire.event.attendees.attendee_image_update')
         @endif
     @endif
 </div>
