@@ -8,19 +8,22 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Address;
 
 class NewAttendee extends Mailable
 {
     use Queueable, SerializesModels;
+
+    public $details;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($details)
     {
-        //
+        $this->details = $details;
     }
 
     /**
@@ -30,8 +33,11 @@ class NewAttendee extends Mailable
      */
     public function envelope()
     {
+        $subject = 'Welcome to ' . $this->details['eventName'] . ' - Your Access Details for GPCA Networking';
+
         return new Envelope(
-            subject: 'New Attendee',
+            from: new Address('forumregistration@gpca.org.ae', 'GPCA Networking App'),
+            subject: $subject,
         );
     }
 

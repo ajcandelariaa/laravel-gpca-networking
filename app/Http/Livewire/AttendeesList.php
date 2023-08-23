@@ -2,12 +2,14 @@
 
 namespace App\Http\Livewire;
 
+use App\Mail\NewAttendee;
 use App\Models\Event as Events;
 use App\Models\Attendee as Attendees;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class AttendeesList extends Component
@@ -197,12 +199,23 @@ class AttendeesList extends Component
 
         Attendees::find($newAttendee->id)->fill(
             [
-                'password' => $randomPassword,
+                'password' => $hashRandomPass,
                 'badge_number' => $badgeNumber,
             ],
         )->save();
 
-        // do the email notification
+        $eventFormattedDate = Carbon::parse($this->event->event_start_date)->format('d') . '-' . Carbon::parse($this->event->event_end_date)->format('d M Y');
+        
+        $details = [
+            'name' => $this->salutation . ' ' . $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name,
+            'eventName' => $this->event->name,
+            'eventDate' => $eventFormattedDate,
+            'eventLocation' => $this->event->location,
+            'username' => $this->username,
+            'password' => $randomPassword,
+        ];
+
+        Mail::to($this->email_address)->cc(config('app.ccEmailNotif.test'))->queue(new NewAttendee($details));
 
         array_push($this->finalListOfAttendees, [
             'id' => $newAttendee->id,

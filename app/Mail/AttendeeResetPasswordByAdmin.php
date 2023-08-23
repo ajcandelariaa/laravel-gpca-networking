@@ -33,7 +33,7 @@ class AttendeeResetPasswordByAdmin extends Mailable
      */
     public function envelope()
     {
-        $subject = 'Password reset for the ' . $this->details['eventName'];
+        $subject = 'Password reset for ' . $this->details['eventName'];
 
         return new Envelope(
             from: new Address('forumregistration@gpca.org.ae', 'GPCA Networking App'),
