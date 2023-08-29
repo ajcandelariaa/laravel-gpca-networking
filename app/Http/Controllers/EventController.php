@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Icon;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -59,9 +60,11 @@ class EventController extends Controller
 
     public function eventDashboardView($eventCategory, $eventId)
     {
+        $event = Event::where('id', $eventId)->first();
+
         return view('admin.event.dashboard.dashboard', [
             "pageTitle" => "Dashboard",
-            "eventName" => "14th GPCA Supply Chain Conference",
+            "eventName" => $event->name,
             "eventCategory" => $eventCategory,
             "eventId" => $eventId,
         ]);
@@ -69,11 +72,84 @@ class EventController extends Controller
 
     public function eventDetailsView($eventCategory, $eventId)
     {
+        $event = Event::where('id', $eventId)->first();
+
+        $finalEventStartDate = Carbon::parse($event->event_start_date)->format('d M Y');
+        $finalEventEndDate = Carbon::parse($event->event_end_date)->format('d M Y');
+
+        if($event->event_logo){
+            $eventLogo = Storage::url($event->event_logo);
+        } else {
+            $eventLogo = "https://via.placeholder.com/150";
+        }
+
+        if($event->event_logo_inverted){
+            $eventLogoInverted = Storage::url($event->event_logo_inverted);
+        } else {
+            $eventLogoInverted = "https://via.placeholder.com/150";
+        }
+        
+        if($event->app_sponsor_logo){
+            $appSponsorLogo = Storage::url($event->app_sponsor_logo);
+        } else {
+            $appSponsorLogo = "https://via.placeholder.com/150";
+        }
+        
+        if($event->event_splash_screen){
+            $eventSplashScreen = Storage::url($event->event_splash_screen);
+        } else {
+            $eventSplashScreen = "http://via.placeholder.com/360x640";
+        }
+
+        
+        if($event->event_banner){
+            $eventBanner = Storage::url($event->event_banner);
+        } else {
+            $eventBanner = "http://via.placeholder.com/640x360";
+        }
+
+        if($event->app_sponsor_banner){
+            $appSponsorBanner = Storage::url($event->app_sponsor_banner);
+        } else {
+            $appSponsorBanner = "http://via.placeholder.com/640x360";
+        }
+        
         return view('admin.event.details.details', [
             "pageTitle" => "Event details",
-            "eventName" => "14th GPCA Supply Chain Conference",
+            "eventName" => $event->name,
             "eventCategory" => $eventCategory,
             "eventId" => $eventId,
+            "eventData" => [
+                "eventCategory" => $eventCategory,
+                "eventId" => $eventId,
+                "eventDetails" => [
+                    'name' => $event->name,
+                    'category' => $event->category,
+                    'location' => $event->location,
+                    'description' => $event->description,
+
+                    'event_full_link' => $event->event_full_link,
+                    'event_short_link' => $event->event_short_link,
+
+                    'event_start_date' => $event->event_start_date,
+                    'event_end_date' => $event->event_end_date,
+
+                    'finalEventStartDate' => $finalEventStartDate,
+                    'finalEventEndDate' => $finalEventEndDate,
+
+                    'year' => $event->year,
+                    'active' => $event->active,
+                ],
+                "eventAssets" => [
+                    'event_logo' => $eventLogo,
+                    'event_logo_inverted' => $eventLogoInverted,
+                    'app_sponsor_logo' => $appSponsorLogo,
+
+                    'event_splash_screen' => $eventSplashScreen,
+                    'event_banner' => $eventBanner,
+                    'app_sponsor_banner' => $appSponsorBanner,
+                ],
+            ],
         ]);
     }
 
