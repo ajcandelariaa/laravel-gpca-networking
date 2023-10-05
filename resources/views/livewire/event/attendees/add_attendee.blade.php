@@ -1,7 +1,7 @@
 <div class="mt-5">
     <div class="grid grid-cols-3 gap-x-5">
         <div class="col-span-1">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Registration type <span class="text-red-500">*</span>
             </div>
             <div>
@@ -22,7 +22,7 @@
         </div>
 
         <div class="col-span-1">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Username <span class="text-red-500">*</span>
             </div>
             <div>
@@ -44,7 +44,7 @@
         </div>
 
         <div class="col-span-1">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Email address <span class="text-red-500">*</span>
             </div>
             <div>
@@ -68,7 +68,7 @@
 
     <div class="mt-5 grid grid-cols-3 gap-x-5">
         <div class="col-span-1">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Pass type <span class="text-red-500">*</span>
             </div>
             <div>
@@ -91,7 +91,7 @@
         </div>
 
         <div class="col-span-1">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Company name <span class="text-red-500">*</span>
             </div>
             <div>
@@ -146,7 +146,7 @@
         </div>
 
         <div class="col-span-1">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Job title <span class="text-red-500">*</span>
             </div>
             <div>
@@ -164,7 +164,7 @@
 
     <div class="mt-5 grid grid-cols-11 gap-x-5">
         <div class="col-span-2">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Salutation
             </div>
             <div>
@@ -179,7 +179,7 @@
         </div>
 
         <div class="col-span-3">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 First name <span class="text-red-500">*</span>
             </div>
             <div>
@@ -195,7 +195,7 @@
         </div>
 
         <div class="col-span-3">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Middle name
             </div>
             <div>
@@ -205,7 +205,7 @@
         </div>
 
         <div class="col-span-3">
-            <div class="text-registrationPrimaryColor">
+            <div class="text-primaryColor">
                 Last name <span class="text-red-500">*</span>
             </div>
             <div>
@@ -224,7 +224,7 @@
     <div class="mt-5">
         <div class="grid grid-cols-3 gap-x-5">
             <div class="col-span-1">
-                <div class="text-registrationPrimaryColor">
+                <div class="text-primaryColor">
                     Mobile number <span class="text-red-500">*</span>
                 </div>
                 <div>
@@ -240,7 +240,7 @@
             </div>
 
             <div class="col-span-1">
-                <div class="text-registrationPrimaryColor">
+                <div class="text-primaryColor">
                     Landline number
                 </div>
                 <div>
@@ -257,7 +257,7 @@
 
 
             <div class="col-span-1">
-                <div class="text-registrationPrimaryColor">
+                <div class="text-primaryColor">
                     Country <span class="text-red-500">*</span>
                 </div>
                 <div>

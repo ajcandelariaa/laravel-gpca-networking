@@ -29,7 +29,7 @@ class AttendeeDetails extends Component
 
     public $emailExistingError, $usernameExistingError;
 
-    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeeImageConfirmed' => 'editImageAttendee'];
+    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeeImageConfirmed' => 'editImageAttendee', 'removeAttendeeImageConfirmed' => 'removeAttendeeImage'];
 
     public function mount($eventId, $eventCategory, $attendeeData)
     {
@@ -57,7 +57,7 @@ class AttendeeDetails extends Component
     {
         $this->editAttendeeForm = true;
         $this->attendee_id = $this->attendeeData['attendeeId'];
-        
+
         $this->salutation = $this->attendeeData['attendeeSalutation'];
         $this->first_name = $this->attendeeData['attendeeFirstName'];
         $this->middle_name = $this->attendeeData['attendeeMiddleName'];
@@ -170,7 +170,7 @@ class AttendeeDetails extends Component
             'registration_type' => $this->registration_type,
         ]);
 
-        
+
         $this->attendeeData['attendeeSalutation'] = $this->salutation;
         $this->attendeeData['attendeeFirstName'] = $this->first_name;
         $this->attendeeData['attendeeMiddleName'] = $this->middle_name;
@@ -248,9 +248,9 @@ class AttendeeDetails extends Component
             'password' => Hash::make($this->newPassword),
             'password_changed_date_time' => Carbon::now(),
         ]);
-        
+
         Attendees::where('id', $this->attendee_id)->increment('password_changed_count');
-        
+
         $details = [
             'name' => $this->attendeeData['attendeeSalutation'] . ' ' . $this->attendeeData['attendeeFirstName'] . ' ' . $this->attendeeData['attendeeMiddleName'] . ' ' . $this->attendeeData['attendeeLastName'],
             'eventName' => $this->event->name,
@@ -272,12 +272,14 @@ class AttendeeDetails extends Component
 
 
     // EDIT ATTENDEE IMAGE
-    public function showUpdateImageAttendee(){
+    public function showUpdateImageAttendee()
+    {
         $this->editAttendeeImageForm = true;
         $this->attendee_id = $this->attendeeData['attendeeId'];
     }
 
-    public function cancelEditImageAttendee(){
+    public function cancelEditImageAttendee()
+    {
         $this->resetImageAttendeeFields();
     }
 
@@ -288,7 +290,8 @@ class AttendeeDetails extends Component
         $this->image = null;
     }
 
-    public function editImageAttendeeConfirmation(){
+    public function editImageAttendeeConfirmation()
+    {
         $this->validate([
             'image' => 'required|mimes:jpeg,jpg,png',
         ]);
@@ -302,8 +305,14 @@ class AttendeeDetails extends Component
         ]);
     }
 
-    public function editImageAttendee(){
+    public function editImageAttendee()
+    {
+        $attendeePrevImageUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('image');
         
+        if(Storage::exists($attendeePrevImageUrl)){
+            Storage::delete($attendeePrevImageUrl);
+        }
+
         $currentYear = strval(Carbon::parse($this->event->event_start_date)->year);
         $fileName = time() . '-' . $this->image->getClientOriginalName();
         $path = $this->image->storeAs('public/event/' . $currentYear . '/attendees/' . $this->event->category, $fileName);
@@ -313,7 +322,7 @@ class AttendeeDetails extends Component
         ]);
 
         $this->attendeeData['attendeeImage'] = Storage::url($path);
-        
+
         $this->resetImageAttendeeFields();
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
@@ -321,6 +330,46 @@ class AttendeeDetails extends Component
             'text' => ''
         ]);
     }
+
+    public function removeAttendeeImageConfirmation()
+    {
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure you want to remove?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, remove it!",
+            'livewireEmit' => "removeAttendeeImageConfirmed",
+        ]);
+    }
+
+    public function removeAttendeeImage()
+    {
+        $attendeeImageUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('image');
+        
+        if(Storage::exists($attendeeImageUrl)){
+            Storage::delete($attendeeImageUrl);
+        }
+
+        Attendees::where('id', $this->attendeeData['attendeeId'])->update([
+            'image' => null,
+        ]);
+
+        $this->attendeeData['attendeeImage'] = asset('assets/images/attendee-image-placeholder.jpg');
+        $this->attendeeData['attendeeImageDefault'] = true;
+
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Image removed succesfully!',
+            'text' => "",
+        ]);
+
+        $this->resetImageAttendeeFields();
+    }
+
+
+
+
 
     public function fetchMembersData()
     {

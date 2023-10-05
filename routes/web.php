@@ -40,7 +40,10 @@ Route::prefix('admin')->group(function (){
                     Route::get('/', [AttendeesController::class, 'eventAttendeesView'])->name('admin.event.attendees.view');
                     Route::get('/{attendeeId}', [AttendeesController::class, 'eventAttendeeView'])->name('admin.event.attendee.view');
                 });
-                Route::get('/speakers', [SpeakerController::class, 'eventSpeakersView'])->name('admin.event.speakers.view');
+                Route::prefix('/speakers')->group(function () {
+                    Route::get('/', [SpeakerController::class, 'eventSpeakersView'])->name('admin.event.speakers.view');
+                    Route::get('/{speakerId}', [SpeakerController::class, 'eventSpeakerView'])->name('admin.event.speaker.view');
+                });
                 Route::get('/agenda', [AgendaController::class, 'eventAgendaView'])->name('admin.event.agenda.view');
                 Route::get('/sponsors', [SponsorController::class, 'eventSponsorsView'])->name('admin.event.sponsors.view');
                 Route::get('/exhibitors', [ExhibitorController::class, 'eventExhibitorsView'])->name('admin.event.exhibitors.view');

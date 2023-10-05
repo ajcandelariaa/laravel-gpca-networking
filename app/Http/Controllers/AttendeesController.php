@@ -25,8 +25,10 @@ class AttendeesController extends Controller
         $attendee = Attendee::where('id', $attendeeId)->first();
 
         if($attendee->image){
+            $attendeeImageDefault = false;
             $attendeeImage = Storage::url($attendee->image);
         } else {
+            $attendeeImageDefault = true;
             $attendeeImage = asset('assets/images/attendee-image-placeholder.jpg');
         }
 
@@ -49,6 +51,7 @@ class AttendeesController extends Controller
             "attendeeRegistrationType" => $attendee->registration_type,
             "attendeeBiography" => $attendee->biography,
             "attendeeImage" => $attendeeImage,
+            "attendeeImageDefault" => $attendeeImageDefault,
             "attendeeAddedDateTime" => Carbon::parse($attendee->joined_date_time)->format('M j, Y g:i A'),
             "attendeeLastPasswordChangeDateTime" => Carbon::parse($attendee->password_changed_date_time)->format('M j, Y g:i A'),
         ];
