@@ -20,16 +20,16 @@ class AttendeeDetails extends Component
     public $event, $salutations, $countries, $attendeeData;
     public $registrationTypes, $members;
 
-    public $editAttendeeForm, $resetPasswordForm, $editAttendeeImageForm;
+    public $editAttendeeForm, $resetPasswordForm, $editAttendeePFPForm;
 
     // Attendee details
-    public $attendee_id, $registration_type, $username, $email_address, $pass_type, $company_name, $job_title, $salutation, $first_name, $middle_name, $last_name, $mobile_number, $landline_number, $country, $image, $biography, $password;
+    public $attendee_id, $registration_type, $username, $email_address, $pass_type, $company_name, $job_title, $salutation, $first_name, $middle_name, $last_name, $mobile_number, $landline_number, $country, $pfp, $biography, $password;
 
     public $newPassword, $confirmPassword, $passwordError;
 
     public $emailExistingError, $usernameExistingError;
 
-    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeeImageConfirmed' => 'editImageAttendee', 'removeAttendeeImageConfirmed' => 'removeAttendeeImage'];
+    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeePFPConfirmed' => 'editPFPAttendee', 'removeAttendeePFPConfirmed' => 'removeAttendeePFP'];
 
     public function mount($eventId, $eventCategory, $attendeeData)
     {
@@ -40,7 +40,7 @@ class AttendeeDetails extends Component
         $this->attendeeData = $attendeeData;
         $this->editAttendeeForm = false;
         $this->resetPasswordForm = false;
-        $this->editAttendeeForm = false;
+        $this->editAttendeePFPForm = false;
 
         // dd($this->attendeeData);
         $this->fetchMembersData();
@@ -271,29 +271,29 @@ class AttendeeDetails extends Component
     }
 
 
-    // EDIT ATTENDEE IMAGE
-    public function showUpdateImageAttendee()
+    // EDIT ATTENDEE PFP
+    public function showUpdatePFPAttendee()
     {
-        $this->editAttendeeImageForm = true;
+        $this->editAttendeePFPForm = true;
         $this->attendee_id = $this->attendeeData['attendeeId'];
     }
 
-    public function cancelEditImageAttendee()
+    public function cancelEditPFPAttendee()
     {
-        $this->resetImageAttendeeFields();
+        $this->resetPFPAttendeeFields();
     }
 
-    public function resetImageAttendeeFields()
+    public function resetPFPAttendeeFields()
     {
-        $this->editAttendeeImageForm = false;
+        $this->editAttendeePFPForm = false;
         $this->attendee_id = null;
-        $this->image = null;
+        $this->pfp = null;
     }
 
-    public function editImageAttendeeConfirmation()
+    public function editPFPAttendeeConfirmation()
     {
         $this->validate([
-            'image' => 'required|mimes:jpeg,jpg,png',
+            'pfp' => 'required|mimes:jpeg,jpg,png',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -301,70 +301,72 @@ class AttendeeDetails extends Component
             'message' => 'Are you sure?',
             'text' => "",
             'buttonConfirmText' => "Yes, update it!",
-            'livewireEmit' => "editAttendeeImageConfirmed",
+            'livewireEmit' => "editAttendeePFPConfirmed",
         ]);
     }
 
-    public function editImageAttendee()
+    public function editPFPAttendee()
     {
-        $attendeePrevImageUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('image');
+        $attendeePrevPFPUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('pfp');
         
-        if(Storage::exists($attendeePrevImageUrl)){
-            Storage::delete($attendeePrevImageUrl);
+        if($attendeePrevPFPUrl){
+            if(Storage::exists($attendeePrevPFPUrl)){
+                Storage::delete($attendeePrevPFPUrl);
+            }
         }
 
         $currentYear = strval(Carbon::parse($this->event->event_start_date)->year);
-        $fileName = time() . '-' . $this->image->getClientOriginalName();
-        $path = $this->image->storeAs('public/event/' . $currentYear . '/attendees/' . $this->event->category, $fileName);
+        $fileName = time() . '-' . $this->pfp->getClientOriginalName();
+        $path = $this->pfp->storeAs('public/' . $currentYear  . '/'. $this->event->category . '/attendees/pfp/', $fileName);
 
         Attendees::where('id', $this->attendee_id)->update([
-            'image' => $path,
+            'pfp' => $path,
         ]);
 
-        $this->attendeeData['attendeeImage'] = Storage::url($path);
+        $this->attendeeData['attendeePFP'] = Storage::url($path);
 
-        $this->resetImageAttendeeFields();
+        $this->resetPFPAttendeeFields();
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
-            'message' => 'Image updated successfully!',
+            'message' => 'PFP updated successfully!',
             'text' => ''
         ]);
     }
 
-    public function removeAttendeeImageConfirmation()
+    public function removeAttendeePFPConfirmation()
     {
         $this->dispatchBrowserEvent('swal:confirmation', [
             'type' => 'warning',
             'message' => 'Are you sure you want to remove?',
             'text' => "",
             'buttonConfirmText' => "Yes, remove it!",
-            'livewireEmit' => "removeAttendeeImageConfirmed",
+            'livewireEmit' => "removeAttendeePFPConfirmed",
         ]);
     }
 
-    public function removeAttendeeImage()
+    public function removeAttendeePFP()
     {
-        $attendeeImageUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('image');
+        $attendeePFPUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('pfp');
         
-        if(Storage::exists($attendeeImageUrl)){
-            Storage::delete($attendeeImageUrl);
+        if(Storage::exists($attendeePFPUrl)){
+            Storage::delete($attendeePFPUrl);
         }
 
         Attendees::where('id', $this->attendeeData['attendeeId'])->update([
-            'image' => null,
+            'pfp' => null,
         ]);
 
-        $this->attendeeData['attendeeImage'] = asset('assets/images/attendee-image-placeholder.jpg');
-        $this->attendeeData['attendeeImageDefault'] = true;
+        $this->attendeeData['attendeePFP'] = asset('assets/images/pfp-placeholder.jpg');
+        $this->attendeeData['attendeePFPDefault'] = true;
 
 
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
-            'message' => 'Image removed succesfully!',
+            'message' => 'PFP removed succesfully!',
             'text' => "",
         ]);
 
-        $this->resetImageAttendeeFields();
+        $this->resetPFPAttendeeFields();
     }
 
 

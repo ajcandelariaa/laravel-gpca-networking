@@ -13,6 +13,56 @@
             There are no media partners yet.
         </div>
     @else
-        
+        <p class="mt-5">Total media partners: {{ count($finalListOfMediaPartners) }}</p>
+
+        <div class="shadow-lg my-5 bg-white rounded-md">
+            <div
+                class="grid grid-cols-11 pt-2 pb-2 mt-3 text-center items-center gap-10 text-sm text-white bg-primaryColor rounded-tl-md rounded-tr-md">
+                <div class="col-span-1">No.</div>
+                <div class="col-span-2">Logo</div>
+                <div class="col-span-2">Company Name</div>
+                <div class="col-span-2">Link</div>
+                <div class="col-span-2">Date time added</div>
+                <div class="col-span-1">Status</div>
+                <div class="col-span-1">Action</div>
+            </div>
+            @foreach ($finalListOfMediaPartners as $index => $finalListOfMediaPartner)
+                <div class="grid grid-cols-11 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
+                    <div class="col-span-1">{{ $index + 1 }}</div>
+                    <div class="col-span-2">
+                        @if ($finalListOfMediaPartner['logo'] == null)
+                            N/A
+                        @else 
+                            {{ $finalListOfMediaPartner['logo'] }}
+                        @endif
+                    </div>
+                    <div class="col-span-2">{{ $finalListOfMediaPartner['name'] }}</div>
+                    <div class="col-span-2">{{ $finalListOfMediaPartner['link'] }}</div>
+                    <div wire:click="showEditMediaPartnerDateTime({{ $finalListOfMediaPartner['id'] }}, {{ $index }})" class="text-blue-700 hover:underline col-span-2 cursor-pointer">{{ $finalListOfMediaPartner['datetime_added'] }}</div>
+                    <div class="col-span-1">
+                        @if ($finalListOfMediaPartner['active'])
+                            <button wire:click="updateMediaPartnerStatus({{ $index }}, {{ $finalListOfMediaPartner['id'] }}, true)"
+                                class="text-gray-700 bg-green-300 hover:bg-green-500 hover:text-white py-1 px-2 text-sm rounded-md">Active</button>
+                        @else
+                            <button wire:click="updateMediaPartnerStatus({{ $index }}, {{ $finalListOfMediaPartner['id'] }}, false)"
+                                class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
+                        @endif
+                    </div>
+                    <div class="col-span-1">
+                        <a href="{{ route('admin.event.media-partner.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'mediaPartnerId' => $finalListOfMediaPartner['id']]) }}" class="cursor-pointer hover:text-gray-600 text-gray-500">
+                            <i class="fa-solid fa-eye"></i> View
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+
+    @if ($editMediaPartnerDateTimeForm)
+        @include('livewire.event.media-partners.edit_datetime')
+    @endif
+    
+    @if ($addMediaPartnerForm)
+        @include('livewire.event.media-partners.add_mp')
     @endif
 </div>

@@ -26,7 +26,7 @@ class AttendeesList extends Component
     // Attendee details
     public $registration_type, $username, $email_address, $pass_type, $company_name, $job_title, $salutation, $first_name, $middle_name, $last_name, $mobile_number, $landline_number, $country;
 
-    public $image, $badge_number, $password;
+    public $badge_number, $password;
 
     public $emailExistingError, $usernameExistingError;
 

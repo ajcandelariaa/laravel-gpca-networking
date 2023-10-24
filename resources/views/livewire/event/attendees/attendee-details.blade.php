@@ -7,8 +7,8 @@
         <div class="grid grid-cols-attendeeDetailGrid gap-14">
             <div class="mt-5">
                 <div class="relative">
-                    <img src="{{ $attendeeData['attendeeImage'] }}" class="w-80 h-80">
-                    <div class="absolute -bottom-4 -right-3 cursor-pointer" wire:click.prevent="showUpdateImageAttendee" wire:key="showUpdateImageAttendee">
+                    <img src="{{ $attendeeData['attendeePFP'] }}" class="w-80 h-80">
+                    <div class="absolute -bottom-4 -right-3 cursor-pointer" wire:click.prevent="showUpdatePFPAttendee" wire:key="showUpdatePFPAttendee">
                         <i class="fa-solid fa-pen bg-primaryColor text-white rounded-full p-3"></i>
                     </div>
                 </div>
@@ -97,8 +97,8 @@
             @include('livewire.event.attendees.attendee_reset_password')
         @endif
 
-        @if ($editAttendeeImageForm)
-            @include('livewire.event.attendees.attendee_image_update')
+        @if ($editAttendeePFPForm)
+            @include('livewire.event.attendees.edit_pfp')
         @endif
     @endif
 </div>

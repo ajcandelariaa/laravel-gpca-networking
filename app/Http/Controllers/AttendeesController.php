@@ -24,12 +24,12 @@ class AttendeesController extends Controller
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
         $attendee = Attendee::where('id', $attendeeId)->first();
 
-        if($attendee->image){
-            $attendeeImageDefault = false;
-            $attendeeImage = Storage::url($attendee->image);
+        if($attendee->pfp){
+            $attendeePFPDefault = false;
+            $attendeePFP = Storage::url($attendee->pfp);
         } else {
-            $attendeeImageDefault = true;
-            $attendeeImage = asset('assets/images/attendee-image-placeholder.jpg');
+            $attendeePFPDefault = true;
+            $attendeePFP = asset('assets/images/pfp-placeholder.jpg');
         }
 
         $attendeeData = [
@@ -50,8 +50,8 @@ class AttendeesController extends Controller
             "attendeePassType" => $attendee->pass_type,
             "attendeeRegistrationType" => $attendee->registration_type,
             "attendeeBiography" => $attendee->biography,
-            "attendeeImage" => $attendeeImage,
-            "attendeeImageDefault" => $attendeeImageDefault,
+            "attendeePFP" => $attendeePFP,
+            "attendeePFPDefault" => $attendeePFPDefault,
             "attendeeAddedDateTime" => Carbon::parse($attendee->joined_date_time)->format('M j, Y g:i A'),
             "attendeeLastPasswordChangeDateTime" => Carbon::parse($attendee->password_changed_date_time)->format('M j, Y g:i A'),
         ];

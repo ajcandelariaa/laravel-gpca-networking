@@ -27,7 +27,7 @@ class Attendee extends Model
         'job_title',
         'country',
         
-        'image',
+        'pfp',
         'biography',
 
         'badge_number',

@@ -29,8 +29,6 @@ class SpeakerDetails extends Component
 
         $this->editSpeakerAssetForm = false;
         $this->editSpeakerDetailsForm = false;
-
-        // dd($this->speakerData);
     }
     public function render()
     {
@@ -164,10 +162,13 @@ class SpeakerDetails extends Component
 
             if(!$this->speakerData['speakerPFPDefault']){
                 $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('pfp');
-                $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+
+                if($speakerAssetUrl){
+                    $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+                }
             }
 
-            $path = $this->image->storeAs('public/event/' . $currentYear . '/' . $this->event->category . '/pfp', $fileName);
+            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/speakers/pfp', $fileName);
 
             Speakers::where('id', $this->speakerData['speakerId'])->update([
                 'pfp' => $path,
@@ -179,10 +180,13 @@ class SpeakerDetails extends Component
             
             if(!$this->speakerData['speakerCoverPhotoDefault']){
                 $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
-                $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+
+                if($speakerAssetUrl){
+                    $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+                }
             }
 
-            $path = $this->image->storeAs('public/event/' . $currentYear . '/' . $this->event->category . '/cover-photo', $fileName);
+            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/speakers/cover-photo', $fileName);
 
             Speakers::where('id', $this->speakerData['speakerId'])->update([
                 'cover_photo' => $path,
@@ -214,7 +218,10 @@ class SpeakerDetails extends Component
     public function removeSpeakerAsset(){
         if($this->assetType == "Speaker PFP"){
             $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('pfp');
-            $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+
+            if($speakerAssetUrl){
+                $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+            }
 
             Speakers::where('id', $this->speakerData['speakerId'])->update([
                 'pfp' => null,
@@ -224,13 +231,16 @@ class SpeakerDetails extends Component
             $this->speakerData['speakerPFPDefault'] = true;
         } else {
             $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
-            $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+
+            if($speakerAssetUrl){
+                $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+            }
 
             Speakers::where('id', $this->speakerData['speakerId'])->update([
                 'cover_photo' => null,
             ]);
 
-            $this->speakerData['speakerCoverPhoto'] = asset('assets/images/attendee-cover-photo-placeholder.jpg');
+            $this->speakerData['speakerCoverPhoto'] = asset('assets/images/cover-photo-placeholder.jpg');
             $this->speakerData['speakerCoverPhotoDefault'] = true;
         }
 

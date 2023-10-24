@@ -12,7 +12,7 @@ class MediaPartner extends Model
     protected $fillable = [
         'event_id',
         'name',
-        'bio',
+        'profile',
         'logo',
         'banner',
         'email_address',

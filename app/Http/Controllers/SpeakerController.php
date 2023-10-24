@@ -29,7 +29,7 @@ class SpeakerController extends Controller
             $speakerPFP = Storage::url($speaker->pfp);
             $speakerPFPDefault = false;
         } else {
-            $speakerPFP = asset('assets/images/attendee-image-placeholder.jpg');
+            $speakerPFP = asset('assets/images/pfp-placeholder.jpg');
             $speakerPFPDefault = true;
         }
 
@@ -37,7 +37,7 @@ class SpeakerController extends Controller
             $speakerCoverPhoto = Storage::url($speaker->cover_photo);
             $speakerCoverPhotoDefault = false;
         } else {
-            $speakerCoverPhoto = asset('assets/images/attendee-cover-photo-placeholder.jpg');
+            $speakerCoverPhoto = asset('assets/images/cover-photo-placeholder.jpg');
             $speakerCoverPhotoDefault = true;
         }
         

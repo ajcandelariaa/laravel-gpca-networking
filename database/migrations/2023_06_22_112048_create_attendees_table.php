@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('job_title');
             $table->string('country');
 
-            $table->string('image')->nullable();
+            $table->string('pfp')->nullable();
             $table->longText('biography')->nullable();
 
             $table->string('badge_number');

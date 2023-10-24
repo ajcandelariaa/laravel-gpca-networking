@@ -15,6 +15,8 @@ class MediaPartnerList extends Component
 
     public $addMediaPartnerForm, $name, $link;
 
+    public $mediaPartnerId, $mediaPartnerDateTime, $mediaPartnerArrayIndex, $editMediaPartnerDateTimeForm;
+
     protected $listeners = ['addMediaPartnerConfirmed' => 'addMediaPartner'];
 
     public function mount($eventId, $eventCategory)
@@ -28,11 +30,11 @@ class MediaPartnerList extends Component
                 array_push($this->finalListOfMediaPartners, [
                     'id' => $mediaPartner->id,
                     'name' => $mediaPartner->name,
-                    'bio' => $mediaPartner->bio,
                     'email_address' => $mediaPartner->email_address,
                     'mobile_number' => $mediaPartner->mobile_number,
                     'link' => $mediaPartner->link,
                     'active' => $mediaPartner->active,
+                    'logo' => $mediaPartner->logo,
                     'datetime_added' => Carbon::parse($mediaPartner->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
@@ -40,6 +42,7 @@ class MediaPartnerList extends Component
         }
 
         $this->addMediaPartnerForm = false;
+        $this->editMediaPartnerDateTimeForm = false;
     }
 
     public function render()
@@ -88,17 +91,89 @@ class MediaPartnerList extends Component
             'link' => $this->link,
             'datetime_added' => Carbon::now(),
         ]);
-
         
         array_push($this->finalListOfMediaPartners, [
             'id' => $newMediaPartner->id,
             'name' => $this->name,
-            'bio' => null,
             'email_address' => null,
             'mobile_number' => null,
             'link' => $this->link,
             'active' => true,
+            'logo' => null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
+        ]);
+
+        $this->finalListOfMediaPartnersConst = $this->finalListOfMediaPartners;
+        
+        $this->resetAddMediaPartnerFields();
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Media partner added successfully!',
+            'text' => ''
+        ]);
+    }
+
+    public function updateMediaPartnerStatus($arrayIndex, $mediaPartnerId, $status){
+        if($status){
+            $newStatus = false;
+        } else {
+            $newStatus = true;
+        }
+
+        MediaPartners::where('id', $mediaPartnerId)->update([
+            'active' => $newStatus,
+        ]);
+
+        $this->finalListOfMediaPartners[$arrayIndex]['active'] = $newStatus;
+        $this->finalListOfMediaPartnersConst[$arrayIndex]['active'] = $newStatus;
+    }
+
+
+
+    // EDIT DATETIME
+    public function showEditMediaPartnerDateTime($mediaPartnerId, $mediaPartnerArrayIndex)
+    {
+        $mediaPartnerDateTime = MediaPartners::where('id', $mediaPartnerId)->value('datetime_added');
+
+        $this->mediaPartnerId = $mediaPartnerId;
+        $this->mediaPartnerDateTime = $mediaPartnerDateTime;
+        $this->mediaPartnerArrayIndex = $mediaPartnerArrayIndex;
+        $this->editMediaPartnerDateTimeForm = true;
+    }
+
+    public function cancelEditMediaPartnerDateTime()
+    {
+        $this->resetEditMediaPartnerDateTimeFields();
+    }
+
+    public function resetEditMediaPartnerDateTimeFields()
+    {
+        $this->editMediaPartnerDateTimeForm = false;
+        $this->mediaPartnerId = null;
+        $this->mediaPartnerDateTime = null;
+        $this->mediaPartnerArrayIndex = null;
+    }
+    
+    public function editMediaPartnerDateTime()
+    {
+        $this->validate([
+            'mediaPartnerDateTime' => 'required',
+        ]);
+
+        MediaPartners::where('id', $this->mediaPartnerId)->update([
+            'datetime_added' => $this->mediaPartnerDateTime,
+        ]);
+
+        $this->finalListOfMediaPartners[$this->mediaPartnerArrayIndex]['datetime_added'] = Carbon::parse($this->mediaPartnerDateTime)->format('M j, Y g:i A');
+        $this->finalListOfMediaPartnersConst[$this->mediaPartnerArrayIndex]['datetime_added'] = Carbon::parse($this->mediaPartnerDateTime)->format('M j, Y g:i A');
+
+        $this->resetEditMediaPartnerDateTimeFields();
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Media Partner Datetime updated successfully!',
+            'text' => ''
         ]);
     }
 }
