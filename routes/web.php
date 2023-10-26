@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('admin')->group(function (){
+Route::prefix('admin')->group(function () {
     Route::middleware(['isAdmin'])->group(function () {
         Route::get('/logout', [AdminController::class, 'logout'])->name('admin.logout');
         Route::get('/dashboard', [EventController::class, 'mainDashboardView'])->name('admin.main-dashboard.view');
@@ -36,7 +36,7 @@ Route::prefix('admin')->group(function (){
             Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
                 Route::get('/dashboard', [EventController::class, 'eventDashboardView'])->name('admin.event.dashboard.view');
                 Route::get('/details', [EventController::class, 'eventDetailsView'])->name('admin.event.details.view');
-                Route::prefix('attendees')->group(function(){
+                Route::prefix('attendees')->group(function () {
                     Route::get('/', [AttendeesController::class, 'eventAttendeesView'])->name('admin.event.attendees.view');
                     Route::get('/{attendeeId}', [AttendeesController::class, 'eventAttendeeView'])->name('admin.event.attendee.view');
                 });
@@ -47,7 +47,10 @@ Route::prefix('admin')->group(function (){
                 Route::get('/agenda', [AgendaController::class, 'eventAgendaView'])->name('admin.event.agenda.view');
                 Route::get('/sponsors', [SponsorController::class, 'eventSponsorsView'])->name('admin.event.sponsors.view');
                 Route::get('/exhibitors', [ExhibitorController::class, 'eventExhibitorsView'])->name('admin.event.exhibitors.view');
-                Route::get('/meeting-room-partners', [MeetingRoomPartnerController::class, 'eventMeetingRoomPartnerView'])->name('admin.event.meeting-room-partners.view');
+                Route::prefix('/meeting-room-partners')->group(function () {
+                    Route::get('/', [MeetingRoomPartnerController::class, 'eventMeetingRoomPartnersView'])->name('admin.event.meeting-room-partners.view');
+                    Route::get('/{meetingRoomPartnerId}', [MeetingRoomPartnerController::class, 'eventMeetingRoomPartnerView'])->name('admin.event.meeting-room-partner.view');
+                });
                 Route::prefix('/media-partners')->group(function () {
                     Route::get('/', [MediaPartnerController::class, 'eventMediaPartnersView'])->name('admin.event.media-partners.view');
                     Route::get('/{mediaPartnerId}', [MediaPartnerController::class, 'eventMediaPartnerView'])->name('admin.event.media-partner.view');

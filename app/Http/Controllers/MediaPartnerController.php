@@ -64,7 +64,6 @@ class MediaPartnerController extends Controller
         } else {
             abort(404, 'Data not found'); 
         }
-        
     }
 
     public function getListOfMediaPartners() {

@@ -30,8 +30,6 @@ class MediaPartnerList extends Component
                 array_push($this->finalListOfMediaPartners, [
                     'id' => $mediaPartner->id,
                     'name' => $mediaPartner->name,
-                    'email_address' => $mediaPartner->email_address,
-                    'mobile_number' => $mediaPartner->mobile_number,
                     'link' => $mediaPartner->link,
                     'active' => $mediaPartner->active,
                     'logo' => $mediaPartner->logo,
@@ -95,8 +93,6 @@ class MediaPartnerList extends Component
         array_push($this->finalListOfMediaPartners, [
             'id' => $newMediaPartner->id,
             'name' => $this->name,
-            'email_address' => null,
-            'mobile_number' => null,
             'link' => $this->link,
             'active' => true,
             'logo' => null,
