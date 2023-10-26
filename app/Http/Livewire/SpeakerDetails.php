@@ -227,7 +227,7 @@ class SpeakerDetails extends Component
                 'pfp' => null,
             ]);
 
-            $this->speakerData['speakerPFP'] = asset('assets/images/attendee-image-placeholder.jpg');
+            $this->speakerData['speakerPFP'] = asset('assets/images/pfp-placeholder.jpg');
             $this->speakerData['speakerPFPDefault'] = true;
         } else {
             $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
