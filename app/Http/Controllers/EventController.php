@@ -60,11 +60,11 @@ class EventController extends Controller
 
     public function eventDashboardView($eventCategory, $eventId)
     {
-        $event = Event::where('id', $eventId)->first();
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
 
         return view('admin.event.dashboard.dashboard', [
             "pageTitle" => "Dashboard",
-            "eventName" => $event->name,
+            "eventName" => $eventName,
             "eventCategory" => $eventCategory,
             "eventId" => $eventId,
         ]);

@@ -3,7 +3,7 @@
 
     <div class="flex justify-between mt-5">
         <button type="button" wire:click.prevent="showAddExhibitor" wire:key="showAddExhibitor"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-52 h-10">Add
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
             exhibitor</button>
     </div>
 
@@ -71,6 +71,6 @@
     @endif
 
     @if ($addExhibitorForm)
-        @include('livewire.event.exhibitors.add_mrp')
+        @include('livewire.event.exhibitors.add_exhibitor')
     @endif
 </div>

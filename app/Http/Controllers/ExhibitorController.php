@@ -12,9 +12,11 @@ class ExhibitorController extends Controller
 {
     public function eventExhibitorsView($eventCategory, $eventId)
     {
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+
         return view('admin.event.exhibitors.exhibitors', [
             "pageTitle" => "Exhibitors",
-            "eventName" => "14th GPCA Supply Chain Conference",
+            "eventName" => $eventName,
             "eventCategory" => $eventCategory,
             "eventId" => $eventId,
         ]);

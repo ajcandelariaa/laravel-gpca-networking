@@ -5,6 +5,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AttendeesController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
+use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\MeetingRoomPartnerController;
@@ -67,6 +68,11 @@ Route::prefix('admin')->group(function () {
 
                 Route::get('/venue', [VenueController::class, 'eventVenueView'])->name('admin.event.venue.view');
                 Route::get('/floor-plan', [FloorPlanController::class, 'eventFloorPlanView'])->name('admin.event.floor-plan.view');
+
+                Route::prefix('/feature')->group(function () {
+                    Route::get('/', [FeatureController::class, 'eventFeaturesView'])->name('admin.event.features.view');
+                    Route::get('/{featureId}', [FeatureController::class, 'eventFeatureView'])->name('admin.event.feature.view');
+                });
             });
         });
     });
