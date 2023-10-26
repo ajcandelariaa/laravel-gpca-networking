@@ -1,8 +1,9 @@
 @extends('admin.event.layouts.master')
 
 @section('content')
-    @livewire('exhibitor-list', [
+    @livewire('exhibitor-details', [
         'eventId' => $eventId,
         'eventCategory' => $eventCategory,
+        'exhibitorData' => $exhibitorData,
     ])
 @endsection
