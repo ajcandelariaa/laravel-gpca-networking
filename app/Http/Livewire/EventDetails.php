@@ -161,37 +161,37 @@ class EventDetails extends Component
         $fileName = time() . '-' . $this->image->getClientOriginalName();
 
         if ($this->assetType == "Event Logo") {
-            $path = $this->image->storeAs('public/event/' . $currentYear . '/logo', $fileName);
+            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_logo' => $path,
             ]);
             $this->eventData['eventAssets']['event_logo'] = Storage::url($path);
         } else if ($this->assetType == 'Event Logo inverted') {
-            $path = $this->image->storeAs('public/event/' . $currentYear . '/logo', $fileName);
+            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_logo_inverted' => $path,
             ]);
             $this->eventData['eventAssets']['event_logo_inverted'] = Storage::url($path);
         } else if ($this->assetType == 'App Sponsor logo') {
-            $path = $this->image->storeAs('public/event/' . $currentYear . '/logo', $fileName);
+            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_logo' => $path,
             ]);
             $this->eventData['eventAssets']['app_sponsor_logo'] = Storage::url($path);
         } else if ($this->assetType == 'Event Banner') {
-            $path = $this->image->storeAs('public/event/' . $currentYear . '/banner', $fileName);
+            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/banner', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_banner' => $path,
             ]);
             $this->eventData['eventAssets']['event_banner'] = Storage::url($path);
         } else if ($this->assetType == 'App Sponsor banner') {
-            $path = $this->image->storeAs('public/event/' . $currentYear . '/banner', $fileName);
+            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/banner', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_banner' => $path,
             ]);
             $this->eventData['eventAssets']['app_sponsor_banner'] = Storage::url($path);
         } else {
-            $path = $this->image->storeAs('public/event/' . $currentYear . '/splash-screen', $fileName);
+            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/splash-screen', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_splash_screen' => $path,
             ]);

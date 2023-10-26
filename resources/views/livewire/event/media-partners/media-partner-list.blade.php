@@ -33,7 +33,7 @@
                         @if ($finalListOfMediaPartner['logo'] == null)
                             N/A
                         @else 
-                            {{ $finalListOfMediaPartner['logo'] }}
+                            <img src="{{ Storage::url($finalListOfMediaPartner['logo']) }}" alt="" class="mx-auto w-14">
                         @endif
                     </div>
                     <div class="col-span-2">{{ $finalListOfMediaPartner['name'] }}</div>

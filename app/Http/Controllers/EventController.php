@@ -191,13 +191,13 @@ class EventController extends Controller
         $fileName5 = time() . '-' . $request->file('event_banner')->getClientOriginalName();
         $fileName6 = time() . '-' . $request->file('app_sponsor_banner')->getClientOriginalName();
 
-        $eventLogoPath = $request->file('event_logo')->storeAs('public/event/' . $currentYear . '/logo', $fileName1);
-        $eventLogoInvertedPath = $request->file('event_logo_inverted')->storeAs('public/event/' . $currentYear . '/logo', $fileName2);
-        $appSponsorLogoPath = $request->file('app_sponsor_logo')->storeAs('public/event/' . $currentYear . '/logo', $fileName3);
+        $eventLogoPath = $request->file('event_logo')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/logo', $fileName1);
+        $eventLogoInvertedPath = $request->file('event_logo_inverted')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/logo', $fileName2);
+        $appSponsorLogoPath = $request->file('app_sponsor_logo')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/logo', $fileName3);
 
-        $eventSplashScreenPath = $request->file('event_splash_screen')->storeAs('public/event/' . $currentYear . '/splash-screen', $fileName4);
-        $eventBannerPath = $request->file('event_banner')->storeAs('public/event/' . $currentYear . '/banner', $fileName5);
-        $appSponsorBannerPath = $request->file('app_sponsor_banner')->storeAs('public/event/' . $currentYear . '/banner', $fileName6);
+        $eventSplashScreenPath = $request->file('event_splash_screen')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/splash-screen', $fileName4);
+        $eventBannerPath = $request->file('event_banner')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/banner', $fileName5);
+        $appSponsorBannerPath = $request->file('app_sponsor_banner')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/banner', $fileName6);
 
         $newEvent = Event::create([
             'category' => $request->category,
