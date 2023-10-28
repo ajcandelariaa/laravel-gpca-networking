@@ -175,7 +175,7 @@ class ExhibitorList extends Component
 
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
-            'message' => 'Feature Datetime updated successfully!',
+            'message' => 'Exhibitor Datetime updated successfully!',
             'text' => ''
         ]);
     }

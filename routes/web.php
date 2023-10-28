@@ -49,7 +49,12 @@ Route::prefix('admin')->group(function () {
                 });
 
                 Route::get('/agenda', [AgendaController::class, 'eventAgendaView'])->name('admin.event.agenda.view');
-                Route::get('/sponsors', [SponsorController::class, 'eventSponsorsView'])->name('admin.event.sponsors.view');
+                
+                Route::prefix('/sponsors')->group(function () {
+                    Route::get('/', [SponsorController::class, 'eventSponsorsView'])->name('admin.event.sponsors.view');
+                    Route::get('/type', [SponsorController::class, 'eventSponsorsTypeView'])->name('admin.event.sponsors.type.view');
+                    Route::get('/{sponsorId}', [SponsorController::class, 'eventSponsorView'])->name('admin.event.sponsor.view');
+                });
 
                 Route::prefix('/exhibitors')->group(function () {
                     Route::get('/', [ExhibitorController::class, 'eventExhibitorsView'])->name('admin.event.exhibitors.view');
