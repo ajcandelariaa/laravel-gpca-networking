@@ -36,6 +36,7 @@ class EventController extends Controller
                     'eventId' => $event->id,
                     'eventLogo' => $event->event_logo,
                     'eventName' => $event->name,
+                    'eventShortName' => $event->short_name,
                     'eventCategory' => $event->category,
                     'eventDate' => $eventFormattedDate,
                     'eventLocation' => $event->location,
@@ -124,6 +125,7 @@ class EventController extends Controller
                 "eventId" => $eventId,
                 "eventDetails" => [
                     'name' => $event->name,
+                    'short_name' => $event->short_name,
                     'category' => $event->category,
                     'location' => $event->location,
                     'description' => $event->description,
@@ -167,6 +169,7 @@ class EventController extends Controller
         $request->validate([
             'category' => 'required',
             'name' => 'required',
+            'short_name' => 'required',
             'location' => 'required',
             'description' => 'required',
             'event_full_link' => 'required',
@@ -202,6 +205,7 @@ class EventController extends Controller
         $newEvent = Event::create([
             'category' => $request->category,
             'name' => $request->name,
+            'short_name' => $request->short_name,
             'location' => $request->location,
             'description' => $request->description,
             'event_full_link' => $request->event_full_link,

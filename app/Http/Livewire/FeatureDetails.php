@@ -15,7 +15,7 @@ class FeatureDetails extends Component
 
     public $event, $featureData;
 
-    public $name, $tagline, $location, $short_description, $long_description, $link, $start_date, $end_date, $editFeatureDetailsForm;
+    public $name, $short_name, $tagline, $location, $short_description, $long_description, $link, $start_date, $end_date, $editFeatureDetailsForm;
 
     public $assetType, $image, $editFeatureAssetForm;
 
@@ -59,7 +59,6 @@ class FeatureDetails extends Component
 
     public function editFeatureAssetConfirmation()
     {
-
         $this->validate([
             'image' => 'required|mimes:png,jpg,jpeg'
         ]);
@@ -220,6 +219,7 @@ class FeatureDetails extends Component
     public function showEditFeatureDetails()
     {
         $this->name = $this->featureData['featureName'];
+        $this->short_name = $this->featureData['featureShortName'];
         $this->tagline = $this->featureData['featureTagline'];
         $this->location = $this->featureData['featureLocation'];
         $this->short_description = $this->featureData['featureShortDescription'];
@@ -239,6 +239,7 @@ class FeatureDetails extends Component
     {
         $this->editFeatureDetailsForm = false;
         $this->name = null;
+        $this->short_name = null;
         $this->tagline = null;
         $this->location = null;
         $this->short_description = null;
@@ -252,6 +253,7 @@ class FeatureDetails extends Component
     {
         $this->validate([
             'name' => 'required',
+            'short_name' => 'required',
             'location' => 'required',
             'link' => 'required',
             'start_date' => 'required',
@@ -271,6 +273,7 @@ class FeatureDetails extends Component
     {
         Features::where('id', $this->featureData['featureId'])->update([
             'name' => $this->name,
+            'short_name' => $this->short_name,
             'tagline' => $this->tagline,
             'location' => $this->location,
             'short_description' => $this->short_description,
@@ -281,6 +284,7 @@ class FeatureDetails extends Component
         ]);
 
         $this->featureData['featureName'] = $this->name;
+        $this->featureData['featureShortName'] = $this->short_name;
         $this->featureData['featureTagline'] = $this->tagline;
         $this->featureData['featureLocation'] = $this->location;
         $this->featureData['featureShortDescription'] = $this->short_description;

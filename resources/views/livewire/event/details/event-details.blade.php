@@ -19,8 +19,9 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-4 mt-5">
+        <div class="flex items-center gap-2 mt-5">
             <p class="font-bold text-2xl">{{ $eventData['eventDetails']['name'] }}</p>
+            <p>({{ $eventData['eventDetails']['short_name'] }})</p>
             <p class="text-primaryColor rounded-full border border-primaryColor px-4 font-bold text-sm">
                 {{ $eventData['eventDetails']['category'] }}</p>
         </div>

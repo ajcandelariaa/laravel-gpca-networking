@@ -9,7 +9,7 @@
     {{-- FEATURE DETAILS --}}
     <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-5">
         <div class="flex items-center justify-between">
-            <h1 class="text-headingTextColor text-3xl font-bold">Feature Details</h1>
+            <h1 class="text-headingTextColor text-3xl font-bold">Feature Details</h1> 
             <div>
                 <button wire:click="showEditFeatureDetails"
                     class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
@@ -19,8 +19,9 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-4 mt-5">
-            <p class="font-bold text-2xl">{{ $featureData['featureName'] }}</p>
+        <div class="flex items-center gap-2 mt-5">
+            <p class="font-bold text-2xl">{{ $featureData['featureName'] }}</p> 
+            <p>({{ $featureData['featureShortName'] }})</p>
         </div>
 
         <div class="flex gap-3 items-center mt-3 text-primaryColor">

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('event_id');
             $table->string('name');
+            $table->string('short_name');
             $table->string('tagline')->nullable();
             $table->string('location');
             $table->longText('short_description')->nullable();

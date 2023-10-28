@@ -13,7 +13,7 @@ class FeatureList extends Component
 
     public $finalListOfFeatures = array(), $finalListOfFeaturesConst = array();
 
-    public $addFeatureForm, $name, $location, $link, $start_date, $end_date;
+    public $addFeatureForm, $name, $short_name, $location, $link, $start_date, $end_date;
 
     public $featureId, $featureDateTime, $featureArrayIndex, $editFeatureDateTimeForm;
 
@@ -31,6 +31,7 @@ class FeatureList extends Component
                 array_push($this->finalListOfFeatures, [
                     'id' => $feature->id,
                     'name' => $feature->name,
+                    'short_name' => $feature->short_name,
                     'location' => $feature->location,
                     'date' => $formattedDate,
                     'active' => $feature->active,
@@ -57,6 +58,7 @@ class FeatureList extends Component
     {
         $this->validate([
             'name' => 'required',
+            'short_name' => 'required',
             'location' => 'required',
             'link' => 'required',
             'start_date' => 'required',
@@ -81,6 +83,7 @@ class FeatureList extends Component
     {
         $this->addFeatureForm = false;
         $this->name = null;
+        $this->short_name = null;
         $this->link = null;
         $this->location = null;
         $this->start_date = null;
@@ -92,6 +95,7 @@ class FeatureList extends Component
         $newFeature = Features::create([
             'event_id' => $this->event->id,
             'name' => $this->name,
+            'short_name' => $this->short_name,
             'location' => $this->location,
             'link' => $this->link,
             'start_date' => $this->start_date,
@@ -104,6 +108,7 @@ class FeatureList extends Component
         array_push($this->finalListOfFeatures, [
             'id' => $newFeature->id,
             'name' => $this->name,
+            'short_name' => $this->short_name,
             'location' => $this->location,
             'date' => $formattedDate,
             'active' => true,

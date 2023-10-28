@@ -18,6 +18,7 @@ return new class extends Migration
             
             $table->string('category');
             $table->string('name');
+            $table->string('short_name');
             $table->string('location');
             $table->longText('description');
             $table->string('event_full_link');

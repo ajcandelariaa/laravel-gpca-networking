@@ -56,6 +56,7 @@ class FeatureController extends Controller
             $featureData = [
                 "featureId" => $feature->id,
                 "featureName" => $feature->name,
+                "featureShortName" => $feature->short_name,
                 "featureTagline" => $feature->tagline,
                 "featureLocation" => $feature->location,
                 "featureShortDescription" => $feature->short_description,

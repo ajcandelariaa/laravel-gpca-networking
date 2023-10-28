@@ -12,6 +12,7 @@ class Feature extends Model
     protected $fillable = [
         'event_id',
         'name',
+        'short_name',
         'tagline',
         'location',
         'short_description',

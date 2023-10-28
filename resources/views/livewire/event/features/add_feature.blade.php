@@ -31,6 +31,25 @@
                         </div>
                     </div>
 
+                    
+                    <div class="mt-5">
+                        <div>
+                            <div class="text-primaryColor">
+                                Short Name <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <input placeholder="Short Name" type="text" wire:model.lazy="short_name"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+
+                                @error('short_name')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
 
                     <div class="mt-5">
                         <div>

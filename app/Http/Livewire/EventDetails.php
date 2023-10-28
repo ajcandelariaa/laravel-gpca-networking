@@ -14,7 +14,7 @@ class EventDetails extends Component
 
     public $eventData, $eventCategories;
 
-    public $name, $category, $location, $description, $event_full_link, $event_short_link, $event_start_date, $event_end_date, $editEventDetailsForm;
+    public $name, $short_name, $category, $location, $description, $event_full_link, $event_short_link, $event_start_date, $event_end_date, $editEventDetailsForm;
 
     public $assetType, $image, $editEventAssetForm;
 
@@ -37,6 +37,7 @@ class EventDetails extends Component
     public function showEditEventDetails()
     {
         $this->name = $this->eventData['eventDetails']['name'];
+        $this->short_name = $this->eventData['eventDetails']['short_name'];
         $this->category = $this->eventData['eventDetails']['category'];
         $this->location = $this->eventData['eventDetails']['location'];
         $this->description = $this->eventData['eventDetails']['description'];
@@ -58,6 +59,7 @@ class EventDetails extends Component
     public function resetEditEventDetailsFields()
     {
         $this->name = null;
+        $this->short_name = null;
         $this->category = null;
         $this->location = null;
         $this->description = null;
@@ -73,6 +75,7 @@ class EventDetails extends Component
         $this->validate([
             'category' => 'required',
             'name' => 'required',
+            'short_name' => 'required',
             'location' => 'required',
             'description' => 'required',
             'event_full_link' => 'required',
@@ -98,6 +101,7 @@ class EventDetails extends Component
         Events::where('id', $this->eventData['eventId'])->update([
             'category' => $this->category,
             'name' => $this->name,
+            'short_name' => $this->short_name,
             'location' => $this->location,
             'description' => $this->description,
             'event_full_link' => $this->event_full_link,

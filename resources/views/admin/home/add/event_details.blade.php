@@ -3,7 +3,7 @@
         Event details
     </div>
 
-    <div class="space-y-2 col-span-2 grid grid-cols-5 gap-5 items-start">
+    <div class="space-y-2 col-span-2 grid grid-cols-7 gap-5 items-start">
 
         <div class="col-span-1 mt-2">
             <div class="text-primaryColor">
@@ -34,6 +34,21 @@
                 <input placeholder="14th GPCA Supply Chain" type="text" name="name" value="{{ old('name') }}"
                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                 @error('name')
+                    <div class="text-red-500 text-xs italic mt-1">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+        </div>
+
+        <div class="col-span-2">
+            <div class="text-primaryColor">
+                Event Short Name <span class="text-red-500">*</span>
+            </div>
+            <div class="mt-2">
+                <input placeholder="GPCA Supply Chain" type="text" name="short_name" value="{{ old('short_name') }}"
+                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                @error('short_name')
                     <div class="text-red-500 text-xs italic mt-1">
                         {{ $message }}
                     </div>
