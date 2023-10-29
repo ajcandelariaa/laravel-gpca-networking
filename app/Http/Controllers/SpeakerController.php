@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Feature;
 use App\Models\Speaker;
+use App\Models\SpeakerType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class SpeakerController extends Controller
 {
-    public function eventSpeakersView($eventCategory, $eventId){
+    public function eventSpeakersView($eventCategory, $eventId)
+    {
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
-        
+
         return view('admin.event.speakers.speakers_list', [
             "pageTitle" => "Speakers",
             "eventName" => $eventName,
@@ -21,11 +24,24 @@ class SpeakerController extends Controller
         ]);
     }
 
-    public function eventSpeakerView($eventCategory, $eventId, $speakerId){
+    public function eventSpeakerTypesView($eventCategory, $eventId)
+    {
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+
+        return view('admin.event.speakers.speaker_types', [
+            "pageTitle" => "Speakers Type",
+            "eventName" => $eventName,
+            "eventCategory" => $eventCategory,
+            "eventId" => $eventId,
+        ]);
+    }
+
+    public function eventSpeakerView($eventCategory, $eventId, $speakerId)
+    {
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
         $speaker = Speaker::where('id', $speakerId)->first();
 
-        if($speaker->pfp){
+        if ($speaker->pfp) {
             $speakerPFP = Storage::url($speaker->pfp);
             $speakerPFPDefault = false;
         } else {
@@ -33,16 +49,38 @@ class SpeakerController extends Controller
             $speakerPFPDefault = true;
         }
 
-        if($speaker->cover_photo){
+        if ($speaker->cover_photo) {
             $speakerCoverPhoto = Storage::url($speaker->cover_photo);
             $speakerCoverPhotoDefault = false;
         } else {
             $speakerCoverPhoto = asset('assets/images/cover-photo-placeholder.jpg');
             $speakerCoverPhotoDefault = true;
         }
-        
+
+        if ($speaker->feature_id == 0) {
+            $category = $event->short_name;
+        } else {
+            $feature = Feature::where('event_id', $event->id)->where('id', $speaker->feature_id)->first();
+            if ($feature) {
+                $category = $feature->short_name;
+            } else {
+                $category = "Others";
+            }
+        }
+
+        $speakerType = SpeakerType::where('event_id', $event->id)->where('id', $speaker->speaker_type_id)->first();
+        if ($speakerType) {
+            $type = $speakerType->name;
+        } else {
+            $type = "N/A";
+        }
+
         $speakerData = [
             "speakerId" => $speaker->id,
+            "speakerCategoryName" => $category,
+            "speakerFeatureId" => $speaker->feature_id,
+            "speakerTypeName" => $type,
+            "speakerTypeId" => $speaker->speaker_type_id,
             "speakerSalutation" => $speaker->salutation,
             "speakerFirstName" => $speaker->first_name,
             "speakerMiddleName" => $speaker->middle_name,
@@ -65,7 +103,7 @@ class SpeakerController extends Controller
             "speakerData" => $speakerData,
         ]);
     }
-    
+
     public function getListOfEvents()
     {
         return response()->json(array(

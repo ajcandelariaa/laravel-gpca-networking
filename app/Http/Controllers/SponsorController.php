@@ -23,10 +23,10 @@ class SponsorController extends Controller
         ]);
     }
 
-    public function eventSponsorsTypeView($eventCategory, $eventId){
+    public function eventSponsorTypesView($eventCategory, $eventId){
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
         
-        return view('admin.event.sponsors.sponsors_type', [
+        return view('admin.event.sponsors.sponsor_types', [
             "pageTitle" => "Sponsors Type",
             "eventName" => $eventName,
             "eventCategory" => $eventCategory,

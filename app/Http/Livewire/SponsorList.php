@@ -71,7 +71,7 @@ class SponsorList extends Component
 
     public function showAddSponsorType()
     {
-        return redirect()->route('admin.event.sponsors.type.view', ['eventCategory' => $this->event->category, 'eventId' => $this->event->id]);
+        return redirect()->route('admin.event.sponsor.types.view', ['eventCategory' => $this->event->category, 'eventId' => $this->event->id]);
     }
 
 

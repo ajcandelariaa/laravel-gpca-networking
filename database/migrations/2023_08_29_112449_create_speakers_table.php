@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('speakers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('event_id');
+            $table->unsignedBigInteger('feature_id')->nullable();
+            $table->unsignedBigInteger('speaker_type_id')->nullable();
 
             $table->string('salutation')->nullable();
             $table->string('first_name');

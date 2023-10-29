@@ -16,6 +16,49 @@
                     <div class="mt-5 grid grid-cols-2 gap-x-5">
                         <div>
                             <div class="text-primaryColor">
+                                Category <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <select wire:model.lazy="category" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                    <option value=""></option>
+                                    @foreach ($categoryChoices as $categoryChoice)
+                                        <option value="{{ $categoryChoice['id'] }}">{{ $categoryChoice['value'] }}</option>
+                                    @endforeach
+                                </select>
+    
+                                @error('category')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        
+                        <div>
+                            <div class="text-primaryColor">
+                                Type <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <select wire:model.lazy="type" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                    <option value=""></option>
+                                    @foreach ($typeChoices as $typeChoice)
+                                        <option value="{{ $typeChoice['id'] }}">{{ $typeChoice['value'] }}</option>
+                                    @endforeach
+                                </select>
+    
+                                @error('type')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 grid grid-cols-2 gap-x-5">
+                        <div>
+                            <div class="text-primaryColor">
                                 Salutation
                             </div>
                             <div class="mt-2">

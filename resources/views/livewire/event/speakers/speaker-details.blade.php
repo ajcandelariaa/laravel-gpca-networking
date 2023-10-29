@@ -54,6 +54,8 @@
 
     <div class="mt-10">
         <p>Published date time: {{ $speakerData['speakerDateTimeAdded'] }}</p>
+        <p>Category: {{ $speakerData['speakerCategoryName'] }}</p>
+        <p>Type: {{ $speakerData['speakerTypeName'] }}</p>
         <p>Status: {{ $speakerData['speakerStatus'] ? 'Active' : 'Inactive' }}</p>
         <p>Biography: </p>
         <p>

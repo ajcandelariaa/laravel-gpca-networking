@@ -4,6 +4,8 @@ namespace App\Http\Livewire;
 
 use App\Models\Event as Events;
 use App\Models\Speaker as Speakers;
+use App\Models\SpeakerType as SpeakerTypes;
+use App\Models\Feature as Features;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -17,7 +19,7 @@ class SpeakerDetails extends Component
 
     public $image, $assetType, $editSpeakerAssetForm, $imageDefault;
 
-    public $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $biography, $editSpeakerDetailsForm;
+    public $category, $type, $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $biography, $editSpeakerDetailsForm, $categoryChoices = array(), $typeChoices = array();
 
     protected $listeners = ['editSpeakerDetailsConfirmed' => 'editSpeakerDetails', 'editSpeakerAssetConfirmed' => 'editSpeakerAsset', 'removeSpeakerAssetConfirmed' => 'removeSpeakerAsset'];
 
@@ -39,6 +41,35 @@ class SpeakerDetails extends Component
     // EDIT SPEAKER DETAILS
     public function showEditSpeakerDetails()
     {
+        $speakerTypes = SpeakerTypes::where('event_id', $this->event->id)->get();
+
+        if ($speakerTypes->isNotEmpty()) {
+            foreach ($speakerTypes as $speakerType) {
+                array_push($this->typeChoices, [
+                    'value' => $speakerType->name,
+                    'id' => $speakerType->id,
+                ]);
+            }
+        }
+
+        $features = Features::where('event_id', $this->event->id)->get();
+        if ($features->isNotEmpty()) {
+
+            array_push($this->categoryChoices, [
+                'value' => $this->event->short_name,
+                'id' => 0,
+            ]);
+
+            foreach ($features as $feature) {
+                array_push($this->categoryChoices, [
+                    'value' => $feature->short_name,
+                    'id' => $feature->id,
+                ]);
+            }
+        }
+        $this->category = $this->speakerData['speakerFeatureId'];
+        $this->type = $this->speakerData['speakerTypeId'];
+
         $this->salutation = $this->speakerData['speakerSalutation'];
         $this->first_name = $this->speakerData['speakerFirstName'];
         $this->middle_name = $this->speakerData['speakerMiddleName'];
@@ -57,6 +88,8 @@ class SpeakerDetails extends Component
     public function resetEditSpeakerDetailsFields()
     {
         $this->editSpeakerDetailsForm = false;
+        $this->category = null;
+        $this->type = null;
         $this->salutation = null;
         $this->first_name = null;
         $this->middle_name = null;
@@ -64,11 +97,15 @@ class SpeakerDetails extends Component
         $this->company_name = null;
         $this->job_title = null;
         $this->biography = null;
+        $this->typeChoices = array();
+        $this->categoryChoices = array();
     }
 
     public function editSpeakerDetailsConfirmation()
     {
         $this->validate([
+            'category' => 'required',
+            'type' => 'required',
             'first_name' => 'required',
             'last_name' => 'required',
             'company_name' => 'required',
@@ -87,6 +124,8 @@ class SpeakerDetails extends Component
     public function editSpeakerDetails()
     {
         Speakers::where('id', $this->speakerData['speakerId'])->update([
+            'feature_id' => $this->category,
+            'speaker_type_id' => $this->type,
             'salutation' => $this->salutation,
             'first_name' => $this->first_name,
             'middle_name' => $this->middle_name,
@@ -96,6 +135,22 @@ class SpeakerDetails extends Component
             'biography' => $this->biography,
         ]);
 
+        foreach($this->categoryChoices as $categoryChoice){
+            if($categoryChoice['id'] == $this->category){
+                $selectedCategory = $categoryChoice['value'];
+            }
+        }
+
+        foreach($this->typeChoices as $typeChoice){
+            if($typeChoice['id'] == $this->type){
+                $selectedType = $typeChoice['value'];
+            }
+        }
+        
+        $this->speakerData['speakerCategoryName'] = $selectedCategory;
+        $this->speakerData['speakerFeatureId'] = $this->category;
+        $this->speakerData['speakerTypeName'] = $selectedType;
+        $this->speakerData['speakerTypeId'] = $this->type;
         $this->speakerData['speakerSalutation'] = $this->salutation;
         $this->speakerData['speakerFirstName'] = $this->first_name;
         $this->speakerData['speakerMiddleName'] = $this->middle_name;
@@ -139,7 +194,7 @@ class SpeakerDetails extends Component
 
     public function editSpeakerAssetConfirmation()
     {
-        
+
         $this->validate([
             'image' => 'required|mimes:png,jpg,jpeg'
         ]);
@@ -160,10 +215,10 @@ class SpeakerDetails extends Component
 
         if ($this->assetType == "Speaker PFP") {
 
-            if(!$this->speakerData['speakerPFPDefault']){
+            if (!$this->speakerData['speakerPFPDefault']) {
                 $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('pfp');
 
-                if($speakerAssetUrl){
+                if ($speakerAssetUrl) {
                     $this->removeSpeakerAssetInStorage($speakerAssetUrl);
                 }
             }
@@ -177,11 +232,11 @@ class SpeakerDetails extends Component
             $this->speakerData['speakerPFP'] = Storage::url($path);
             $this->speakerData['speakerPFPDefault'] = false;
         } else {
-            
-            if(!$this->speakerData['speakerCoverPhotoDefault']){
+
+            if (!$this->speakerData['speakerCoverPhotoDefault']) {
                 $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
 
-                if($speakerAssetUrl){
+                if ($speakerAssetUrl) {
                     $this->removeSpeakerAssetInStorage($speakerAssetUrl);
                 }
             }
@@ -205,7 +260,8 @@ class SpeakerDetails extends Component
         $this->resetEditSpeakerAssetFields();
     }
 
-    public function removeSpeakerAssetConfirmation(){
+    public function removeSpeakerAssetConfirmation()
+    {
         $this->dispatchBrowserEvent('swal:confirmation', [
             'type' => 'warning',
             'message' => 'Are you sure you want to remove?',
@@ -215,11 +271,12 @@ class SpeakerDetails extends Component
         ]);
     }
 
-    public function removeSpeakerAsset(){
-        if($this->assetType == "Speaker PFP"){
+    public function removeSpeakerAsset()
+    {
+        if ($this->assetType == "Speaker PFP") {
             $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('pfp');
 
-            if($speakerAssetUrl){
+            if ($speakerAssetUrl) {
                 $this->removeSpeakerAssetInStorage($speakerAssetUrl);
             }
 
@@ -232,7 +289,7 @@ class SpeakerDetails extends Component
         } else {
             $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
 
-            if($speakerAssetUrl){
+            if ($speakerAssetUrl) {
                 $this->removeSpeakerAssetInStorage($speakerAssetUrl);
             }
 
@@ -253,14 +310,16 @@ class SpeakerDetails extends Component
         $this->resetEditSpeakerAssetFields();
     }
 
-    public function removeSpeakerAssetInStorage($storageUrl){
-        if(Storage::exists($storageUrl)){
+    public function removeSpeakerAssetInStorage($storageUrl)
+    {
+        if (Storage::exists($storageUrl)) {
             Storage::delete($storageUrl);
         }
     }
 
 
-    public function deleteSpeakerConfirmation(){
+    public function deleteSpeakerConfirmation()
+    {
         $this->dispatchBrowserEvent('swal:confirmation', [
             'type' => 'warning',
             'message' => 'Are you sure you want to remove?',

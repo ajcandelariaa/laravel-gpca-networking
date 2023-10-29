@@ -4,6 +4,8 @@ namespace App\Http\Livewire;
 
 use App\Models\Event as Events;
 use App\Models\Speaker as Speakers;
+use App\Models\SpeakerType as SpeakerTypes;
+use App\Models\Feature as Features;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -18,7 +20,7 @@ class SpeakersList extends Component
     public $speakerId, $speakerDateTime, $speakerArrayIndex, $editSpeakerDateTimeForm;
 
     // Speaker details
-    public $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $bio, $addSpeakerForm;
+    public $category, $type, $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $bio, $addSpeakerForm, $categoryChoices = array(), $typeChoices = array();
 
     protected $listeners = ['addSpeakerConfirmed' => 'addSpeaker'];
 
@@ -32,9 +34,29 @@ class SpeakersList extends Component
         $speakers = Speakers::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
         if ($speakers->isNotEmpty()) {
             foreach ($speakers as $speaker) {
+                if ($speaker->feature_id == 0) {
+                    $category = $this->event->short_name;
+                } else {
+                    $feature = Features::where('event_id', $this->event->id)->where('id', $speaker->feature_id)->first();
+                    if ($feature) {
+                        $category = $feature->short_name;
+                    } else {
+                        $category = "Others";
+                    }
+                }
+
+                $speakerType = SpeakerTypes::where('event_id', $this->event->id)->where('id', $speaker->speaker_type_id)->first();
+                if ($speakerType) {
+                    $type = $speakerType->name;
+                } else {
+                    $type = "N/A";
+                }
+
                 array_push($this->finalListOfSpeakers, [
                     'id' => $speaker->id,
                     'name' => $speaker->salutation . ' ' . $speaker->first_name . ' ' . $speaker->middle_name . ' ' . $speaker->last_name,
+                    'category' => $category,
+                    'type' => $type,
                     'job_title' => $speaker->job_title,
                     'company_name' => $speaker->company_name,
                     'active' => $speaker->active,
@@ -51,6 +73,11 @@ class SpeakersList extends Component
         return view('livewire.event.speakers.speakers-list');
     }
 
+
+    public function showAddSpeakerType()
+    {
+        return redirect()->route('admin.event.speaker.types.view', ['eventCategory' => $this->event->category, 'eventId' => $this->event->id]);
+    }
 
     public function search()
     {
@@ -91,7 +118,7 @@ class SpeakersList extends Component
         $this->speakerDateTime = null;
         $this->speakerArrayIndex = null;
     }
-    
+
     public function editSpeakerDateTime()
     {
         $this->validate([
@@ -119,6 +146,33 @@ class SpeakersList extends Component
     // ADD SPEAKER
     public function showAddSpeaker()
     {
+        $speakerTypes = SpeakerTypes::where('event_id', $this->event->id)->get();
+
+        if ($speakerTypes->isNotEmpty()) {
+            foreach ($speakerTypes as $speakerType) {
+                array_push($this->typeChoices, [
+                    'value' => $speakerType->name,
+                    'id' => $speakerType->id,
+                ]);
+            }
+        }
+
+        $features = Features::where('event_id', $this->event->id)->get();
+        if ($features->isNotEmpty()) {
+
+            array_push($this->categoryChoices, [
+                'value' => $this->event->short_name,
+                'id' => 0,
+            ]);
+
+            foreach ($features as $feature) {
+                array_push($this->categoryChoices, [
+                    'value' => $feature->short_name,
+                    'id' => $feature->id,
+                ]);
+            }
+        }
+
         $this->addSpeakerForm = true;
     }
 
@@ -130,12 +184,16 @@ class SpeakersList extends Component
     public function resetAddSpeakerFields()
     {
         $this->addSpeakerForm = false;
+        $this->category = null;
+        $this->type = null;
         $this->salutation = null;
         $this->first_name = null;
         $this->middle_name = null;
         $this->last_name = null;
         $this->company_name = null;
         $this->job_title = null;
+        $this->categoryChoices = array();
+        $this->typeChoices = array();
     }
 
     public function addSpeakerConfirmation()
@@ -145,6 +203,8 @@ class SpeakersList extends Component
             'last_name' => 'required',
             'company_name' => 'required',
             'job_title' => 'required',
+            'category' => 'required',
+            'type' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -160,6 +220,8 @@ class SpeakersList extends Component
     {
         $newSpeaker = Speakers::create([
             'event_id' => $this->event->id,
+            'feature_id' => $this->category,
+            'speaker_type_id' => $this->type,
 
             'salutation' => $this->salutation,
             'first_name' => $this->first_name,
@@ -174,9 +236,23 @@ class SpeakersList extends Component
             'datetime_added' => Carbon::now(),
         ]);
 
+        foreach ($this->categoryChoices as $categoryChoice) {
+            if ($categoryChoice['id'] == $this->category) {
+                $selectedCategory = $categoryChoice['value'];
+            }
+        }
+
+        foreach ($this->typeChoices as $typeChoice) {
+            if ($typeChoice['id'] == $this->type) {
+                $selectedType = $typeChoice['value'];
+            }
+        }
+
         array_push($this->finalListOfSpeakers, [
             'id' => $newSpeaker->id,
             'name' => $this->salutation . ' ' . $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name,
+            'category' => $selectedCategory,
+            'type' => $selectedType,
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
             'active' => true,
@@ -194,8 +270,9 @@ class SpeakersList extends Component
         ]);
     }
 
-    public function updateSpeakerStatus($arrayIndex, $speakerId, $status){
-        if($status){
+    public function updateSpeakerStatus($arrayIndex, $speakerId, $status)
+    {
+        if ($status) {
             $newStatus = false;
         } else {
             $newStatus = true;
@@ -209,4 +286,3 @@ class SpeakersList extends Component
         $this->finalListOfSpeakersConst[$arrayIndex]['active'] = $newStatus;
     }
 }
-
