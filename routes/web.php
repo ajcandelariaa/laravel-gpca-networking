@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AttendeesController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
@@ -9,6 +8,7 @@ use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\MeetingRoomPartnerController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SpeakerController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\VenueController;
@@ -49,7 +49,10 @@ Route::prefix('admin')->group(function () {
                     Route::get('/{speakerId}', [SpeakerController::class, 'eventSpeakerView'])->name('admin.event.speaker.view');
                 });
 
-                Route::get('/agenda', [AgendaController::class, 'eventAgendaView'])->name('admin.event.agenda.view');
+                Route::prefix('/session')->group(function () {
+                    Route::get('/', [SessionController::class, 'eventSessionsView'])->name('admin.event.sessions.view');
+                    Route::get('/{sessionId}', [SessionController::class, 'eventSessionView'])->name('admin.event.session.view');
+                });
                 
                 Route::prefix('/sponsor')->group(function () {
                     Route::get('/', [SponsorController::class, 'eventSponsorsView'])->name('admin.event.sponsors.view');

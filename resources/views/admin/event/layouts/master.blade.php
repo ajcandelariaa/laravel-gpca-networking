@@ -49,9 +49,9 @@
                     <i class="fa-solid fa-microphone w-5 text-center"></i>
                     <p>Speakers</p>
                 </a>
-                <a href="{{ route('admin.event.agenda.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/agenda*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
+                <a href="{{ route('admin.event.sessions.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/session*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-regular fa-newspaper w-5 text-center"></i>
-                    <p>Agenda</p>
+                    <p>Session</p>
                 </a>
                 <a href="{{ route('admin.event.sponsors.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/sponsors*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-handshake w-5 text-center"></i>
