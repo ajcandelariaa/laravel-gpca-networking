@@ -51,6 +51,7 @@ Route::prefix('admin')->group(function () {
 
                 Route::prefix('/session')->group(function () {
                     Route::get('/', [SessionController::class, 'eventSessionsView'])->name('admin.event.sessions.view');
+                    Route::get('/{sessionId}/speaker/type', [SessionController::class, 'eventSessionSpeakerTypesView'])->name('admin.event.session.speaker.types.view');
                     Route::get('/{sessionId}', [SessionController::class, 'eventSessionView'])->name('admin.event.session.view');
                 });
                 
