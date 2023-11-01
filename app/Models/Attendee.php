@@ -15,17 +15,24 @@ class Attendee extends Model
         'username',
         'password',
 
+        'company_name',
+        'job_title',
+        'country',
+
         'salutation',
         'first_name',
         'middle_name',
         'last_name',
+
         'email_address',
         'mobile_number',
         'landline_number',
 
-        'company_name',
-        'job_title',
-        'country',
+        'website',
+        'facebook',
+        'linkedin',
+        'twitter',
+        'instagram',
         
         'pfp',
         'biography',
@@ -34,9 +41,7 @@ class Attendee extends Model
         'pass_type',
         'registration_type',
 
+        'active',
         'joined_date_time',
-        
-        'password_changed_date_time',
-        'password_changed_count',
     ];
 }

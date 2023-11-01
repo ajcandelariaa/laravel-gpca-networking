@@ -175,7 +175,6 @@ class AttendeesList extends Component
             'registration_type' => $this->registration_type,
 
             'joined_date_time' => Carbon::now(),
-            
         ]);
 
 

@@ -7,6 +7,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\Http;
 use App\Models\Event as Events;
 use App\Models\Attendee as Attendees;
+use App\Models\AttendeePasswordReset as AttendeePasswordResets;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -23,7 +24,7 @@ class AttendeeDetails extends Component
     public $editAttendeeForm, $resetPasswordForm, $editAttendeePFPForm;
 
     // Attendee details
-    public $attendee_id, $registration_type, $username, $email_address, $pass_type, $company_name, $job_title, $salutation, $first_name, $middle_name, $last_name, $mobile_number, $landline_number, $country, $pfp, $biography, $password;
+    public $attendee_id, $registration_type, $username, $email_address, $pass_type, $company_name, $job_title, $salutation, $first_name, $middle_name, $last_name, $mobile_number, $landline_number, $country, $pfp, $biography, $password, $website, $facebook, $twitter, $linkedin, $instagram;
 
     public $newPassword, $confirmPassword, $passwordError;
 
@@ -76,6 +77,13 @@ class AttendeeDetails extends Component
         $this->registration_type = $this->attendeeData['attendeeRegistrationType'];
 
         $this->biography = $this->attendeeData['attendeeBiography'];
+
+        $this->website = $this->attendeeData['attendeeWebsite'];
+        $this->facebook = $this->attendeeData['attendeeFacebook'];
+        $this->linkedin = $this->attendeeData['attendeeLinkedin'];
+        $this->twitter = $this->attendeeData['attendeeTwitter'];
+        $this->instagram = $this->attendeeData['attendeeInstagram'];
+
     }
 
     public function cancelEditAttendee()
@@ -106,6 +114,13 @@ class AttendeeDetails extends Component
         $this->registration_type = null;
 
         $this->biography = null;
+
+        $this->website = null;
+        $this->facebook = null;
+        $this->linkedin = null;
+        $this->twitter = null;
+        $this->instagram = null;
+
     }
 
     public function editAttendeeConfirmation()
@@ -168,6 +183,12 @@ class AttendeeDetails extends Component
             'biography' => $this->biography == "" ? null : $this->biography,
             'pass_type' => $this->pass_type,
             'registration_type' => $this->registration_type,
+
+            'website' => $this->website == "" ? null : $this->website,
+            'facebook' => $this->facebook == "" ? null : $this->facebook,
+            'linkedin' => $this->linkedin == "" ? null : $this->linkedin,
+            'twitter' => $this->twitter == "" ? null : $this->twitter,
+            'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
 
@@ -189,6 +210,12 @@ class AttendeeDetails extends Component
         $this->attendeeData['attendeeRegistrationType'] = $this->registration_type;
 
         $this->attendeeData['attendeeBiography'] = $this->biography;
+
+        $this->attendeeData['attendeeWebsite'] = $this->website;
+        $this->attendeeData['attendeeFacebook'] = $this->facebook;
+        $this->attendeeData['attendeeLinkedin'] = $this->linkedin;
+        $this->attendeeData['attendeeTwitter'] = $this->twitter;
+        $this->attendeeData['attendeeInstagram'] = $this->instagram;
 
         $this->resetEditAttendeeFields();
         $this->dispatchBrowserEvent('swal:success', [
@@ -246,10 +273,13 @@ class AttendeeDetails extends Component
     {
         Attendees::where('id', $this->attendee_id)->update([
             'password' => Hash::make($this->newPassword),
-            'password_changed_date_time' => Carbon::now(),
         ]);
 
-        Attendees::where('id', $this->attendee_id)->increment('password_changed_count');
+        AttendeePasswordResets::create([
+            'event_id' => $this->event->id,
+            'attendee_id' => $this->attendee_id,
+            'password_changed_date_time' => Carbon::now(),
+        ]);
 
         $details = [
             'name' => $this->attendeeData['attendeeSalutation'] . ' ' . $this->attendeeData['attendeeFirstName'] . ' ' . $this->attendeeData['attendeeMiddleName'] . ' ' . $this->attendeeData['attendeeLastName'],
@@ -260,7 +290,7 @@ class AttendeeDetails extends Component
 
         Mail::to($this->attendeeData['attendeeEmail'])->cc(config('app.ccEmailNotif.test'))->queue(new AttendeeResetPasswordByAdmin($details));
 
-        $this->attendeeData['attendeeLastPasswordChangeDateTime'] = Carbon::parse(Carbon::now())->format('M j, Y g:i A');
+        array_push($this->attendeeData['attendeePasswordResetDetais'], Carbon::parse(Carbon::now())->format('M j, Y g:i A'));
 
         $this->resetResetPasswordAttendeeFields();
         $this->dispatchBrowserEvent('swal:success', [

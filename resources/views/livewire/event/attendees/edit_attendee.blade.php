@@ -246,12 +246,6 @@
                 <div>
                     <input placeholder="xxxxxxx" type="text" wire:model.lazy="landline_number"
                         class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-
-                    @error('landline_number')
-                        <div class="text-red-500 text-xs italic mt-1">
-                            {{ $message }}
-                        </div>
-                    @enderror
                 </div>
             </div>
 
@@ -276,6 +270,62 @@
                             {{ $message }}
                         </div>
                     @enderror
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="mt-5">
+        <div class="grid grid-cols-5 gap-x-5">
+            <div class="col-span-1">
+                <div class="text-registrationPrimaryColor">
+                    Website
+                </div>
+                <div>
+                    <input placeholder="" type="text" wire:model.lazy="website"
+                        class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                </div>
+            </div>
+
+            <div class="col-span-1">
+                <div class="text-registrationPrimaryColor">
+                    Facebook
+                </div>
+                <div>
+                    <input placeholder="" type="text" wire:model.lazy="facebook"
+                        class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                </div>
+            </div>
+
+            <div class="col-span-1">
+                <div class="text-registrationPrimaryColor">
+                    Linkedin
+                </div>
+                <div>
+                    <input placeholder="" type="text" wire:model.lazy="linkedin"
+                        class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                </div>
+            </div>
+
+            <div class="col-span-1">
+                <div class="text-registrationPrimaryColor">
+                    Twitter
+                </div>
+                <div>
+                    <input placeholder="" type="text" wire:model.lazy="twitter"
+                        class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                </div>
+            </div>
+
+            <div class="col-span-1">
+                <div class="text-registrationPrimaryColor">
+                    Instagram
+                </div>
+                <div>
+                    <input placeholder="" type="text" wire:model.lazy="instagram"
+                        class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                 </div>
             </div>
         </div>
