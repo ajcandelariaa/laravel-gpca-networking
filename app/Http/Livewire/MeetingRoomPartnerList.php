@@ -13,7 +13,7 @@ class MeetingRoomPartnerList extends Component
 
     public $finalListOfMeetingRoomPartners = array(), $finalListOfMeetingRoomPartnersConst = array();
 
-    public $addMeetingRoomPartnerForm, $name, $link, $location;
+    public $addMeetingRoomPartnerForm, $name, $website, $location;
 
     public $meetingRoomPartnerId, $meetingRoomPartnerDateTime, $meetingRoomPartnerArrayIndex, $editMeetingRoomPartnerDateTimeForm;
 
@@ -31,7 +31,7 @@ class MeetingRoomPartnerList extends Component
                     'id' => $meetingRoomPartner->id,
                     'name' => $meetingRoomPartner->name,
                     'location' => $meetingRoomPartner->location,
-                    'link' => $meetingRoomPartner->link,
+                    'website' => $meetingRoomPartner->website,
                     'active' => $meetingRoomPartner->active,
                     'logo' => $meetingRoomPartner->logo,
                     'datetime_added' => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
@@ -58,7 +58,7 @@ class MeetingRoomPartnerList extends Component
     {
         $this->validate([
             'name' => 'required',
-            'link' => 'required',
+            'website' => 'required',
             'location' => 'required',
         ]);
 
@@ -80,7 +80,7 @@ class MeetingRoomPartnerList extends Component
     {
         $this->addMeetingRoomPartnerForm = false;
         $this->name = null;
-        $this->link = null;
+        $this->website = null;
         $this->location = null;
     }
 
@@ -88,7 +88,7 @@ class MeetingRoomPartnerList extends Component
         $newMeetingRoomPartner = MeetingRoomPartners::create([
             'event_id' => $this->event->id,
             'name' => $this->name,
-            'link' => $this->link,
+            'website' => $this->website,
             'location' => $this->location,
             'datetime_added' => Carbon::now(),
         ]);
@@ -97,7 +97,7 @@ class MeetingRoomPartnerList extends Component
             'id' => $newMeetingRoomPartner->id,
             'name' => $this->name,
             'location' => $this->location,
-            'link' => $this->link,
+            'website' => $this->website,
             'active' => true,
             'logo' => null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),

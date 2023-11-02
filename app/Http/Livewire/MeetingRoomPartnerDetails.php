@@ -17,7 +17,7 @@ class MeetingRoomPartnerDetails extends Component
 
     public $image, $assetType, $editMeetingRoomPartnerAssetForm, $imageDefault;
 
-    public $name, $profile, $location, $email_address, $mobile_number, $link, $editMeetingRoomPartnerDetailsForm;
+    public $name, $profile, $location, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $editMeetingRoomPartnerDetailsForm;
 
     protected $listeners = ['editMeetingRoomPartnerDetailsConfirmed' => 'editMeetingRoomPartnerDetails', 'editMeetingRoomPartnerAssetConfirmed' => 'editMeetingRoomPartnerAsset', 'removeMeetingRoomPartnerAssetConfirmed' => 'removeMeetingRoomPartnerAsset'];
 
@@ -35,10 +35,6 @@ class MeetingRoomPartnerDetails extends Component
     {
         return view('livewire.event.meeting-room-partners.meeting-room-partner-details');
     }
-
-
-
-
 
 
 
@@ -193,9 +189,17 @@ class MeetingRoomPartnerDetails extends Component
         $this->name = $this->meetingRoomPartnerData['meetingRoomPartnerName'];
         $this->profile = $this->meetingRoomPartnerData['meetingRoomPartnerProfile'];
         $this->location = $this->meetingRoomPartnerData['meetingRoomPartnerLocation'];
+        
+        
+        $this->country = $this->meetingRoomPartnerData['meetingRoomPartnerCountry'];
+        $this->contact_person_name = $this->meetingRoomPartnerData['meetingRoomPartnerContactPersonName'];
         $this->email_address = $this->meetingRoomPartnerData['meetingRoomPartnerEmailAddress'];
         $this->mobile_number = $this->meetingRoomPartnerData['meetingRoomPartnerMobileNumber'];
-        $this->link = $this->meetingRoomPartnerData['meetingRoomPartnerLink'];
+        $this->website = $this->meetingRoomPartnerData['meetingRoomPartnerWebsite'];
+        $this->facebook = $this->meetingRoomPartnerData['meetingRoomPartnerFacebook'];
+        $this->linkedin = $this->meetingRoomPartnerData['meetingRoomPartnerLinkedin'];
+        $this->twitter = $this->meetingRoomPartnerData['meetingRoomPartnerTwitter'];
+        $this->instagram = $this->meetingRoomPartnerData['meetingRoomPartnerInstagram'];
         $this->editMeetingRoomPartnerDetailsForm = true;
     }
 
@@ -210,16 +214,23 @@ class MeetingRoomPartnerDetails extends Component
         $this->name = null;
         $this->profile = null;
         $this->location = null;
+
+        $this->country = null;
+        $this->contact_person_name = null;
         $this->email_address = null;
         $this->mobile_number = null;
-        $this->link = null;
+        $this->website = null;
+        $this->facebook = null;
+        $this->linkedin = null;
+        $this->twitter = null;
+        $this->instagram = null;
     }
 
     public function editMeetingRoomPartnerDetailsConfirmation()
     {
         $this->validate([
             'name' => 'required',
-            'link' => 'required',
+            'website' => 'required',
             'location' => 'required',
         ]);
 
@@ -238,17 +249,31 @@ class MeetingRoomPartnerDetails extends Component
             'name' => $this->name,
             'profile' => $this->profile,
             'location' => $this->location,
-            'email_address' => $this->email_address,
-            'mobile_number' => $this->mobile_number,
-            'link' => $this->link,
+
+            'country' => $this->country == "" ? null : $this->country,
+            'contact_person_name' => $this->contact_person_name == "" ? null : $this->contact_person_name,
+            'email_address' => $this->email_address == "" ? null : $this->email_address,
+            'mobile_number' => $this->mobile_number == "" ? null : $this->mobile_number,
+            'website' => $this->website == "" ? null : $this->website,
+            'facebook' => $this->facebook == "" ? null : $this->facebook,
+            'linkedin' => $this->linkedin == "" ? null : $this->linkedin,
+            'twitter' => $this->twitter == "" ? null : $this->twitter,
+            'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
         $this->meetingRoomPartnerData['meetingRoomPartnerName'] = $this->name;
         $this->meetingRoomPartnerData['meetingRoomPartnerProfile'] = $this->profile;
         $this->meetingRoomPartnerData['meetingRoomPartnerLocation'] = $this->location;
+        
+        $this->meetingRoomPartnerData['meetingRoomPartnerCountry'] = $this->country;
+        $this->meetingRoomPartnerData['meetingRoomPartnerContactPersonName'] = $this->contact_person_name;
         $this->meetingRoomPartnerData['meetingRoomPartnerEmailAddress'] = $this->email_address;
         $this->meetingRoomPartnerData['meetingRoomPartnerMobileNumber'] = $this->mobile_number;
-        $this->meetingRoomPartnerData['meetingRoomPartnerLink'] = $this->link;
+        $this->meetingRoomPartnerData['meetingRoomPartnerWebsite'] = $this->website;
+        $this->meetingRoomPartnerData['meetingRoomPartnerFacebook'] = $this->facebook;
+        $this->meetingRoomPartnerData['meetingRoomPartnerLinkedin'] = $this->linkedin;
+        $this->meetingRoomPartnerData['meetingRoomPartnerTwitter'] = $this->twitter;
+        $this->meetingRoomPartnerData['meetingRoomPartnerInstagram'] = $this->instagram;
 
         $this->resetEditMeetingRoomPartnerDetailsFields();
 

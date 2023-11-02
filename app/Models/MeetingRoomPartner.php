@@ -11,14 +11,23 @@ class MeetingRoomPartner extends Model
 
     protected $fillable = [
         'event_id',
+        
         'name',
+        'location',
         'profile',
         'logo',
         'banner',
-        'location',
+
+        'country',
+        'contact_person_name',
         'email_address',
         'mobile_number',
-        'link',
+        'website',
+        'facebook',
+        'linkedin',
+        'twitter',
+        'instagram',
+
         'active',
         'datetime_added',
     ];

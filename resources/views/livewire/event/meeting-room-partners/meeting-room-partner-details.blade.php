@@ -7,7 +7,7 @@
 
     <h1 class="text-headingTextColor text-3xl font-bold mt-5">Meeting room partner details</h1>
 
-    
+
     <div class="mt-5 relative">
         <div>
             <img src="{{ $meetingRoomPartnerData['meetingRoomPartnerBanner'] }}" alt="" class="w-full relative">
@@ -32,34 +32,87 @@
 
     <div class="mt-36 text-center">
         <p class="font-semibold text-xl">{{ $meetingRoomPartnerData['meetingRoomPartnerName'] }}</p>
-        <p class="font-semibold">{{ $meetingRoomPartnerData['meetingRoomPartnerLink'] }}</p>
-        <p>{{ $meetingRoomPartnerData['meetingRoomPartnerLocation'] }}</p>
-
-        <p class="">
-            @if ($meetingRoomPartnerData['meetingRoomPartnerEmailAddress'] == null || $meetingRoomPartnerData['meetingRoomPartnerEmailAddress'] == "")
-                N/A
-            @else
-                {{ $meetingRoomPartnerData['meetingRoomPartnerEmailAddress'] }}
-            @endif
-        </p>
-        
-        <p class="">
-            @if ($meetingRoomPartnerData['meetingRoomPartnerMobileNumber'] == null || $meetingRoomPartnerData['meetingRoomPartnerMobileNumber'] == "")
-                N/A
-            @else
-                {{ $meetingRoomPartnerData['meetingRoomPartnerMobileNumber'] }}
-            @endif
-        </p>
+        <p class="font-semibold">{{ $meetingRoomPartnerData['meetingRoomPartnerWebsite'] }}</p>
     </div>
 
     <div class="mt-4">
         <hr>
     </div>
 
+
     <div class="mt-6">
+        <p><span class="font-semibold">Location:</span> {{ $meetingRoomPartnerData['meetingRoomPartnerLocation'] }}</p>
+
+        <hr class="my-4">
+
+        <div class="flex items-start gap-10">
+            <div>
+                <p><span class="font-semibold">Facebook:</span>
+                    @if ($meetingRoomPartnerData['meetingRoomPartnerFacebook'] == '' || $meetingRoomPartnerData['meetingRoomPartnerFacebook'] == null)
+                        N/A
+                    @else
+                        {{ $meetingRoomPartnerData['meetingRoomPartnerFacebook'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">LinkedIn:</span>
+                    @if ($meetingRoomPartnerData['meetingRoomPartnerLinkedin'] == '' || $meetingRoomPartnerData['meetingRoomPartnerLinkedin'] == null)
+                        N/A
+                    @else
+                        {{ $meetingRoomPartnerData['meetingRoomPartnerLinkedin'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Twitter:</span>
+                    @if ($meetingRoomPartnerData['meetingRoomPartnerTwitter'] == '' || $meetingRoomPartnerData['meetingRoomPartnerTwitter'] == null)
+                        N/A
+                    @else
+                        {{ $meetingRoomPartnerData['meetingRoomPartnerTwitter'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Instagram:</span>
+                    @if ($meetingRoomPartnerData['meetingRoomPartnerInstagram'] == '' || $meetingRoomPartnerData['meetingRoomPartnerInstagram'] == null)
+                        N/A
+                    @else
+                        {{ $meetingRoomPartnerData['meetingRoomPartnerInstagram'] }}
+                    @endif
+                </p>
+            </div>
+            <div>
+                <p><span class="font-semibold">Country:</span>
+                    @if ($meetingRoomPartnerData['meetingRoomPartnerCountry'] == '' || $meetingRoomPartnerData['meetingRoomPartnerCountry'] == null)
+                        N/A
+                    @else
+                        {{ $meetingRoomPartnerData['meetingRoomPartnerCountry'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Contact Name:</span>
+                    @if ($meetingRoomPartnerData['meetingRoomPartnerContactPersonName'] == '' || $meetingRoomPartnerData['meetingRoomPartnerContactPersonName'] == null)
+                        N/A
+                    @else
+                        {{ $meetingRoomPartnerData['meetingRoomPartnerContactPersonName'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Email address:</span>
+                    @if ($meetingRoomPartnerData['meetingRoomPartnerEmailAddress'] == '' || $meetingRoomPartnerData['meetingRoomPartnerEmailAddress'] == null)
+                        N/A
+                    @else
+                        {{ $meetingRoomPartnerData['meetingRoomPartnerEmailAddress'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Mobile Number:</span>
+                    @if ($meetingRoomPartnerData['meetingRoomPartnerMobileNumber'] == '' || $meetingRoomPartnerData['meetingRoomPartnerMobileNumber'] == null)
+                        N/A
+                    @else
+                        {{ $meetingRoomPartnerData['meetingRoomPartnerMobileNumber'] }}
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
         <p class="font-semibold">Company profile:</p>
-        <p class="mt-2">
-            @if ($meetingRoomPartnerData['meetingRoomPartnerProfile'] == null || $meetingRoomPartnerData['meetingRoomPartnerProfile'] == "")
+        <p>
+            @if ($meetingRoomPartnerData['meetingRoomPartnerProfile'] == null || $meetingRoomPartnerData['meetingRoomPartnerProfile'] == '')
                 N/A
             @else
                 {{ $meetingRoomPartnerData['meetingRoomPartnerProfile'] }}
@@ -74,11 +127,11 @@
             <span>Edit Profile</span>
         </button>
     </div>
-    
+
     @if ($editMeetingRoomPartnerDetailsForm)
         @include('livewire.event.meeting-room-partners.edit_details')
     @endif
-    
+
     @if ($editMeetingRoomPartnerAssetForm)
         @include('livewire.event.meeting-room-partners.edit_asset')
     @endif

@@ -46,14 +46,23 @@ class MeetingRoomPartnerController extends Controller
                 "meetingRoomPartnerId" => $meetingRoomPartner->id,
                 "meetingRoomPartnerName" => $meetingRoomPartner->name,
                 "meetingRoomPartnerLocation" => $meetingRoomPartner->location,
-                "meetingRoomPartnerEmailAddress" => $meetingRoomPartner->email_address,
-                "meetingRoomPartnerMobileNumber" => $meetingRoomPartner->mobile_number,
-                "meetingRoomPartnerLink" => $meetingRoomPartner->link,
                 "meetingRoomPartnerProfile" => $meetingRoomPartner->profile,
+
                 "meetingRoomPartnerLogo" => $meetingRoomPartnerLogo,
                 "meetingRoomPartnerLogoDefault" => $meetingRoomPartnerLogoDefault,
                 "meetingRoomPartnerBanner" => $meetingRoomPartnerBanner,
                 "meetingRoomPartnerBannerDefault" => $meetingRoomPartnerBannerDefault,
+
+                "meetingRoomPartnerCountry" => $meetingRoomPartner->country,
+                "meetingRoomPartnerContactPersonName" => $meetingRoomPartner->contact_person_name,
+                "meetingRoomPartnerEmailAddress" => $meetingRoomPartner->email_address,
+                "meetingRoomPartnerMobileNumber" => $meetingRoomPartner->mobile_number,
+                "meetingRoomPartnerWebsite" => $meetingRoomPartner->website,
+                "meetingRoomPartnerFacebook" => $meetingRoomPartner->facebook,
+                "meetingRoomPartnerLinkedin" => $meetingRoomPartner->linkedin,
+                "meetingRoomPartnerTwitter" => $meetingRoomPartner->twitter,
+                "meetingRoomPartnerInstagram" => $meetingRoomPartner->instagram,
+
                 "meetingRoomPartnerStatus" => $meetingRoomPartner->active,
                 "meetingRoomPartnerDateTimeAdded" => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
             ];

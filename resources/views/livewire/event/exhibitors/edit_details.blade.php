@@ -151,8 +151,6 @@
 
                     <hr class="mt-7 my-5">
 
-
-
                     <div>
                         <div>
                             <div class="text-primaryColor">
