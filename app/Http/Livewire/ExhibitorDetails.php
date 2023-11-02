@@ -17,7 +17,7 @@ class ExhibitorDetails extends Component
 
     public $image, $assetType, $editExhibitorAssetForm, $imageDefault;
 
-    public $name, $profile, $stand_number, $email_address, $mobile_number, $link, $editExhibitorDetailsForm;
+    public $name, $profile, $stand_number, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram,  $editExhibitorDetailsForm;
 
     protected $listeners = ['editExhibitorDetailsConfirmed' => 'editExhibitorDetails', 'editExhibitorAssetConfirmed' => 'editExhibitorAsset', 'removeExhibitorAssetConfirmed' => 'removeExhibitorAsset'];
 
@@ -185,9 +185,17 @@ class ExhibitorDetails extends Component
         $this->name = $this->exhibitorData['exhibitorName'];
         $this->profile = $this->exhibitorData['exhibitorProfile'];
         $this->stand_number = $this->exhibitorData['exhibitorStandNumber'];
+        
+        $this->country = $this->exhibitorData['exhibitorCountry'];
+        $this->contact_person_name = $this->exhibitorData['exhibitorContactPersonName'];
         $this->email_address = $this->exhibitorData['exhibitorEmailAddress'];
         $this->mobile_number = $this->exhibitorData['exhibitorMobileNumber'];
-        $this->link = $this->exhibitorData['exhibitorLink'];
+        $this->website = $this->exhibitorData['exhibitorWebsite'];
+        $this->facebook = $this->exhibitorData['exhibitorFacebook'];
+        $this->linkedin = $this->exhibitorData['exhibitorLinkedin'];
+        $this->twitter = $this->exhibitorData['exhibitorTwitter'];
+        $this->instagram = $this->exhibitorData['exhibitorInstagram'];
+
         $this->editExhibitorDetailsForm = true;
     }
 
@@ -202,16 +210,23 @@ class ExhibitorDetails extends Component
         $this->name = null;
         $this->profile = null;
         $this->stand_number = null;
+
+        $this->country = null;
+        $this->contact_person_name = null;
         $this->email_address = null;
         $this->mobile_number = null;
-        $this->link = null;
+        $this->website = null;
+        $this->facebook = null;
+        $this->linkedin = null;
+        $this->twitter = null;
+        $this->instagram = null;
     }
 
     public function editExhibitorDetailsConfirmation()
     {
         $this->validate([
             'name' => 'required',
-            'link' => 'required',
+            'website' => 'required',
             'stand_number' => 'required',
         ]);
 
@@ -230,17 +245,31 @@ class ExhibitorDetails extends Component
             'name' => $this->name,
             'profile' => $this->profile,
             'stand_number' => $this->stand_number,
-            'email_address' => $this->email_address,
-            'mobile_number' => $this->mobile_number,
-            'link' => $this->link,
+
+            'country' => $this->country == "" ? null : $this->country,
+            'contact_person_name' => $this->contact_person_name == "" ? null : $this->contact_person_name,
+            'email_address' => $this->email_address == "" ? null : $this->email_address,
+            'mobile_number' => $this->mobile_number == "" ? null : $this->mobile_number,
+            'website' => $this->website == "" ? null : $this->website,
+            'facebook' => $this->facebook == "" ? null : $this->facebook,
+            'linkedin' => $this->linkedin == "" ? null : $this->linkedin,
+            'twitter' => $this->twitter == "" ? null : $this->twitter,
+            'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
         $this->exhibitorData['exhibitorName'] = $this->name;
         $this->exhibitorData['exhibitorProfile'] = $this->profile;
         $this->exhibitorData['exhibitorStandNumber'] = $this->stand_number;
+
+        $this->exhibitorData['exhibitorCountry'] = $this->country;
+        $this->exhibitorData['exhibitorContactPersonName'] = $this->contact_person_name;
         $this->exhibitorData['exhibitorEmailAddress'] = $this->email_address;
         $this->exhibitorData['exhibitorMobileNumber'] = $this->mobile_number;
-        $this->exhibitorData['exhibitorLink'] = $this->link;
+        $this->exhibitorData['exhibitorWebsite'] = $this->website;
+        $this->exhibitorData['exhibitorFacebook'] = $this->facebook;
+        $this->exhibitorData['exhibitorLinkedin'] = $this->linkedin;
+        $this->exhibitorData['exhibitorTwitter'] = $this->twitter;
+        $this->exhibitorData['exhibitorInstagram'] = $this->instagram;
 
         $this->resetEditExhibitorDetailsFields();
 

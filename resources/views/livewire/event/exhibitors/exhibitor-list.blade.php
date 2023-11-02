@@ -20,7 +20,7 @@
                 <div class="col-span-1">No.</div>
                 <div class="col-span-2">Logo</div>
                 <div class="col-span-2">Company Name</div>
-                <div class="col-span-1">Link</div>
+                <div class="col-span-1">Website</div>
                 <div class="col-span-1">Stand No.</div>
                 <div class="col-span-2">Date time added</div>
                 <div class="col-span-1">Status</div>
@@ -39,7 +39,7 @@
                         @endif
                     </div>
                     <div class="col-span-2">{{ $finalListOfExhibitor['name'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfExhibitor['link'] }}</div>
+                    <div class="col-span-1">{{ $finalListOfExhibitor['website'] }}</div>
                     <div class="col-span-1">{{ $finalListOfExhibitor['stand_number'] }}</div>
                     <div wire:click="showEditExhibitorDateTime({{ $finalListOfExhibitor['id'] }}, {{ $index }})"
                         class="text-blue-700 hover:underline col-span-2 cursor-pointer">

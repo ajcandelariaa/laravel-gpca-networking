@@ -48,14 +48,23 @@ class ExhibitorController extends Controller
                 "exhibitorId" => $exhibitor->id,
                 "exhibitorName" => $exhibitor->name,
                 "exhibitorStandNumber" => $exhibitor->stand_number,
-                "exhibitorEmailAddress" => $exhibitor->email_address,
-                "exhibitorMobileNumber" => $exhibitor->mobile_number,
-                "exhibitorLink" => $exhibitor->link,
                 "exhibitorProfile" => $exhibitor->profile,
+
                 "exhibitorLogo" => $exhibitorLogo,
                 "exhibitorLogoDefault" => $exhibitorLogoDefault,
                 "exhibitorBanner" => $exhibitorBanner,
                 "exhibitorBannerDefault" => $exhibitorBannerDefault,
+
+                "exhibitorCountry" => $exhibitor->country,
+                "exhibitorContactPersonName" => $exhibitor->contact_person_name,
+                "exhibitorEmailAddress" => $exhibitor->email_address,
+                "exhibitorMobileNumber" => $exhibitor->mobile_number,
+                "exhibitorWebsite" => $exhibitor->website,
+                "exhibitorFacebook" => $exhibitor->facebook,
+                "exhibitorLinkedin" => $exhibitor->linkedin,
+                "exhibitorTwitter" => $exhibitor->twitter,
+                "exhibitorInstagram" => $exhibitor->instagram,
+
                 "exhibitorStatus" => $exhibitor->active,
                 "exhibitorDateTimeAdded" => Carbon::parse($exhibitor->datetime_added)->format('M j, Y g:i A'),
             ];

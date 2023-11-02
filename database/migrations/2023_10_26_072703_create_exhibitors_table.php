@@ -16,14 +16,23 @@ return new class extends Migration
         Schema::create('exhibitors', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('event_id');
+
             $table->string('name');
+            $table->string('stand_number');
             $table->longText('profile')->nullable();
             $table->string('logo')->nullable();
             $table->string('banner')->nullable();
-            $table->string('stand_number');
+            
+            $table->string('country')->nullable();
+            $table->string('contact_person_name')->nullable();
             $table->string('email_address')->nullable();
             $table->string('mobile_number')->nullable();
-            $table->string('link')->nullable();
+            $table->string('website');
+            $table->string('facebook')->nullable();
+            $table->string('linkedin')->nullable();
+            $table->string('twitter')->nullable();
+            $table->string('instagram')->nullable();
+
             $table->boolean('active')->default(true);
             $table->dateTime('datetime_added');
             $table->timestamps();

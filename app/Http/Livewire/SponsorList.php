@@ -15,7 +15,7 @@ class SponsorList extends Component
 
     public $finalListOfSponsors = array(), $finalListOfSponsorsConst = array();
 
-    public $addSponsorForm, $category, $type, $name, $link, $categoryChoices = array(), $typeChoices = array();
+    public $addSponsorForm, $category, $type, $name, $website, $categoryChoices = array(), $typeChoices = array();
 
     public $sponsorId, $sponsorDateTime, $sponsorArrayIndex, $editSponsorDateTimeForm;
 
@@ -111,7 +111,7 @@ class SponsorList extends Component
     {
         $this->validate([
             'name' => 'required',
-            'link' => 'required',
+            'website' => 'required',
             'category' => 'required',
             'type' => 'required',
         ]);
@@ -136,7 +136,7 @@ class SponsorList extends Component
         $this->category = null;
         $this->type = null;
         $this->name = null;
-        $this->link = null;
+        $this->website = null;
         $this->categoryChoices = array();
         $this->typeChoices = array();
     }
@@ -148,7 +148,7 @@ class SponsorList extends Component
             'feature_id' => $this->category,
             'sponsor_type_id' => $this->type,
             'name' => $this->name,
-            'link' => $this->link,
+            'website' => $this->website,
             'datetime_added' => Carbon::now(),
         ]);
 

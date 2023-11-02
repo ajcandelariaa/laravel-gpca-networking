@@ -11,14 +11,23 @@ class Exhibitor extends Model
 
     protected $fillable = [
         'event_id',
+        
         'name',
+        'stand_number',
         'profile',
         'logo',
         'banner',
-        'stand_number',
+
+        'country',
+        'contact_person_name',
         'email_address',
         'mobile_number',
-        'link',
+        'website',
+        'facebook',
+        'linkedin',
+        'twitter',
+        'instagram',
+
         'active',
         'datetime_added',
     ];

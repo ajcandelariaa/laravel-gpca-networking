@@ -13,7 +13,7 @@ class ExhibitorList extends Component
 
     public $finalListOfExhibitors = array(), $finalListOfExhibitorsConst = array();
 
-    public $addExhibitorForm, $name, $link, $stand_number;
+    public $addExhibitorForm, $name, $website, $stand_number;
 
     public $exhibitorId, $exhibitorDateTime, $exhibitorArrayIndex, $editExhibitorDateTimeForm;
 
@@ -31,7 +31,7 @@ class ExhibitorList extends Component
                     'id' => $exhibitor->id,
                     'name' => $exhibitor->name,
                     'stand_number' => $exhibitor->stand_number,
-                    'link' => $exhibitor->link,
+                    'website' => $exhibitor->website,
                     'active' => $exhibitor->active,
                     'logo' => $exhibitor->logo,
                     'datetime_added' => Carbon::parse($exhibitor->datetime_added)->format('M j, Y g:i A'),
@@ -58,7 +58,7 @@ class ExhibitorList extends Component
     {
         $this->validate([
             'name' => 'required',
-            'link' => 'required',
+            'website' => 'required',
             'stand_number' => 'required',
         ]);
 
@@ -80,7 +80,7 @@ class ExhibitorList extends Component
     {
         $this->addExhibitorForm = false;
         $this->name = null;
-        $this->link = null;
+        $this->website = null;
         $this->stand_number = null;
     }
 
@@ -88,7 +88,7 @@ class ExhibitorList extends Component
         $newExhibitor = Exhibitors::create([
             'event_id' => $this->event->id,
             'name' => $this->name,
-            'link' => $this->link,
+            'website' => $this->website,
             'stand_number' => $this->stand_number,
             'datetime_added' => Carbon::now(),
         ]);
@@ -97,7 +97,7 @@ class ExhibitorList extends Component
             'id' => $newExhibitor->id,
             'name' => $this->name,
             'stand_number' => $this->stand_number,
-            'link' => $this->link,
+            'website' => $this->website,
             'active' => true,
             'logo' => null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),

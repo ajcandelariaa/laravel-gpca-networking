@@ -35,13 +35,13 @@
                     <div class="mt-5">
                         <div>
                             <div class="text-primaryColor">
-                                Link <span class="text-red-500">*</span>
+                                Website <span class="text-red-500">*</span>
                             </div>
                             <div class="mt-2">
-                                <input placeholder="Link" type="text" wire:model.lazy="link"
+                                <input placeholder="Website" type="text" wire:model.lazy="website"
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                 
-                                @error('link')
+                                @error('website')
                                     <div class="text-red-500 text-xs italic mt-1">
                                         {{ $message }}
                                     </div>

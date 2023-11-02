@@ -32,33 +32,86 @@
 
     <div class="mt-36 text-center">
         <p class="font-semibold text-xl">{{ $exhibitorData['exhibitorName'] }}</p>
-        <p class="font-semibold">{{ $exhibitorData['exhibitorLink'] }}</p>
-        <p>{{ $exhibitorData['exhibitorStandNumber'] }}</p>
-
-        <p class="">
-            @if ($exhibitorData['exhibitorEmailAddress'] == null || $exhibitorData['exhibitorEmailAddress'] == "")
-                N/A
-            @else
-                {{ $exhibitorData['exhibitorEmailAddress'] }}
-            @endif
-        </p>
-        
-        <p class="">
-            @if ($exhibitorData['exhibitorMobileNumber'] == null || $exhibitorData['exhibitorMobileNumber'] == "")
-                N/A
-            @else
-                {{ $exhibitorData['exhibitorMobileNumber'] }}
-            @endif
-        </p>
+        <p class="font-semibold">{{ $exhibitorData['exhibitorWebsite'] }}</p>
     </div>
 
     <div class="mt-4">
         <hr>
     </div>
 
+    
     <div class="mt-6">
+        <p><span class="font-semibold">Stand number:</span> {{ $exhibitorData['exhibitorStandNumber'] }}</p>
+        
+        <hr class="my-4">
+
+        <div class="flex items-start gap-10">
+            <div>
+                <p><span class="font-semibold">Facebook:</span>
+                    @if ($exhibitorData['exhibitorFacebook'] == '' || $exhibitorData['exhibitorFacebook'] == null)
+                        N/A
+                    @else
+                        {{ $exhibitorData['exhibitorFacebook'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">LinkedIn:</span>
+                    @if ($exhibitorData['exhibitorLinkedin'] == '' || $exhibitorData['exhibitorLinkedin'] == null)
+                        N/A
+                    @else
+                        {{ $exhibitorData['exhibitorLinkedin'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Twitter:</span>
+                    @if ($exhibitorData['exhibitorTwitter'] == '' || $exhibitorData['exhibitorTwitter'] == null)
+                        N/A
+                    @else
+                        {{ $exhibitorData['exhibitorTwitter'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Instagram:</span>
+                    @if ($exhibitorData['exhibitorInstagram'] == '' || $exhibitorData['exhibitorInstagram'] == null)
+                        N/A
+                    @else
+                        {{ $exhibitorData['exhibitorInstagram'] }}
+                    @endif
+                </p>
+            </div>
+            <div>
+                <p><span class="font-semibold">Country:</span>
+                    @if ($exhibitorData['exhibitorCountry'] == '' || $exhibitorData['exhibitorCountry'] == null)
+                        N/A
+                    @else
+                        {{ $exhibitorData['exhibitorCountry'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Contact Name:</span>
+                    @if ($exhibitorData['exhibitorContactPersonName'] == '' || $exhibitorData['exhibitorContactPersonName'] == null)
+                        N/A
+                    @else
+                        {{ $exhibitorData['exhibitorContactPersonName'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Email address:</span>
+                    @if ($exhibitorData['exhibitorEmailAddress'] == '' || $exhibitorData['exhibitorEmailAddress'] == null)
+                        N/A
+                    @else
+                        {{ $exhibitorData['exhibitorEmailAddress'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Mobile Number:</span>
+                    @if ($exhibitorData['exhibitorMobileNumber'] == '' || $exhibitorData['exhibitorMobileNumber'] == null)
+                        N/A
+                    @else
+                        {{ $exhibitorData['exhibitorMobileNumber'] }}
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
         <p class="font-semibold">Company profile:</p>
-        <p class="mt-2">
+        <p>
             @if ($exhibitorData['exhibitorProfile'] == null || $exhibitorData['exhibitorProfile'] == "")
                 N/A
             @else
