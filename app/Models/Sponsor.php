@@ -16,11 +16,19 @@ class Sponsor extends Model
 
         'name',
         'profile',
-        'link',
-        'email_address',
-        'mobile_number',
         'logo',
         'banner',
+
+        'country',
+        'contact_person_name',
+        'email_address',
+        'mobile_number',
+        'website',
+        'facebook',
+        'linkedin',
+        'twitter',
+        'instagram',
+
         'active',
         'datetime_added',
     ];

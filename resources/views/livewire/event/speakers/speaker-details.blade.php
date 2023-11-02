@@ -53,37 +53,37 @@
     </div>
 
     <div class="mt-10">
-        <p>Published date time: {{ $speakerData['speakerDateTimeAdded'] }}</p>
-        <p>Category: {{ $speakerData['speakerCategoryName'] }}</p>
-        <p>Type: {{ $speakerData['speakerTypeName'] }}</p>
-        <p>Status: {{ $speakerData['speakerStatus'] ? 'Active' : 'Inactive' }}</p>
+        <p><span class="font-semibold">Published date time:</span> {{ $speakerData['speakerDateTimeAdded'] }}</p>
+        <p><span class="font-semibold">Category:</span> {{ $speakerData['speakerCategoryName'] }}</p>
+        <p><span class="font-semibold">Type:</span> {{ $speakerData['speakerTypeName'] }}</p>
+        <p><span class="font-semibold">Status:</span> {{ $speakerData['speakerStatus'] ? 'Active' : 'Inactive' }}</p>
 
         <hr class="my-4">
 
         <div class="flex items-start gap-10">
             <div>
-                <p>Facebook:
+                <p><span class="font-semibold">Facebook:</span>
                     @if ($speakerData['speakerFacebook'] == '' || $speakerData['speakerFacebook'] == null)
                         N/A
                     @else
                         {{ $speakerData['speakerFacebook'] }}
                     @endif
                 </p>
-                <p>LinkedIn:
+                <p><span class="font-semibold">LinkedIn:</span>
                     @if ($speakerData['speakerLinkedin'] == '' || $speakerData['speakerLinkedin'] == null)
                         N/A
                     @else
                         {{ $speakerData['speakerLinkedin'] }}
                     @endif
                 </p>
-                <p>Twitter:
+                <p><span class="font-semibold">Twitter:</span>
                     @if ($speakerData['speakerTwitter'] == '' || $speakerData['speakerTwitter'] == null)
                         N/A
                     @else
                         {{ $speakerData['speakerTwitter'] }}
                     @endif
                 </p>
-                <p>Instagram:
+                <p><span class="font-semibold">Instagram:</span>
                     @if ($speakerData['speakerInstagram'] == '' || $speakerData['speakerInstagram'] == null)
                         N/A
                     @else
@@ -93,28 +93,28 @@
             </div>
 
             <div>
-                <p>Country:
+                <p><span class="font-semibold">Country:</span>
                     @if ($speakerData['speakerCountry'] == '' || $speakerData['speakerCountry'] == null)
                         N/A
                     @else
                         {{ $speakerData['speakerCountry'] }}
                     @endif
                 </p>
-                <p>Email address:
+                <p><span class="font-semibold">Email address:</span>
                     @if ($speakerData['speakerEmailAddress'] == '' || $speakerData['speakerEmailAddress'] == null)
                         N/A
                     @else
                         {{ $speakerData['speakerEmailAddress'] }}
                     @endif
                 </p>
-                <p>Mobile Number:
+                <p><span class="font-semibold">Mobile Number:</span>
                     @if ($speakerData['speakerMobileNumber'] == '' || $speakerData['speakerMobileNumber'] == null)
                         N/A
                     @else
                         {{ $speakerData['speakerMobileNumber'] }}
                     @endif
                 </p>
-                <p>Website:
+                <p><span class="font-semibold">Website:</span>
                     @if ($speakerData['speakerWebsite'] == '' || $speakerData['speakerWebsite'] == null)
                         N/A
                     @else
@@ -127,7 +127,7 @@
 
         <hr class="my-4">
 
-        <p>Biography: </p>
+        <p><span class="font-semibold">Biography: </span></p>
         <p>
             @if ($speakerData['speakerBiography'] == '' || $speakerData['speakerBiography'] == null)
                 N/A

@@ -21,11 +21,19 @@ return new class extends Migration
 
             $table->string('name');
             $table->longText('profile')->nullable();
-            $table->string('link');
-            $table->string('email_address')->nullable();
-            $table->string('mobile_number')->nullable();
             $table->string('logo')->nullable();
             $table->string('banner')->nullable();
+
+            $table->string('country')->nullable();
+            $table->string('contact_person_name')->nullable();
+            $table->string('email_address')->nullable();
+            $table->string('mobile_number')->nullable();
+            $table->string('website');
+            $table->string('facebook')->nullable();
+            $table->string('linkedin')->nullable();
+            $table->string('twitter')->nullable();
+            $table->string('instagram')->nullable();
+
             $table->boolean('active')->default(true);
             $table->dateTime('datetime_added');
 

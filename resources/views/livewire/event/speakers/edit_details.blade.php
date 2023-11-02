@@ -14,7 +14,7 @@
                     </div>
 
                     <div class="mt-5 grid grid-cols-2 gap-x-5">
-                        <div class="mt-5">
+                        <div>
                             <div class="text-primaryColor">
                                 Category <span class="text-red-500">*</span>
                             </div>
@@ -36,7 +36,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-5">
+                        <div>
                             <div class="text-primaryColor">
                                 Type <span class="text-red-500">*</span>
                             </div>
@@ -165,7 +165,7 @@
 
                     <div class="grid grid-cols-2 gap-5">
                         <div class="col-span-1">
-                            <div class="text-registrationPrimaryColor">
+                            <div class="text-primaryColor">
                                 Country
                             </div>
                             <div>
@@ -175,7 +175,7 @@
                         </div>
 
                         <div class="col-span-1">
-                            <div class="text-registrationPrimaryColor">
+                            <div class="text-primaryColor">
                                 Email address
                             </div>
                             <div>
@@ -185,7 +185,7 @@
                         </div>
 
                         <div class="col-span-1">
-                            <div class="text-registrationPrimaryColor">
+                            <div class="text-primaryColor">
                                 Mobile number
                             </div>
                             <div>
@@ -195,7 +195,7 @@
                         </div>
 
                         <div class="col-span-1">
-                            <div class="text-registrationPrimaryColor">
+                            <div class="text-primaryColor">
                                 Website
                             </div>
                             <div>
@@ -205,7 +205,7 @@
                         </div>
 
                         <div class="col-span-1">
-                            <div class="text-registrationPrimaryColor">
+                            <div class="text-primaryColor">
                                 Facebook
                             </div>
                             <div>
@@ -215,7 +215,7 @@
                         </div>
 
                         <div class="col-span-1">
-                            <div class="text-registrationPrimaryColor">
+                            <div class="text-primaryColor">
                                 Linkedin
                             </div>
                             <div>
@@ -225,7 +225,7 @@
                         </div>
 
                         <div class="col-span-1">
-                            <div class="text-registrationPrimaryColor">
+                            <div class="text-primaryColor">
                                 Twitter
                             </div>
                             <div>
@@ -235,7 +235,7 @@
                         </div>
 
                         <div class="col-span-1">
-                            <div class="text-registrationPrimaryColor">
+                            <div class="text-primaryColor">
                                 Instagram
                             </div>
                             <div>

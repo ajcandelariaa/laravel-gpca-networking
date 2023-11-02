@@ -19,7 +19,7 @@ class SponsorDetails extends Component
 
     public $image, $assetType, $editSponsorAssetForm, $imageDefault;
 
-    public $category, $type, $name, $profile, $email_address, $mobile_number, $link, $editSponsorDetailsForm, $categoryChoices = array(), $typeChoices = array();
+    public $category, $type, $name, $profile, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $editSponsorDetailsForm, $categoryChoices = array(), $typeChoices = array();
 
     protected $listeners = ['editSponsorDetailsConfirmed' => 'editSponsorDetails', 'editSponsorAssetConfirmed' => 'editSponsorAsset', 'removeSponsorAssetConfirmed' => 'removeSponsorAsset'];
 
@@ -71,10 +71,17 @@ class SponsorDetails extends Component
         $this->type = $this->sponsorData['sponsorTypeId'];
 
         $this->name = $this->sponsorData['sponsorName'];
-        $this->link = $this->sponsorData['sponsorLink'];
         $this->profile = $this->sponsorData['sponsorProfile'];
+        
+        $this->country = $this->sponsorData['sponsorCountry'];
+        $this->contact_person_name = $this->sponsorData['sponsorContactPersonName'];
         $this->email_address = $this->sponsorData['sponsorEmailAddress'];
         $this->mobile_number = $this->sponsorData['sponsorMobileNumber'];
+        $this->website = $this->sponsorData['sponsorWebsite'];
+        $this->facebook = $this->sponsorData['sponsorFacebook'];
+        $this->linkedin = $this->sponsorData['sponsorLinkedin'];
+        $this->twitter = $this->sponsorData['sponsorTwitter'];
+        $this->instagram = $this->sponsorData['sponsorInstagram'];
         $this->editSponsorDetailsForm = true;
     }
 
@@ -90,9 +97,17 @@ class SponsorDetails extends Component
         $this->type = null;
         $this->name = null;
         $this->profile = null;
+
+        $this->country = null;
+        $this->contact_person_name = null;
         $this->email_address = null;
         $this->mobile_number = null;
-        $this->link = null;
+        $this->website = null;
+        $this->facebook = null;
+        $this->linkedin = null;
+        $this->twitter = null;
+        $this->instagram = null;
+
         $this->typeChoices = array();
         $this->categoryChoices = array();
     }
@@ -103,7 +118,7 @@ class SponsorDetails extends Component
             'category' => 'required',
             'type' => 'required',
             'name' => 'required',
-            'link' => 'required',
+            'website' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -122,9 +137,16 @@ class SponsorDetails extends Component
             'sponsor_type_id' => $this->type,
             'name' => $this->name,
             'profile' => $this->profile,
-            'email_address' => $this->email_address,
-            'mobile_number' => $this->mobile_number,
-            'link' => $this->link,
+
+            'country' => $this->country == "" ? null : $this->country,
+            'contact_person_name' => $this->contact_person_name == "" ? null : $this->contact_person_name,
+            'email_address' => $this->email_address == "" ? null : $this->email_address,
+            'mobile_number' => $this->mobile_number == "" ? null : $this->mobile_number,
+            'website' => $this->website == "" ? null : $this->website,
+            'facebook' => $this->facebook == "" ? null : $this->facebook,
+            'linkedin' => $this->linkedin == "" ? null : $this->linkedin,
+            'twitter' => $this->twitter == "" ? null : $this->twitter,
+            'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
         
@@ -144,11 +166,19 @@ class SponsorDetails extends Component
         $this->sponsorData['sponsorFeatureId'] = $this->category;
         $this->sponsorData['sponsorTypeName'] = $selectedType;
         $this->sponsorData['sponsorTypeId'] = $this->type;
+
         $this->sponsorData['sponsorName'] = $this->name;
         $this->sponsorData['sponsorProfile'] = $this->profile;
+
+        $this->sponsorData['sponsorCountry'] = $this->country;
+        $this->sponsorData['sponsorContactPersonName'] = $this->contact_person_name;
         $this->sponsorData['sponsorEmailAddress'] = $this->email_address;
         $this->sponsorData['sponsorMobileNumber'] = $this->mobile_number;
-        $this->sponsorData['sponsorLink'] = $this->link;
+        $this->sponsorData['sponsorWebsite'] = $this->website;
+        $this->sponsorData['sponsorFacebook'] = $this->facebook;
+        $this->sponsorData['sponsorLinkedin'] = $this->linkedin;
+        $this->sponsorData['sponsorTwitter'] = $this->twitter;
+        $this->sponsorData['sponsorInstagram'] = $this->instagram;
 
         $this->resetEditSponsorDetailsFields();
 

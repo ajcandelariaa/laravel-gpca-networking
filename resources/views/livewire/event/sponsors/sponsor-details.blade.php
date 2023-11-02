@@ -32,23 +32,7 @@
 
     <div class="mt-36 text-center">
         <p class="font-semibold text-xl">{{ $sponsorData['sponsorName'] }}</p>
-        <p class="font-semibold">{{ $sponsorData['sponsorLink'] }}</p>
-
-        <p class="">
-            @if ($sponsorData['sponsorEmailAddress'] == null || $sponsorData['sponsorEmailAddress'] == "")
-                N/A
-            @else
-                {{ $sponsorData['sponsorEmailAddress'] }}
-            @endif
-        </p>
-        
-        <p class="">
-            @if ($sponsorData['sponsorMobileNumber'] == null || $sponsorData['sponsorMobileNumber'] == "")
-                N/A
-            @else
-                {{ $sponsorData['sponsorMobileNumber'] }}
-            @endif
-        </p>
+        <p class="font-semibold">{{ $sponsorData['sponsorWebsite'] }}</p>
     </div>
 
     <div class="mt-4">
@@ -58,8 +42,76 @@
     <div class="mt-6">
         <p><span class="font-semibold">Category:</span> {{ $sponsorData['sponsorCategoryName'] }} sponsor</p>
         <p><span class="font-semibold">Type:</span> {{ $sponsorData['sponsorTypeName'] }} sponsor</p>
+        
+        <hr class="my-4">
+
+        <div class="flex items-start gap-10">
+            <div>
+                <p><span class="font-semibold">Facebook:</span>
+                    @if ($sponsorData['sponsorFacebook'] == '' || $sponsorData['sponsorFacebook'] == null)
+                        N/A
+                    @else
+                        {{ $sponsorData['sponsorFacebook'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">LinkedIn:</span>
+                    @if ($sponsorData['sponsorLinkedin'] == '' || $sponsorData['sponsorLinkedin'] == null)
+                        N/A
+                    @else
+                        {{ $sponsorData['sponsorLinkedin'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Twitter:</span>
+                    @if ($sponsorData['sponsorTwitter'] == '' || $sponsorData['sponsorTwitter'] == null)
+                        N/A
+                    @else
+                        {{ $sponsorData['sponsorTwitter'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Instagram:</span>
+                    @if ($sponsorData['sponsorInstagram'] == '' || $sponsorData['sponsorInstagram'] == null)
+                        N/A
+                    @else
+                        {{ $sponsorData['sponsorInstagram'] }}
+                    @endif
+                </p>
+            </div>
+            <div>
+                <p><span class="font-semibold">Country:</span>
+                    @if ($sponsorData['sponsorCountry'] == '' || $sponsorData['sponsorCountry'] == null)
+                        N/A
+                    @else
+                        {{ $sponsorData['sponsorCountry'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Contact Name:</span>
+                    @if ($sponsorData['sponsorContactPersonName'] == '' || $sponsorData['sponsorContactPersonName'] == null)
+                        N/A
+                    @else
+                        {{ $sponsorData['sponsorContactPersonName'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Email address:</span>
+                    @if ($sponsorData['sponsorEmailAddress'] == '' || $sponsorData['sponsorEmailAddress'] == null)
+                        N/A
+                    @else
+                        {{ $sponsorData['sponsorEmailAddress'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Mobile Number:</span>
+                    @if ($sponsorData['sponsorMobileNumber'] == '' || $sponsorData['sponsorMobileNumber'] == null)
+                        N/A
+                    @else
+                        {{ $sponsorData['sponsorMobileNumber'] }}
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
         <p class="font-semibold">Company profile:</p>
-        <p class="mt-2">
+        <p>
             @if ($sponsorData['sponsorProfile'] == null || $sponsorData['sponsorProfile'] == "")
                 N/A
             @else

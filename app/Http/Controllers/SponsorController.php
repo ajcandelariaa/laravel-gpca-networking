@@ -82,15 +82,25 @@ class SponsorController extends Controller
                 "sponsorFeatureId" => $sponsor->feature_id,
                 "sponsorTypeName" => $type,
                 "sponsorTypeId" => $sponsor->sponsor_type_id,
+
                 "sponsorName" => $sponsor->name,
-                "sponsorEmailAddress" => $sponsor->email_address,
-                "sponsorMobileNumber" => $sponsor->mobile_number,
-                "sponsorLink" => $sponsor->link,
                 "sponsorProfile" => $sponsor->profile,
+                
                 "sponsorLogo" => $sponsorLogo,
                 "sponsorLogoDefault" => $sponsorLogoDefault,
                 "sponsorBanner" => $sponsorBanner,
                 "sponsorBannerDefault" => $sponsorBannerDefault,
+
+                "sponsorCountry" => $sponsor->country,
+                "sponsorContactPersonName" => $sponsor->contact_person_name,
+                "sponsorEmailAddress" => $sponsor->email_address,
+                "sponsorMobileNumber" => $sponsor->mobile_number,
+                "sponsorWebsite" => $sponsor->website,
+                "sponsorFacebook" => $sponsor->facebook,
+                "sponsorLinkedin" => $sponsor->linkedin,
+                "sponsorTwitter" => $sponsor->twitter,
+                "sponsorInstagram" => $sponsor->instagram,
+
                 "sponsorStatus" => $sponsor->active,
                 "sponsorDateTimeAdded" => Carbon::parse($sponsor->datetime_added)->format('M j, Y g:i A'),
             ];
