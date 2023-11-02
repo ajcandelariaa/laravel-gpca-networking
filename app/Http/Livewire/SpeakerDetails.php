@@ -19,7 +19,7 @@ class SpeakerDetails extends Component
 
     public $image, $assetType, $editSpeakerAssetForm, $imageDefault;
 
-    public $category, $type, $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $biography, $editSpeakerDetailsForm, $categoryChoices = array(), $typeChoices = array();
+    public $category, $type, $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $biography, $country, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $editSpeakerDetailsForm, $categoryChoices = array(), $typeChoices = array();
 
     protected $listeners = ['editSpeakerDetailsConfirmed' => 'editSpeakerDetails', 'editSpeakerAssetConfirmed' => 'editSpeakerAsset', 'removeSpeakerAssetConfirmed' => 'removeSpeakerAsset'];
 
@@ -77,6 +77,15 @@ class SpeakerDetails extends Component
         $this->company_name = $this->speakerData['speakerCompanyName'];
         $this->job_title = $this->speakerData['speakerJobTitle'];
         $this->biography = $this->speakerData['speakerBiography'];
+
+        $this->country = $this->speakerData['speakerCountry'];
+        $this->email_address = $this->speakerData['speakerEmailAddress'];
+        $this->mobile_number = $this->speakerData['speakerMobileNumber'];
+        $this->website = $this->speakerData['speakerWebsite'];
+        $this->facebook = $this->speakerData['speakerFacebook'];
+        $this->linkedin = $this->speakerData['speakerLinkedin'];
+        $this->twitter = $this->speakerData['speakerTwitter'];
+        $this->instagram = $this->speakerData['speakerInstagram'];
         $this->editSpeakerDetailsForm = true;
     }
 
@@ -97,6 +106,15 @@ class SpeakerDetails extends Component
         $this->company_name = null;
         $this->job_title = null;
         $this->biography = null;
+
+        $this->country = null;
+        $this->email_address = null;
+        $this->mobile_number = null;
+        $this->website = null;
+        $this->facebook = null;
+        $this->linkedin = null;
+        $this->twitter = null;
+        $this->instagram = null;
         $this->typeChoices = array();
         $this->categoryChoices = array();
     }
@@ -133,6 +151,15 @@ class SpeakerDetails extends Component
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
             'biography' => $this->biography,
+
+            'country' => $this->country == "" ? null : $this->country,
+            'email_address' => $this->email_address == "" ? null : $this->email_address,
+            'mobile_number' => $this->mobile_number == "" ? null : $this->mobile_number,
+            'website' => $this->website == "" ? null : $this->website,
+            'facebook' => $this->facebook == "" ? null : $this->facebook,
+            'linkedin' => $this->linkedin == "" ? null : $this->linkedin,
+            'twitter' => $this->twitter == "" ? null : $this->twitter,
+            'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
         foreach($this->categoryChoices as $categoryChoice){
@@ -158,6 +185,15 @@ class SpeakerDetails extends Component
         $this->speakerData['speakerCompanyName'] = $this->company_name;
         $this->speakerData['speakerJobTitle'] = $this->job_title;
         $this->speakerData['speakerBiography'] = $this->biography;
+
+        $this->speakerData['speakerCountry'] = $this->country;
+        $this->speakerData['speakerEmailAddress'] = $this->email_address;
+        $this->speakerData['speakerMobileNumber'] = $this->mobile_number;
+        $this->speakerData['speakerWebsite'] = $this->website;
+        $this->speakerData['speakerFacebook'] = $this->facebook;
+        $this->speakerData['speakerLinkedin'] = $this->linkedin;
+        $this->speakerData['speakerTwitter'] = $this->twitter;
+        $this->speakerData['speakerInstagram'] = $this->instagram;
 
         $this->resetEditSpeakerDetailsFields();
 

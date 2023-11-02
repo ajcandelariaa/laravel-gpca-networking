@@ -57,6 +57,76 @@
         <p>Category: {{ $speakerData['speakerCategoryName'] }}</p>
         <p>Type: {{ $speakerData['speakerTypeName'] }}</p>
         <p>Status: {{ $speakerData['speakerStatus'] ? 'Active' : 'Inactive' }}</p>
+
+        <hr class="my-4">
+
+        <div class="flex items-start gap-10">
+            <div>
+                <p>Facebook:
+                    @if ($speakerData['speakerFacebook'] == '' || $speakerData['speakerFacebook'] == null)
+                        N/A
+                    @else
+                        {{ $speakerData['speakerFacebook'] }}
+                    @endif
+                </p>
+                <p>LinkedIn:
+                    @if ($speakerData['speakerLinkedin'] == '' || $speakerData['speakerLinkedin'] == null)
+                        N/A
+                    @else
+                        {{ $speakerData['speakerLinkedin'] }}
+                    @endif
+                </p>
+                <p>Twitter:
+                    @if ($speakerData['speakerTwitter'] == '' || $speakerData['speakerTwitter'] == null)
+                        N/A
+                    @else
+                        {{ $speakerData['speakerTwitter'] }}
+                    @endif
+                </p>
+                <p>Instagram:
+                    @if ($speakerData['speakerInstagram'] == '' || $speakerData['speakerInstagram'] == null)
+                        N/A
+                    @else
+                        {{ $speakerData['speakerInstagram'] }}
+                    @endif
+                </p>
+            </div>
+
+            <div>
+                <p>Country:
+                    @if ($speakerData['speakerCountry'] == '' || $speakerData['speakerCountry'] == null)
+                        N/A
+                    @else
+                        {{ $speakerData['speakerCountry'] }}
+                    @endif
+                </p>
+                <p>Email address:
+                    @if ($speakerData['speakerEmailAddress'] == '' || $speakerData['speakerEmailAddress'] == null)
+                        N/A
+                    @else
+                        {{ $speakerData['speakerEmailAddress'] }}
+                    @endif
+                </p>
+                <p>Mobile Number:
+                    @if ($speakerData['speakerMobileNumber'] == '' || $speakerData['speakerMobileNumber'] == null)
+                        N/A
+                    @else
+                        {{ $speakerData['speakerMobileNumber'] }}
+                    @endif
+                </p>
+                <p>Website:
+                    @if ($speakerData['speakerWebsite'] == '' || $speakerData['speakerWebsite'] == null)
+                        N/A
+                    @else
+                        {{ $speakerData['speakerWebsite'] }}
+                    @endif
+                </p>
+            </div>
+        </div>
+
+
+        <hr class="my-4">
+
         <p>Biography: </p>
         <p>
             @if ($speakerData['speakerBiography'] == '' || $speakerData['speakerBiography'] == null)

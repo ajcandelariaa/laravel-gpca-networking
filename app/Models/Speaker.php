@@ -27,6 +27,15 @@ class Speaker extends Model
         'pfp',
         'cover_photo',
 
+        'country',
+        'email_address',
+        'mobile_number',
+        'website',
+        'facebook',
+        'linkedin',
+        'twitter',
+        'instagram',
+
         'active',
         
         'datetime_added',

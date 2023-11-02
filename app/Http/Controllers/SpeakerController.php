@@ -93,6 +93,16 @@ class SpeakerController extends Controller
                 "speakerPFPDefault" => $speakerPFPDefault,
                 "speakerCoverPhoto" => $speakerCoverPhoto,
                 "speakerCoverPhotoDefault" => $speakerCoverPhotoDefault,
+
+                "speakerCountry" => $speaker->country,
+                "speakerEmailAddress" => $speaker->email_address,
+                "speakerMobileNumber" => $speaker->mobile_number,
+                "speakerWebsite" => $speaker->website,
+                "speakerFacebook" => $speaker->facebook,
+                "speakerLinkedin" => $speaker->linkedin,
+                "speakerTwitter" => $speaker->twitter,
+                "speakerInstagram" => $speaker->instagram,
+
                 "speakerStatus" => $speaker->active,
                 "speakerDateTimeAdded" => Carbon::parse($speaker->datetime_added)->format('M j, Y g:i A'),
             ];
