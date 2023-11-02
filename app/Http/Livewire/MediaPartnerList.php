@@ -13,7 +13,7 @@ class MediaPartnerList extends Component
 
     public $finalListOfMediaPartners = array(), $finalListOfMediaPartnersConst = array();
 
-    public $addMediaPartnerForm, $name, $link;
+    public $addMediaPartnerForm, $name, $website;
 
     public $mediaPartnerId, $mediaPartnerDateTime, $mediaPartnerArrayIndex, $editMediaPartnerDateTimeForm;
 
@@ -30,7 +30,7 @@ class MediaPartnerList extends Component
                 array_push($this->finalListOfMediaPartners, [
                     'id' => $mediaPartner->id,
                     'name' => $mediaPartner->name,
-                    'link' => $mediaPartner->link,
+                    'website' => $mediaPartner->website,
                     'active' => $mediaPartner->active,
                     'logo' => $mediaPartner->logo,
                     'datetime_added' => Carbon::parse($mediaPartner->datetime_added)->format('M j, Y g:i A'),
@@ -57,7 +57,7 @@ class MediaPartnerList extends Component
     {
         $this->validate([
             'name' => 'required',
-            'link' => 'required',
+            'website' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -79,21 +79,21 @@ class MediaPartnerList extends Component
     {
         $this->addMediaPartnerForm = false;
         $this->name = null;
-        $this->link = null;
+        $this->website = null;
     }
 
     public function addMediaPartner(){
         $newMediaPartner = MediaPartners::create([
             'event_id' => $this->event->id,
             'name' => $this->name,
-            'link' => $this->link,
+            'website' => $this->website,
             'datetime_added' => Carbon::now(),
         ]);
         
         array_push($this->finalListOfMediaPartners, [
             'id' => $newMediaPartner->id,
             'name' => $this->name,
-            'link' => $this->link,
+            'website' => $this->website,
             'active' => true,
             'logo' => null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),

@@ -32,33 +32,83 @@
 
     <div class="mt-36 text-center">
         <p class="font-semibold text-xl">{{ $mediaPartnerData['mediaPartnerName'] }}</p>
-        <p class="font-semibold">{{ $mediaPartnerData['mediaPartnerLink'] }}</p>
-
-        <p class="">
-            @if ($mediaPartnerData['mediaPartnerEmailAddress'] == null || $mediaPartnerData['mediaPartnerEmailAddress'] == "")
-                N/A
-            @else
-                {{ $mediaPartnerData['mediaPartnerEmailAddress'] }}
-            @endif
-        </p>
-        
-        <p class="">
-            @if ($mediaPartnerData['mediaPartnerMobileNumber'] == null || $mediaPartnerData['mediaPartnerMobileNumber'] == "")
-                N/A
-            @else
-                {{ $mediaPartnerData['mediaPartnerMobileNumber'] }}
-            @endif
-        </p>
+        <p class="font-semibold">{{ $mediaPartnerData['mediaPartnerWebsite'] }}</p>
     </div>
 
     <div class="mt-4">
         <hr>
     </div>
 
+
     <div class="mt-6">
+        <div class="flex items-start gap-10">
+            <div>
+                <p><span class="font-semibold">Facebook:</span>
+                    @if ($mediaPartnerData['mediaPartnerFacebook'] == '' || $mediaPartnerData['mediaPartnerFacebook'] == null)
+                        N/A
+                    @else
+                        {{ $mediaPartnerData['mediaPartnerFacebook'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">LinkedIn:</span>
+                    @if ($mediaPartnerData['mediaPartnerLinkedin'] == '' || $mediaPartnerData['mediaPartnerLinkedin'] == null)
+                        N/A
+                    @else
+                        {{ $mediaPartnerData['mediaPartnerLinkedin'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Twitter:</span>
+                    @if ($mediaPartnerData['mediaPartnerTwitter'] == '' || $mediaPartnerData['mediaPartnerTwitter'] == null)
+                        N/A
+                    @else
+                        {{ $mediaPartnerData['mediaPartnerTwitter'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Instagram:</span>
+                    @if ($mediaPartnerData['mediaPartnerInstagram'] == '' || $mediaPartnerData['mediaPartnerInstagram'] == null)
+                        N/A
+                    @else
+                        {{ $mediaPartnerData['mediaPartnerInstagram'] }}
+                    @endif
+                </p>
+            </div>
+            <div>
+                <p><span class="font-semibold">Country:</span>
+                    @if ($mediaPartnerData['mediaPartnerCountry'] == '' || $mediaPartnerData['mediaPartnerCountry'] == null)
+                        N/A
+                    @else
+                        {{ $mediaPartnerData['mediaPartnerCountry'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Contact Name:</span>
+                    @if ($mediaPartnerData['mediaPartnerContactPersonName'] == '' || $mediaPartnerData['mediaPartnerContactPersonName'] == null)
+                        N/A
+                    @else
+                        {{ $mediaPartnerData['mediaPartnerContactPersonName'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Email address:</span>
+                    @if ($mediaPartnerData['mediaPartnerEmailAddress'] == '' || $mediaPartnerData['mediaPartnerEmailAddress'] == null)
+                        N/A
+                    @else
+                        {{ $mediaPartnerData['mediaPartnerEmailAddress'] }}
+                    @endif
+                </p>
+                <p><span class="font-semibold">Mobile Number:</span>
+                    @if ($mediaPartnerData['mediaPartnerMobileNumber'] == '' || $mediaPartnerData['mediaPartnerMobileNumber'] == null)
+                        N/A
+                    @else
+                        {{ $mediaPartnerData['mediaPartnerMobileNumber'] }}
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <hr class="my-4">
+
         <p class="font-semibold">Company profile:</p>
-        <p class="mt-2">
-            @if ($mediaPartnerData['mediaPartnerProfile'] == null || $mediaPartnerData['mediaPartnerProfile'] == "")
+        <p>
+            @if ($mediaPartnerData['mediaPartnerProfile'] == null || $mediaPartnerData['mediaPartnerProfile'] == '')
                 N/A
             @else
                 {{ $mediaPartnerData['mediaPartnerProfile'] }}

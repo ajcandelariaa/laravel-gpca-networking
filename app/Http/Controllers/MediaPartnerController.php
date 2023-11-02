@@ -44,14 +44,23 @@ class MediaPartnerController extends Controller
             $mediaPartnerData = [
                 "mediaPartnerId" => $mediaPartner->id,
                 "mediaPartnerName" => $mediaPartner->name,
-                "mediaPartnerEmailAddress" => $mediaPartner->email_address,
-                "mediaPartnerMobileNumber" => $mediaPartner->mobile_number,
-                "mediaPartnerLink" => $mediaPartner->link,
                 "mediaPartnerProfile" => $mediaPartner->profile,
+
                 "mediaPartnerLogo" => $mediaPartnerLogo,
                 "mediaPartnerLogoDefault" => $mediaPartnerLogoDefault,
                 "mediaPartnerBanner" => $mediaPartnerBanner,
                 "mediaPartnerBannerDefault" => $mediaPartnerBannerDefault,
+
+                "mediaPartnerCountry" => $mediaPartner->country,
+                "mediaPartnerContactPersonName" => $mediaPartner->contact_person_name,
+                "mediaPartnerEmailAddress" => $mediaPartner->email_address,
+                "mediaPartnerMobileNumber" => $mediaPartner->mobile_number,
+                "mediaPartnerWebsite" => $mediaPartner->website,
+                "mediaPartnerFacebook" => $mediaPartner->facebook,
+                "mediaPartnerLinkedin" => $mediaPartner->linkedin,
+                "mediaPartnerTwitter" => $mediaPartner->twitter,
+                "mediaPartnerInstagram" => $mediaPartner->instagram,
+
                 "mediaPartnerStatus" => $mediaPartner->active,
                 "mediaPartnerDateTimeAdded" => Carbon::parse($mediaPartner->datetime_added)->format('M j, Y g:i A'),
             ];

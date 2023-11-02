@@ -21,7 +21,7 @@
                 <div class="col-span-1">No.</div>
                 <div class="col-span-2">Logo</div>
                 <div class="col-span-2">Company Name</div>
-                <div class="col-span-2">Link</div>
+                <div class="col-span-2">Website</div>
                 <div class="col-span-2">Date time added</div>
                 <div class="col-span-1">Status</div>
                 <div class="col-span-1">Action</div>
@@ -37,7 +37,7 @@
                         @endif
                     </div>
                     <div class="col-span-2">{{ $finalListOfMediaPartner['name'] }}</div>
-                    <div class="col-span-2">{{ $finalListOfMediaPartner['link'] }}</div>
+                    <div class="col-span-2">{{ $finalListOfMediaPartner['website'] }}</div>
                     <div wire:click="showEditMediaPartnerDateTime({{ $finalListOfMediaPartner['id'] }}, {{ $index }})" class="text-blue-700 hover:underline col-span-2 cursor-pointer">{{ $finalListOfMediaPartner['datetime_added'] }}</div>
                     <div class="col-span-1">
                         @if ($finalListOfMediaPartner['active'])

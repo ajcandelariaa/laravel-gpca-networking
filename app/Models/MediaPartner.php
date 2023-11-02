@@ -15,9 +15,17 @@ class MediaPartner extends Model
         'profile',
         'logo',
         'banner',
+
+        'country',
+        'contact_person_name',
         'email_address',
         'mobile_number',
-        'link',
+        'website',
+        'facebook',
+        'linkedin',
+        'twitter',
+        'instagram',
+
         'active',
         'datetime_added',
     ];

@@ -17,7 +17,7 @@ class MediaPartnerDetails extends Component
 
     public $image, $assetType, $editMediaPartnerAssetForm, $imageDefault;
 
-    public $name, $profile, $email_address, $mobile_number, $link, $editMediaPartnerDetailsForm;
+    public $name, $profile, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $editMediaPartnerDetailsForm;
 
     protected $listeners = ['editMediaPartnerDetailsConfirmed' => 'editMediaPartnerDetails', 'editMediaPartnerAssetConfirmed' => 'editMediaPartnerAsset', 'removeMediaPartnerAssetConfirmed' => 'removeMediaPartnerAsset'];
 
@@ -192,9 +192,16 @@ class MediaPartnerDetails extends Component
     {
         $this->name = $this->mediaPartnerData['mediaPartnerName'];
         $this->profile = $this->mediaPartnerData['mediaPartnerProfile'];
+        
+        $this->country = $this->mediaPartnerData['mediaPartnerCountry'];
+        $this->contact_person_name = $this->mediaPartnerData['mediaPartnerContactPersonName'];
         $this->email_address = $this->mediaPartnerData['mediaPartnerEmailAddress'];
         $this->mobile_number = $this->mediaPartnerData['mediaPartnerMobileNumber'];
-        $this->link = $this->mediaPartnerData['mediaPartnerLink'];
+        $this->website = $this->mediaPartnerData['mediaPartnerWebsite'];
+        $this->facebook = $this->mediaPartnerData['mediaPartnerFacebook'];
+        $this->linkedin = $this->mediaPartnerData['mediaPartnerLinkedin'];
+        $this->twitter = $this->mediaPartnerData['mediaPartnerTwitter'];
+        $this->instagram = $this->mediaPartnerData['mediaPartnerInstagram'];
         $this->editMediaPartnerDetailsForm = true;
     }
 
@@ -208,16 +215,23 @@ class MediaPartnerDetails extends Component
         $this->editMediaPartnerDetailsForm = false;
         $this->name = null;
         $this->profile = null;
+
+        $this->country = null;
+        $this->contact_person_name = null;
         $this->email_address = null;
         $this->mobile_number = null;
-        $this->link = null;
+        $this->website = null;
+        $this->facebook = null;
+        $this->linkedin = null;
+        $this->twitter = null;
+        $this->instagram = null;
     }
 
     public function editMediaPartnerDetailsConfirmation()
     {
         $this->validate([
             'name' => 'required',
-            'link' => 'required',
+            'website' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -234,16 +248,30 @@ class MediaPartnerDetails extends Component
         MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
             'name' => $this->name,
             'profile' => $this->profile,
-            'email_address' => $this->email_address,
-            'mobile_number' => $this->mobile_number,
-            'link' => $this->link,
+
+            'country' => $this->country == "" ? null : $this->country,
+            'contact_person_name' => $this->contact_person_name == "" ? null : $this->contact_person_name,
+            'email_address' => $this->email_address == "" ? null : $this->email_address,
+            'mobile_number' => $this->mobile_number == "" ? null : $this->mobile_number,
+            'website' => $this->website == "" ? null : $this->website,
+            'facebook' => $this->facebook == "" ? null : $this->facebook,
+            'linkedin' => $this->linkedin == "" ? null : $this->linkedin,
+            'twitter' => $this->twitter == "" ? null : $this->twitter,
+            'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
         $this->mediaPartnerData['mediaPartnerName'] = $this->name;
         $this->mediaPartnerData['mediaPartnerProfile'] = $this->profile;
+        
+        $this->mediaPartnerData['mediaPartnerCountry'] = $this->country;
+        $this->mediaPartnerData['mediaPartnerContactPersonName'] = $this->contact_person_name;
         $this->mediaPartnerData['mediaPartnerEmailAddress'] = $this->email_address;
         $this->mediaPartnerData['mediaPartnerMobileNumber'] = $this->mobile_number;
-        $this->mediaPartnerData['mediaPartnerLink'] = $this->link;
+        $this->mediaPartnerData['mediaPartnerWebsite'] = $this->website;
+        $this->mediaPartnerData['mediaPartnerFacebook'] = $this->facebook;
+        $this->mediaPartnerData['mediaPartnerLinkedin'] = $this->linkedin;
+        $this->mediaPartnerData['mediaPartnerTwitter'] = $this->twitter;
+        $this->mediaPartnerData['mediaPartnerInstagram'] = $this->instagram;
 
         $this->resetEditMediaPartnerDetailsFields();
 
