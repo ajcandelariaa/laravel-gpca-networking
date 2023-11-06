@@ -19,12 +19,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/event', [EventController::class, 'eventsList']);
+Route::get('/event', [EventController::class, 'apiEventsList']);
+Route::group(['middleware' => 'api.check.event.exists'], function () {
+    Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
+        Route::get('/details', [EventController::class, 'apiEventDetails']);
+        Route::get('/speaker', [SpeakerController::class, 'getListOfSpeakers']);
+        Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
+        Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
+        Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
+    });
+});
 
-Route::get('/speaker', [SpeakerController::class, 'getListOfSpeakers']);
-Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
-Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
-Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
+
+Route::fallback(function(){
+    return response()->json([
+        'status' => 404,
+        'message' => "Page not found",
+    ], 404);
+});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'isAdmin' => \App\Http\Middleware\Admin::class,
         'check.event.exists' => \App\Http\Middleware\CheckEventExists::class,
+        'api.check.event.exists' => \App\Http\Middleware\APICheckEventExists::class,
     ];
 }
