@@ -8,6 +8,7 @@ use App\Models\Feature as Features;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class FeatureDetails extends Component
 {
@@ -74,20 +75,19 @@ class FeatureDetails extends Component
 
     public function editFeatureAsset()
     {
-        $currentYear = $this->event->year;
-        $fileName = time() . '-' . $this->image->getClientOriginalName();
+        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
 
         if ($this->assetType == "Feature Logo") {
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/logo/' . $this->featureData['featureId'];
 
             if (!$this->featureData['featureLogoDefault']) {
                 $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('logo');
                 if ($featureAssetUrl) {
-                    $this->removeFeatureAssetInStorage($featureAssetUrl);
+                    $this->removeFeatureAssetInStorage($featureAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/features/logo', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Features::where('id', $this->featureData['featureId'])->update([
                 'logo' => $path,
             ]);
@@ -95,17 +95,17 @@ class FeatureDetails extends Component
             $this->featureData['featureLogo'] = Storage::url($path);
             $this->featureData['featureLogoDefault'] = false;
         } else if ($this->assetType == "Feature Banner") {
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/banner/' . $this->featureData['featureId'];
 
             if (!$this->featureData['featureBannerDefault']) {
                 $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('banner');
 
                 if ($featureAssetUrl) {
-                    $this->removeFeatureAssetInStorage($featureAssetUrl);
+                    $this->removeFeatureAssetInStorage($featureAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/features/banner', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Features::where('id', $this->featureData['featureId'])->update([
                 'banner' => $path,
             ]);
@@ -113,16 +113,17 @@ class FeatureDetails extends Component
             $this->featureData['featureBanner'] = Storage::url($path);
             $this->featureData['featureBannerDefault'] = false;
         } else {
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/image/' . $this->featureData['featureId'];
+
             if (!$this->featureData['featureImageDefault']) {
                 $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('image');
 
                 if ($featureAssetUrl) {
-                    $this->removeFeatureAssetInStorage($featureAssetUrl);
+                    $this->removeFeatureAssetInStorage($featureAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/features/image', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Features::where('id', $this->featureData['featureId'])->update([
                 'image' => $path,
             ]);
@@ -155,12 +156,10 @@ class FeatureDetails extends Component
     {
         if ($this->assetType == "Feature Logo") {
             $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('logo');
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/logo/' . $this->featureData['featureId'];
 
             if ($featureAssetUrl) {
-                $this->removeFeatureAssetInStorage($featureAssetUrl);
-            } else {
-
-                dd(true);
+                $this->removeFeatureAssetInStorage($featureAssetUrl, $pathDirectory);
             }
 
             Features::where('id', $this->featureData['featureId'])->update([
@@ -172,8 +171,10 @@ class FeatureDetails extends Component
         } else if ($this->assetType == "Feature Banner") {
             $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('banner');
 
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/banner/' . $this->featureData['featureId'];
+
             if ($featureAssetUrl) {
-                $this->removeFeatureAssetInStorage($featureAssetUrl);
+                $this->removeFeatureAssetInStorage($featureAssetUrl, $pathDirectory);
             }
 
             Features::where('id', $this->featureData['featureId'])->update([
@@ -185,8 +186,10 @@ class FeatureDetails extends Component
         } else {
             $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('image');
 
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/image/' . $this->featureData['featureId'];
+
             if ($featureAssetUrl) {
-                $this->removeFeatureAssetInStorage($featureAssetUrl);
+                $this->removeFeatureAssetInStorage($featureAssetUrl, $pathDirectory);
             }
 
             Features::where('id', $this->featureData['featureId'])->update([
@@ -206,10 +209,11 @@ class FeatureDetails extends Component
         $this->resetEditFeatureAssetFields();
     }
 
-    public function removeFeatureAssetInStorage($storageUrl)
+    public function removeFeatureAssetInStorage($storageUrl, $storageDirectory)
     {
         if (Storage::exists($storageUrl)) {
             Storage::delete($storageUrl);
+            Storage::deleteDirectory($storageDirectory);
         }
     }
 

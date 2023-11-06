@@ -10,6 +10,7 @@ use App\Models\Feature as Features;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class SponsorDetails extends Component
 {
@@ -229,20 +230,18 @@ class SponsorDetails extends Component
 
     public function editSponsorAsset()
     {
-        $currentYear = $this->event->year;
-        $fileName = time() . '-' . $this->image->getClientOriginalName();
+        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
 
         if ($this->assetType == "Sponsor logo") {
-
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/sponsors/logo/' . $this->sponsorData['sponsorId'];
             if(!$this->sponsorData['sponsorLogoDefault']){
                 $sponsorAssetUrl = Sponsors::where('id', $this->sponsorData['sponsorId'])->value('logo');
                 if($sponsorAssetUrl){
-                    $this->removeSponsorAssetInStorage($sponsorAssetUrl);
+                    $this->removeSponsorAssetInStorage($sponsorAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/sponsors/logo', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Sponsors::where('id', $this->sponsorData['sponsorId'])->update([
                 'logo' => $path,
             ]);
@@ -250,17 +249,16 @@ class SponsorDetails extends Component
             $this->sponsorData['sponsorLogo'] = Storage::url($path);
             $this->sponsorData['sponsorLogoDefault'] = false;
         } else {
-            
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/sponsors/banner/' . $this->sponsorData['sponsorId'];
             if(!$this->sponsorData['sponsorBannerDefault']){
                 $sponsorAssetUrl = Sponsors::where('id', $this->sponsorData['sponsorId'])->value('banner');
 
                 if($sponsorAssetUrl){
-                    $this->removeSponsorAssetInStorage($sponsorAssetUrl);
+                    $this->removeSponsorAssetInStorage($sponsorAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/sponsors/banner', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Sponsors::where('id', $this->sponsorData['sponsorId'])->update([
                 'banner' => $path,
             ]);
@@ -291,9 +289,10 @@ class SponsorDetails extends Component
     public function removeSponsorAsset(){
         if($this->assetType == "Sponsor logo"){
             $sponsorAssetUrl = Sponsors::where('id', $this->sponsorData['sponsorId'])->value('logo');
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/sponsors/logo/' . $this->sponsorData['sponsorId'];
 
             if($sponsorAssetUrl){
-                $this->removeSponsorAssetInStorage($sponsorAssetUrl);
+                $this->removeSponsorAssetInStorage($sponsorAssetUrl, $pathDirectory);
             }
 
             Sponsors::where('id', $this->sponsorData['sponsorId'])->update([
@@ -303,10 +302,11 @@ class SponsorDetails extends Component
             $this->sponsorData['sponsorLogo'] = asset('assets/images/logo-placeholder.jpg');
             $this->sponsorData['sponsorLogoDefault'] = true;
         } else {
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/sponsors/banner/' . $this->sponsorData['sponsorId'];
             $sponsorAssetUrl = Sponsors::where('id', $this->sponsorData['sponsorId'])->value('banner');
             
             if($sponsorAssetUrl){
-                $this->removeSponsorAssetInStorage($sponsorAssetUrl);
+                $this->removeSponsorAssetInStorage($sponsorAssetUrl, $pathDirectory);
             }
 
             Sponsors::where('id', $this->sponsorData['sponsorId'])->update([
@@ -326,9 +326,10 @@ class SponsorDetails extends Component
         $this->resetEditSponsorAssetFields();
     }
 
-    public function removeSponsorAssetInStorage($storageUrl){
+    public function removeSponsorAssetInStorage($storageUrl, $storageDirectory){
         if(Storage::exists($storageUrl)){
             Storage::delete($storageUrl);
+            Storage::deleteDirectory($storageDirectory);
         }
     }
 

@@ -7,6 +7,7 @@ use App\Models\Icon;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EventController extends Controller
 {
@@ -78,43 +79,43 @@ class EventController extends Controller
         $finalEventStartDate = Carbon::parse($event->event_start_date)->format('d M Y');
         $finalEventEndDate = Carbon::parse($event->event_end_date)->format('d M Y');
 
-        if($event->event_logo){
+        if ($event->event_logo) {
             $eventLogo = Storage::url($event->event_logo);
         } else {
             $eventLogo = "https://via.placeholder.com/150";
         }
 
-        if($event->event_logo_inverted){
+        if ($event->event_logo_inverted) {
             $eventLogoInverted = Storage::url($event->event_logo_inverted);
         } else {
             $eventLogoInverted = "https://via.placeholder.com/150";
         }
-        
-        if($event->app_sponsor_logo){
+
+        if ($event->app_sponsor_logo) {
             $appSponsorLogo = Storage::url($event->app_sponsor_logo);
         } else {
             $appSponsorLogo = "https://via.placeholder.com/150";
         }
-        
-        if($event->event_splash_screen){
+
+        if ($event->event_splash_screen) {
             $eventSplashScreen = Storage::url($event->event_splash_screen);
         } else {
             $eventSplashScreen = "http://via.placeholder.com/360x640";
         }
 
-        
-        if($event->event_banner){
+
+        if ($event->event_banner) {
             $eventBanner = Storage::url($event->event_banner);
         } else {
             $eventBanner = "http://via.placeholder.com/640x360";
         }
 
-        if($event->app_sponsor_banner){
+        if ($event->app_sponsor_banner) {
             $appSponsorBanner = Storage::url($event->app_sponsor_banner);
         } else {
             $appSponsorBanner = "http://via.placeholder.com/640x360";
         }
-        
+
         return view('admin.event.details.details', [
             "pageTitle" => "Event details",
             "eventName" => $event->name,
@@ -187,20 +188,20 @@ class EventController extends Controller
 
         $currentYear = strval(Carbon::parse($request->event_start_date)->year);
 
-        $fileName1 = time() . '-' . $request->file('event_logo')->getClientOriginalName();
-        $fileName2 = time() . '-' . $request->file('event_logo_inverted')->getClientOriginalName();
-        $fileName3 = time() . '-' . $request->file('app_sponsor_logo')->getClientOriginalName();
-        $fileName4 = time() . '-' . $request->file('event_splash_screen')->getClientOriginalName();
-        $fileName5 = time() . '-' . $request->file('event_banner')->getClientOriginalName();
-        $fileName6 = time() . '-' . $request->file('app_sponsor_banner')->getClientOriginalName();
+        $fileName1 = uniqid() . '-' . Str::of($request->file('event_logo')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
+        $fileName2 = uniqid() . '-' . Str::of($request->file('event_logo_inverted')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
+        $fileName3 = uniqid() . '-' . Str::of($request->file('app_sponsor_logo')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
+        $fileName4 = uniqid() . '-' . Str::of($request->file('event_splash_screen')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
+        $fileName5 = uniqid() . '-' . Str::of($request->file('event_banner')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
+        $fileName6 = uniqid() . '-' . Str::of($request->file('app_sponsor_banner')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
 
-        $eventLogoPath = $request->file('event_logo')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/logo', $fileName1);
-        $eventLogoInvertedPath = $request->file('event_logo_inverted')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/logo', $fileName2);
-        $appSponsorLogoPath = $request->file('app_sponsor_logo')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/logo', $fileName3);
+        $eventLogoPath = $request->file('event_logo')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/logo', $fileName1);
+        $eventLogoInvertedPath = $request->file('event_logo_inverted')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/logo', $fileName2);
+        $appSponsorLogoPath = $request->file('app_sponsor_logo')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/logo', $fileName3);
 
-        $eventSplashScreenPath = $request->file('event_splash_screen')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/splash-screen', $fileName4);
-        $eventBannerPath = $request->file('event_banner')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/banner', $fileName5);
-        $appSponsorBannerPath = $request->file('app_sponsor_banner')->storeAs('public/' . $currentYear . '/'. $request->category . '/details/banner', $fileName6);
+        $eventSplashScreenPath = $request->file('event_splash_screen')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/splash-screen', $fileName4);
+        $eventBannerPath = $request->file('event_banner')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/banner', $fileName5);
+        $appSponsorBannerPath = $request->file('app_sponsor_banner')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/banner', $fileName6);
 
         $newEvent = Event::create([
             'category' => $request->category,
@@ -213,12 +214,12 @@ class EventController extends Controller
             'event_start_date' => $request->event_start_date,
             'event_end_date' => $request->event_end_date,
 
-            'event_logo' => $eventLogoInvertedPath,
-            'event_logo_inverted' => $appSponsorLogoPath,
-            'app_sponsor_logo' => $eventBannerPath,
+            'event_logo' => $eventLogoPath,
+            'event_logo_inverted' => $eventLogoInvertedPath,
+            'app_sponsor_logo' => $appSponsorLogoPath,
 
-            'event_splash_screen' => $eventLogoPath,
-            'event_banner' => $eventSplashScreenPath,
+            'event_splash_screen' => $eventSplashScreenPath,
+            'event_banner' => $eventBannerPath,
             'app_sponsor_banner' => $appSponsorBannerPath,
 
             'year' => $currentYear,
@@ -234,51 +235,47 @@ class EventController extends Controller
         return redirect()->route('admin.events.view')->with('success', 'Event added successfully.');;
     }
 
-    public function getListOfEvents()
+
+
+
+
+
+
+
+    // =========================================================
+    //                       API FUNCTIONS
+    // =========================================================
+    public function eventsList()
     {
-        return response()->json(array(
-            [
-                'eventId' => '1',
-                'eventName' => 'Supply Chain Conference',
-                'eventDate' => "17-19 May, 2022",
-                'eventVenue' => 'Place 1',
-                'eventLogo' => 'url1',
-            ],
-            [
-                'eventId' => '2',
-                'eventName' => 'Plastics Conference',
-                'eventDate' => "17-19 May, 2022",
-                'eventVenue' => 'Place 2',
-                'eventLogo' => 'url2',
-            ],
-            [
-                'eventId' => '3',
-                'eventName' => 'Agri-Nutrients Conference',
-                'eventDate' => "17-19 May, 2022",
-                'eventVenue' => 'Place 3',
-                'eventLogo' => 'url3',
-            ],
-            [
-                'eventId' => '4',
-                'eventName' => 'Research & Innovation Conference',
-                'eventDate' => "17-19 May, 2022",
-                'eventVenue' => 'Place 4',
-                'eventLogo' => 'url4',
-            ],
-            [
-                'eventId' => '5',
-                'eventName' => 'Responsible Care',
-                'eventDate' => "17-19 May, 2022",
-                'eventVenue' => 'Place 5',
-                'eventLogo' => 'url5',
-            ],
-            [
-                'eventId' => '6',
-                'eventName' => 'GPCA Annual Forum',
-                'eventDate' => "17-19 May, 2022",
-                'eventVenue' => 'Place 6',
-                'eventLogo' => 'url6',
-            ],
-        ));
+        $events = Event::get();
+
+        $finalData = array();
+        if ($events->isNotEmpty()) {
+            foreach ($events as $event) {
+                array_push($finalData, [
+                    'id' => $event->id,
+                    'name' => $event->name,
+                    'short_name' => $event->short_name,
+                    'location' => $event->location,
+                    'description' => $event->description,
+                    'event_full_link' => $event->event_full_link,
+                    'event_short_link' => $event->event_short_link,
+                    'event_start_date' => $event->event_start_date,
+                    'event_end_date' => $event->event_end_date,
+
+                    'event_logo' => asset(Storage::url($event->event_logo)),
+                    'event_logo_inverted' => asset(Storage::url($event->event_logo_inverted)),
+                    'app_sponsor_logo' => asset(Storage::url($event->app_sponsor_logo)),
+
+                    'event_splash_screen' => asset(Storage::url($event->event_splash_screen)),
+                    'event_banner' => asset(Storage::url($event->event_banner)),
+                    'app_sponsor_banner' => asset(Storage::url($event->app_sponsor_banner)),
+
+                    'year' => $event->year,
+                    'active' => $event->active,
+                ]);
+            }
+        }
+        return response()->json($finalData);
     }
 }

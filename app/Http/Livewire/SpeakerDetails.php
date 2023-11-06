@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class SpeakerDetails extends Component
 {
@@ -246,21 +247,18 @@ class SpeakerDetails extends Component
 
     public function editSpeakerAsset()
     {
-        $currentYear = $this->event->year;
-        $fileName = time() . '-' . $this->image->getClientOriginalName();
+        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
 
         if ($this->assetType == "Speaker PFP") {
-
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/speakers/pfp/' . $this->speakerData['speakerId'];
             if (!$this->speakerData['speakerPFPDefault']) {
                 $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('pfp');
-
                 if ($speakerAssetUrl) {
-                    $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+                    $this->removeSpeakerAssetInStorage($speakerAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/speakers/pfp', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Speakers::where('id', $this->speakerData['speakerId'])->update([
                 'pfp' => $path,
             ]);
@@ -268,17 +266,16 @@ class SpeakerDetails extends Component
             $this->speakerData['speakerPFP'] = Storage::url($path);
             $this->speakerData['speakerPFPDefault'] = false;
         } else {
-
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/speakers/cover-photo/' . $this->speakerData['speakerId'];
             if (!$this->speakerData['speakerCoverPhotoDefault']) {
                 $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
 
                 if ($speakerAssetUrl) {
-                    $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+                    $this->removeSpeakerAssetInStorage($speakerAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/speakers/cover-photo', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Speakers::where('id', $this->speakerData['speakerId'])->update([
                 'cover_photo' => $path,
             ]);
@@ -312,8 +309,10 @@ class SpeakerDetails extends Component
         if ($this->assetType == "Speaker PFP") {
             $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('pfp');
 
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/speakers/pfp/' . $this->speakerData['speakerId'];
+
             if ($speakerAssetUrl) {
-                $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+                $this->removeSpeakerAssetInStorage($speakerAssetUrl, $pathDirectory);
             }
 
             Speakers::where('id', $this->speakerData['speakerId'])->update([
@@ -325,8 +324,10 @@ class SpeakerDetails extends Component
         } else {
             $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
 
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/speakers/cover-photo/' . $this->speakerData['speakerId'];
+
             if ($speakerAssetUrl) {
-                $this->removeSpeakerAssetInStorage($speakerAssetUrl);
+                $this->removeSpeakerAssetInStorage($speakerAssetUrl, $pathDirectory);
             }
 
             Speakers::where('id', $this->speakerData['speakerId'])->update([
@@ -346,10 +347,11 @@ class SpeakerDetails extends Component
         $this->resetEditSpeakerAssetFields();
     }
 
-    public function removeSpeakerAssetInStorage($storageUrl)
+    public function removeSpeakerAssetInStorage($storageUrl, $storageDirectory)
     {
         if (Storage::exists($storageUrl)) {
             Storage::delete($storageUrl);
+            Storage::deleteDirectory($storageDirectory);
         }
     }
 

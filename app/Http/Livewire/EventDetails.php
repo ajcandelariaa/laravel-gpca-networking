@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class EventDetails extends Component
 {
@@ -111,13 +112,13 @@ class EventDetails extends Component
             'year' => $currentYear,
         ]);
 
-        if($this->category == $this->eventData['eventCategory']){
+        if ($this->category == $this->eventData['eventCategory']) {
             $this->dispatchBrowserEvent('swal:success', [
                 'type' => 'success',
                 'message' => 'Event details updated succesfully!',
                 'text' => "",
             ]);
-    
+
             $this->resetEditEventDetailsFields();
         } else {
             return redirect()->route('admin.event.details.view', ['eventCategory' => $this->category, 'eventId' => $this->eventData['eventId']]);
@@ -162,39 +163,69 @@ class EventDetails extends Component
     public function editEventAsset()
     {
         $currentYear = strval(Carbon::parse($this->eventData['eventDetails']['event_start_date'])->year);
-        $fileName = time() . '-' . $this->image->getClientOriginalName();
+        $fileName = uniqid() . '-' . Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
 
         if ($this->assetType == "Event Logo") {
+            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('event_logo');
+            if ($prevAssetUrl) {
+                $this->removeEventAssetInStorage($prevAssetUrl);
+            }
+
             $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_logo' => $path,
             ]);
             $this->eventData['eventAssets']['event_logo'] = Storage::url($path);
         } else if ($this->assetType == 'Event Logo inverted') {
+            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('event_logo_inverted');
+            if ($prevAssetUrl) {
+                $this->removeEventAssetInStorage($prevAssetUrl);
+            }
+
             $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_logo_inverted' => $path,
             ]);
             $this->eventData['eventAssets']['event_logo_inverted'] = Storage::url($path);
         } else if ($this->assetType == 'App Sponsor logo') {
+            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('app_sponsor_logo');
+            if ($prevAssetUrl) {
+                $this->removeEventAssetInStorage($prevAssetUrl);
+            }
+
             $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_logo' => $path,
             ]);
             $this->eventData['eventAssets']['app_sponsor_logo'] = Storage::url($path);
         } else if ($this->assetType == 'Event Banner') {
+            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('event_banner');
+            if ($prevAssetUrl) {
+                $this->removeEventAssetInStorage($prevAssetUrl);
+            }
+
             $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/banner', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_banner' => $path,
             ]);
             $this->eventData['eventAssets']['event_banner'] = Storage::url($path);
         } else if ($this->assetType == 'App Sponsor banner') {
+            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('app_sponsor_banner');
+            if ($prevAssetUrl) {
+                $this->removeEventAssetInStorage($prevAssetUrl);
+            }
+
             $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/banner', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_banner' => $path,
             ]);
             $this->eventData['eventAssets']['app_sponsor_banner'] = Storage::url($path);
         } else {
+            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('event_splash_screen');
+            if ($prevAssetUrl) {
+                $this->removeEventAssetInStorage($prevAssetUrl);
+            }
+
             $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/splash-screen', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_splash_screen' => $path,
@@ -209,5 +240,12 @@ class EventDetails extends Component
         ]);
 
         $this->resetEditEventAssetFields();
+    }
+
+    
+    public function removeEventAssetInStorage($storageUrl){
+        if(Storage::exists($storageUrl)){
+            Storage::delete($storageUrl);
+        }
     }
 }

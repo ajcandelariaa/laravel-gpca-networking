@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/event', [EventController::class, 'getListOfEvents']);
+Route::get('/event', [EventController::class, 'eventsList']);
+
 Route::get('/speaker', [SpeakerController::class, 'getListOfSpeakers']);
 Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
 Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class AttendeeDetails extends Component
 {
@@ -83,7 +84,6 @@ class AttendeeDetails extends Component
         $this->linkedin = $this->attendeeData['attendeeLinkedin'];
         $this->twitter = $this->attendeeData['attendeeTwitter'];
         $this->instagram = $this->attendeeData['attendeeInstagram'];
-
     }
 
     public function cancelEditAttendee()
@@ -120,7 +120,6 @@ class AttendeeDetails extends Component
         $this->linkedin = null;
         $this->twitter = null;
         $this->instagram = null;
-
     }
 
     public function editAttendeeConfirmation()
@@ -338,22 +337,23 @@ class AttendeeDetails extends Component
     public function editPFPAttendee()
     {
         $attendeePrevPFPUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('pfp');
-        
-        if($attendeePrevPFPUrl){
-            if(Storage::exists($attendeePrevPFPUrl)){
-                Storage::delete($attendeePrevPFPUrl);
-            }
+        $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/attendees/pfp/' . $this->attendeeData['attendeeId'];
+
+        if ($attendeePrevPFPUrl) {
+            $this->removeAttendeeAssetInStorage($attendeePrevPFPUrl, $pathDirectory);
         }
 
-        $currentYear = strval(Carbon::parse($this->event->event_start_date)->year);
-        $fileName = time() . '-' . $this->pfp->getClientOriginalName();
-        $path = $this->pfp->storeAs('public/' . $currentYear  . '/'. $this->event->category . '/attendees/pfp/', $fileName);
+        $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/attendees/pfp/' . $this->attendeeData['attendeeId'];
+        $fileName = Str::of($this->pfp->getClientOriginalName())->replace([' ', '-'], '_')->lower();
+
+        $path = $this->pfp->storeAs($tempPath , $fileName);
 
         Attendees::where('id', $this->attendee_id)->update([
             'pfp' => $path,
         ]);
 
         $this->attendeeData['attendeePFP'] = Storage::url($path);
+        $this->attendeeData['attendeePFPDefault'] = false;
 
         $this->resetPFPAttendeeFields();
         $this->dispatchBrowserEvent('swal:success', [
@@ -377,10 +377,9 @@ class AttendeeDetails extends Component
     public function removeAttendeePFP()
     {
         $attendeePFPUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('pfp');
-        
-        if(Storage::exists($attendeePFPUrl)){
-            Storage::delete($attendeePFPUrl);
-        }
+        $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/attendees/pfp/' . $this->attendeeData['attendeeId'];
+
+        $this->removeAttendeeAssetInStorage($attendeePFPUrl, $pathDirectory);
 
         Attendees::where('id', $this->attendeeData['attendeeId'])->update([
             'pfp' => null,
@@ -397,6 +396,14 @@ class AttendeeDetails extends Component
         ]);
 
         $this->resetPFPAttendeeFields();
+    }
+
+
+    public function removeAttendeeAssetInStorage($storageUrl, $storageDirectory){
+        if (Storage::exists($storageUrl)) {
+            Storage::delete($storageUrl);
+            Storage::deleteDirectory($storageDirectory);
+        }
     }
 
 

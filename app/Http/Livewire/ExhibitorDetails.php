@@ -8,6 +8,7 @@ use App\Models\Exhibitor as Exhibitors;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class ExhibitorDetails extends Component
 {
@@ -58,7 +59,6 @@ class ExhibitorDetails extends Component
 
     public function editExhibitorAssetConfirmation()
     {
-        
         $this->validate([
             'image' => 'required|mimes:png,jpg,jpeg'
         ]);
@@ -74,20 +74,18 @@ class ExhibitorDetails extends Component
 
     public function editExhibitorAsset()
     {
-        $currentYear = $this->event->year;
-        $fileName = time() . '-' . $this->image->getClientOriginalName();
+        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
 
         if ($this->assetType == "Exhibitor logo") {
-
-            if(!$this->exhibitorData['exhibitorLogoDefault']){
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/exhibitors/logo/' . $this->exhibitorData['exhibitorId'];
+            if (!$this->exhibitorData['exhibitorLogoDefault']) {
                 $exhibitorAssetUrl = Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->value('logo');
-                if($exhibitorAssetUrl){
-                    $this->removeExhibitorAssetInStorage($exhibitorAssetUrl);
+                if ($exhibitorAssetUrl) {
+                    $this->removeExhibitorAssetInStorage($exhibitorAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/exhibitors/logo', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
                 'logo' => $path,
             ]);
@@ -95,17 +93,15 @@ class ExhibitorDetails extends Component
             $this->exhibitorData['exhibitorLogo'] = Storage::url($path);
             $this->exhibitorData['exhibitorLogoDefault'] = false;
         } else {
-            
-            if(!$this->exhibitorData['exhibitorBannerDefault']){
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/exhibitors/banner/' . $this->exhibitorData['exhibitorId'];
+            if (!$this->exhibitorData['exhibitorBannerDefault']) {
                 $exhibitorAssetUrl = Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->value('banner');
-
-                if($exhibitorAssetUrl){
-                    $this->removeExhibitorAssetInStorage($exhibitorAssetUrl);
+                if ($exhibitorAssetUrl) {
+                    $this->removeExhibitorAssetInStorage($exhibitorAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/exhibitors/banner', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
                 'banner' => $path,
             ]);
@@ -123,7 +119,8 @@ class ExhibitorDetails extends Component
         $this->resetEditExhibitorAssetFields();
     }
 
-    public function removeExhibitorAssetConfirmation(){
+    public function removeExhibitorAssetConfirmation()
+    {
         $this->dispatchBrowserEvent('swal:confirmation', [
             'type' => 'warning',
             'message' => 'Are you sure you want to remove?',
@@ -133,12 +130,14 @@ class ExhibitorDetails extends Component
         ]);
     }
 
-    public function removeExhibitorAsset(){
-        if($this->assetType == "Exhibitor logo"){
+    public function removeExhibitorAsset()
+    {
+        if ($this->assetType == "Exhibitor logo") {
             $exhibitorAssetUrl = Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->value('logo');
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/exhibitors/logo/' . $this->exhibitorData['exhibitorId'];
 
-            if($exhibitorAssetUrl){
-                $this->removeExhibitorAssetInStorage($exhibitorAssetUrl);
+            if ($exhibitorAssetUrl) {
+                $this->removeExhibitorAssetInStorage($exhibitorAssetUrl, $pathDirectory);
             }
 
             Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
@@ -149,9 +148,10 @@ class ExhibitorDetails extends Component
             $this->exhibitorData['exhibitorLogoDefault'] = true;
         } else {
             $exhibitorAssetUrl = Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->value('banner');
-            
-            if($exhibitorAssetUrl){
-                $this->removeExhibitorAssetInStorage($exhibitorAssetUrl);
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/exhibitors/banner/' . $this->exhibitorData['exhibitorId'];
+
+            if ($exhibitorAssetUrl) {
+                $this->removeExhibitorAssetInStorage($exhibitorAssetUrl, $pathDirectory);
             }
 
             Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
@@ -171,9 +171,11 @@ class ExhibitorDetails extends Component
         $this->resetEditExhibitorAssetFields();
     }
 
-    public function removeExhibitorAssetInStorage($storageUrl){
-        if(Storage::exists($storageUrl)){
+    public function removeExhibitorAssetInStorage($storageUrl, $storageDirectory)
+    {
+        if (Storage::exists($storageUrl)) {
             Storage::delete($storageUrl);
+            Storage::deleteDirectory($storageDirectory);
         }
     }
 
@@ -185,7 +187,7 @@ class ExhibitorDetails extends Component
         $this->name = $this->exhibitorData['exhibitorName'];
         $this->profile = $this->exhibitorData['exhibitorProfile'];
         $this->stand_number = $this->exhibitorData['exhibitorStandNumber'];
-        
+
         $this->country = $this->exhibitorData['exhibitorCountry'];
         $this->contact_person_name = $this->exhibitorData['exhibitorContactPersonName'];
         $this->email_address = $this->exhibitorData['exhibitorEmailAddress'];

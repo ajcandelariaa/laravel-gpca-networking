@@ -8,6 +8,7 @@ use App\Models\MediaPartner as MediaPartners;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class MediaPartnerDetails extends Component
 {
@@ -81,20 +82,19 @@ class MediaPartnerDetails extends Component
 
     public function editMediaPartnerAsset()
     {
-        $currentYear = $this->event->year;
-        $fileName = time() . '-' . $this->image->getClientOriginalName();
+        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
 
         if ($this->assetType == "Media partner logo") {
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/media-partners/logo/' . $this->mediaPartnerData['mediaPartnerId'];
 
             if(!$this->mediaPartnerData['mediaPartnerLogoDefault']){
                 $mediaPartnerAssetUrl = MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->value('logo');
                 if($mediaPartnerAssetUrl){
-                    $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl);
+                    $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/media-partners/logo', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
                 'logo' => $path,
             ]);
@@ -102,17 +102,17 @@ class MediaPartnerDetails extends Component
             $this->mediaPartnerData['mediaPartnerLogo'] = Storage::url($path);
             $this->mediaPartnerData['mediaPartnerLogoDefault'] = false;
         } else {
-            
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/media-partners/banner/' . $this->mediaPartnerData['mediaPartnerId'];
+
             if(!$this->mediaPartnerData['mediaPartnerBannerDefault']){
                 $mediaPartnerAssetUrl = MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->value('banner');
 
                 if($mediaPartnerAssetUrl){
-                    $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl);
+                    $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/media-partners/banner', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
                 'banner' => $path,
             ]);
@@ -144,8 +144,10 @@ class MediaPartnerDetails extends Component
         if($this->assetType == "Media partner logo"){
             $mediaPartnerAssetUrl = MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->value('logo');
 
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/media-partners/logo/' . $this->mediaPartnerData['mediaPartnerId'];
+
             if($mediaPartnerAssetUrl){
-                $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl);
+                $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl, $pathDirectory);
             }
 
             MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
@@ -156,9 +158,11 @@ class MediaPartnerDetails extends Component
             $this->mediaPartnerData['mediaPartnerLogoDefault'] = true;
         } else {
             $mediaPartnerAssetUrl = MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->value('banner');
-            
+
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/media-partners/banner/' . $this->mediaPartnerData['mediaPartnerId'];
+
             if($mediaPartnerAssetUrl){
-                $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl);
+                $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl, $pathDirectory);
             }
 
             MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
@@ -178,9 +182,10 @@ class MediaPartnerDetails extends Component
         $this->resetEditMediaPartnerAssetFields();
     }
 
-    public function removeMediaPartnerAssetInStorage($storageUrl){
+    public function removeMediaPartnerAssetInStorage($storageUrl, $storageDirectory){
         if(Storage::exists($storageUrl)){
             Storage::delete($storageUrl);
+            Storage::deleteDirectory($storageDirectory);
         }
     }
 

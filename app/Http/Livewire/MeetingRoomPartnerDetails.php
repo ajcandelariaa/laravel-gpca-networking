@@ -8,6 +8,7 @@ use App\Models\MeetingRoomPartner as MeetingRoomPartners;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Str;
 
 class MeetingRoomPartnerDetails extends Component
 {
@@ -77,20 +78,18 @@ class MeetingRoomPartnerDetails extends Component
 
     public function editMeetingRoomPartnerAsset()
     {
-        $currentYear = $this->event->year;
-        $fileName = time() . '-' . $this->image->getClientOriginalName();
+        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
 
         if ($this->assetType == "Meeting room partner logo") {
-
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/meeting-room-partners/logo/' . $this->meetingRoomPartnerData['meetingRoomPartnerId'];
             if(!$this->meetingRoomPartnerData['meetingRoomPartnerLogoDefault']){
                 $meetingRoomPartnerAssetUrl = MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->value('logo');
                 if($meetingRoomPartnerAssetUrl){
-                    $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl);
+                    $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/meeting-room-partners/logo', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
                 'logo' => $path,
             ]);
@@ -98,17 +97,17 @@ class MeetingRoomPartnerDetails extends Component
             $this->meetingRoomPartnerData['meetingRoomPartnerLogo'] = Storage::url($path);
             $this->meetingRoomPartnerData['meetingRoomPartnerLogoDefault'] = false;
         } else {
-            
+            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/meeting-room-partners/banner/' . $this->meetingRoomPartnerData['meetingRoomPartnerId'];
+
             if(!$this->meetingRoomPartnerData['meetingRoomPartnerBannerDefault']){
                 $meetingRoomPartnerAssetUrl = MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->value('banner');
 
                 if($meetingRoomPartnerAssetUrl){
-                    $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl);
+                    $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl, $tempPath);
                 }
             }
 
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->event->category . '/meeting-room-partners/banner', $fileName);
-
+            $path = $this->image->storeAs($tempPath, $fileName);
             MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
                 'banner' => $path,
             ]);
@@ -140,8 +139,10 @@ class MeetingRoomPartnerDetails extends Component
         if($this->assetType == "Meeting room partner logo"){
             $meetingRoomPartnerAssetUrl = MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->value('logo');
 
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/meeting-room-partners/logo/' . $this->meetingRoomPartnerData['meetingRoomPartnerId'];
+
             if($meetingRoomPartnerAssetUrl){
-                $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl);
+                $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl, $pathDirectory);
             }
 
             MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
@@ -151,10 +152,12 @@ class MeetingRoomPartnerDetails extends Component
             $this->meetingRoomPartnerData['meetingRoomPartnerLogo'] = asset('assets/images/logo-placeholder.jpg');
             $this->meetingRoomPartnerData['meetingRoomPartnerLogoDefault'] = true;
         } else {
+            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/meeting-room-partners/banner/' . $this->meetingRoomPartnerData['meetingRoomPartnerId'];
+
             $meetingRoomPartnerAssetUrl = MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->value('banner');
             
             if($meetingRoomPartnerAssetUrl){
-                $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl);
+                $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl, $pathDirectory);
             }
 
             MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
@@ -174,9 +177,10 @@ class MeetingRoomPartnerDetails extends Component
         $this->resetEditMeetingRoomPartnerAssetFields();
     }
 
-    public function removeMeetingRoomPartnerAssetInStorage($storageUrl){
+    public function removeMeetingRoomPartnerAssetInStorage($storageUrl, $storageDirectory){
         if(Storage::exists($storageUrl)){
             Storage::delete($storageUrl);
+            Storage::deleteDirectory($storageDirectory);
         }
     }
 
