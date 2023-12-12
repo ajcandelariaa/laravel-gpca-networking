@@ -20,15 +20,15 @@ class APICheckEventExists
         $eventId = $request->route('eventId'); 
         $eventCategory = $request->route('eventCategory');
 
-        $event = Event::where('category', $eventCategory)->where('id', $eventId)->first();
+        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
 
-        if (!$event) {
+        if ($event == null) {
             return response()->json([
                 'status' => 404,
                 'message' => "Event not found",
             ], 404);
+        } else{
+            return $next($request);
         }
-
-        return $next($request);
     }
 }

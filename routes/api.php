@@ -23,10 +23,12 @@ Route::get('/event', [EventController::class, 'apiEventsList']);
 Route::group(['middleware' => 'api.check.event.exists'], function () {
     Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
         Route::get('/details', [EventController::class, 'apiEventDetails']);
-        Route::get('/speaker', [SpeakerController::class, 'getListOfSpeakers']);
+        
+        Route::get('/speaker', [SpeakerController::class, 'apiSpeakersList']);
+        Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
+
         Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
         Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
-        Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
     });
 });
 

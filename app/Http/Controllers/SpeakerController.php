@@ -159,4 +159,54 @@ class SpeakerController extends Controller
             ],
         ));
     }
+
+
+
+
+
+    // =========================================================
+    //                       API FUNCTIONS
+    // =========================================================
+    public function apiSpeakersList($eventCategory, $eventId)
+    {
+        $speakers = Speaker::where('event_id', $eventId)->where('active', true)->get();
+
+        if ($speakers->isNotEmpty()) {
+            $data = array();
+
+            foreach($speakers as $speaker){
+                array_push($data, [
+                    'id' => $speaker->id,
+                    'feature_id' => $speaker->feature_id,
+                    'speaker_type_id' => $speaker->speaker_type_id,
+
+                    'salutation' => $speaker->salutation,
+                    'first_name' => $speaker->first_name,
+                    'middle_name' => $speaker->middle_name,
+                    'last_name' => $speaker->last_name,
+
+                    'company_name' => $speaker->company_name,
+                    'job_title' => $speaker->job_title,
+
+                    'biography' => $speaker->biography,
+                    'pfp' => $speaker->pfp,
+                    'cover_photo' => $speaker->cover_photo,
+
+                    'country' => $speaker->country,
+                    'email_address' => $speaker->email_address,
+                    'mobile_number' => $speaker->mobile_number,
+                    'website' => $speaker->website,
+                    'facebook' => $speaker->facebook,
+                    'linkedin' => $speaker->linkedin,
+                    'twitter' => $speaker->twitter,
+                    'instagram' => $speaker->instagram,
+                ]);
+            }
+        } else {
+            return response()->json([
+                'status' => 200,
+                'message' => "There's no speaker yet.",
+            ], 200);
+        }
+    }
 }

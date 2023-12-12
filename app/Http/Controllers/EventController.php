@@ -291,34 +291,32 @@ class EventController extends Controller
     public function apiEventDetails($eventCategory, $eventId)
     {
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
+        
+        return response()->json([
+            'status' => 200,
+            'message' => "Events Details",
+            'data' => [
+                'id' => $event->id,
+                'name' => $event->name,
+                'short_name' => $event->short_name,
+                'location' => $event->location,
+                'description' => $event->description,
+                'event_full_link' => $event->event_full_link,
+                'event_short_link' => $event->event_short_link,
+                'event_start_date' => $event->event_start_date,
+                'event_end_date' => $event->event_end_date,
 
-        if ($event) {
-            return response()->json([
-                'status' => 200,
-                'message' => "Events List",
-                'data' => [
-                    'id' => $event->id,
-                    'name' => $event->name,
-                    'short_name' => $event->short_name,
-                    'location' => $event->location,
-                    'description' => $event->description,
-                    'event_full_link' => $event->event_full_link,
-                    'event_short_link' => $event->event_short_link,
-                    'event_start_date' => $event->event_start_date,
-                    'event_end_date' => $event->event_end_date,
+                'event_logo' => asset(Storage::url($event->event_logo)),
+                'event_logo_inverted' => asset(Storage::url($event->event_logo_inverted)),
+                'app_sponsor_logo' => asset(Storage::url($event->app_sponsor_logo)),
 
-                    'event_logo' => asset(Storage::url($event->event_logo)),
-                    'event_logo_inverted' => asset(Storage::url($event->event_logo_inverted)),
-                    'app_sponsor_logo' => asset(Storage::url($event->app_sponsor_logo)),
+                'event_splash_screen' => asset(Storage::url($event->event_splash_screen)),
+                'event_banner' => asset(Storage::url($event->event_banner)),
+                'app_sponsor_banner' => asset(Storage::url($event->app_sponsor_banner)),
 
-                    'event_splash_screen' => asset(Storage::url($event->event_splash_screen)),
-                    'event_banner' => asset(Storage::url($event->event_banner)),
-                    'app_sponsor_banner' => asset(Storage::url($event->app_sponsor_banner)),
-
-                    'year' => $event->year,
-                    'active' => $event->active,
-                ],
-            ]);
-        }
+                'year' => $event->year,
+                'active' => $event->active,
+            ],
+        ]);
     }
 }
