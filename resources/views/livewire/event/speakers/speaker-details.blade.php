@@ -137,15 +137,6 @@
         </p>
     </div>
 
-    <div class="mt-10">
-        <p class="py-4 bg-gray-100 text-center font-semibold text-primaryColor text-xl">Sessions</p>
-    </div>
-
-    <div class="mt-10">
-
-    </div>
-
-
     @if ($editSpeakerDetailsForm)
         @include('livewire.event.speakers.edit_details')
     @endif

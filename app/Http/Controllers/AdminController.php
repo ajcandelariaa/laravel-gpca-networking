@@ -26,7 +26,7 @@ class AdminController extends Controller
         ]);
         if($request->username == env('ADMIN_USERNAME') && $request->password == env('ADMIN_PASSWORD')){
             $request->session()->put('userType', 'gpcaAdmin');
-            return Redirect::to("/admin/dashboard")->withSuccess('Welcome');
+            return Redirect::to("/admin/event")->withSuccess('Welcome');
         } else {
             return Redirect::to("/admin/login")->withFail('Invalid username & password!');
         }
