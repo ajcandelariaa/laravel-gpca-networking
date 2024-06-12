@@ -2,31 +2,31 @@
 
 namespace App\Http\Livewire;
 
+use App\Enums\MediaEntityTypes;
+use App\Enums\MediaUsageUpdateTypes;
 use Livewire\Component;
 use App\Models\Event as Events;
 use App\Models\Feature as Features;
+use App\Models\Media as Medias;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
 
 class FeatureDetails extends Component
 {
-    use WithFileUploads;
-
     public $event, $featureData;
 
-    public $name, $short_name, $tagline, $location, $short_description, $long_description, $link, $start_date, $end_date, $editFeatureDetailsForm;
+    public $full_name, $short_name, $edition, $location, $description_html_text, $link, $start_date, $end_date, $editFeatureDetailsForm;
 
-    public $assetType, $image, $editFeatureAssetForm;
+    // EDIT ASSETS
+    public $assetType, $editFeatureAssetForm, $image_media_id, $image_placeholder_text;
+    public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    protected $listeners = ['editFeatureDetailsConfirmed' => 'editFeatureDetails', 'editFeatureAssetConfirmed' => 'editFeatureAsset', 'removeFeatureAssetConfirmed' => 'removeFeatureAsset'];
+    protected $listeners = ['editFeatureDetailsConfirmed' => 'editFeatureDetails', 'editFeatureAssetConfirmed' => 'editFeatureAsset'];
 
     public function mount($eventId, $eventCategory, $featureData)
     {
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
         $this->featureData = $featureData;
-
+        $this->mediaFileList = getMediaFileList();
         $this->editFeatureAssetForm = false;
         $this->editFeatureDetailsForm = false;
     }
@@ -36,9 +36,6 @@ class FeatureDetails extends Component
         return view('livewire.event.features.feature-details');
     }
 
-
-
-
     // EDIT FEATURE ASSET
     public function showEditFeatureAsset($assetType)
     {
@@ -46,22 +43,18 @@ class FeatureDetails extends Component
         $this->editFeatureAssetForm = true;
     }
 
-    public function cancelEditFeatureAsset()
-    {
-        $this->resetEditFeatureAssetFields();
-    }
-
     public function resetEditFeatureAssetFields()
     {
         $this->editFeatureAssetForm = false;
         $this->assetType = null;
-        $this->image = null;
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
     }
 
     public function editFeatureAssetConfirmation()
     {
         $this->validate([
-            'image' => 'required|mimes:png,jpg,jpeg'
+            'image_placeholder_text' => 'required'
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -75,61 +68,62 @@ class FeatureDetails extends Component
 
     public function editFeatureAsset()
     {
-        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-
         if ($this->assetType == "Feature Logo") {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/logo/' . $this->featureData['featureId'];
-
-            if (!$this->featureData['featureLogoDefault']) {
-                $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('logo');
-                if ($featureAssetUrl) {
-                    $this->removeFeatureAssetInStorage($featureAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
             Features::where('id', $this->featureData['featureId'])->update([
-                'logo' => $path,
+                'logo_media_id' => $this->image_media_id,
             ]);
 
-            $this->featureData['featureLogo'] = Storage::url($path);
-            $this->featureData['featureLogoDefault'] = false;
-        } else if ($this->assetType == "Feature Banner") {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/banner/' . $this->featureData['featureId'];
-
-            if (!$this->featureData['featureBannerDefault']) {
-                $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('banner');
-
-                if ($featureAssetUrl) {
-                    $this->removeFeatureAssetInStorage($featureAssetUrl, $tempPath);
-                }
+            if ($this->featureData['featureLogo']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::FEATURE_LOGO->value,
+                    $this->featureData['featureId'],
+                    $this->featureData['featureLogo']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::FEATURE_LOGO->value,
+                    $this->featureData['featureId'],
+                    $this->featureData['featureLogo']['media_usage_id']
+                );
             }
 
-            $path = $this->image->storeAs($tempPath, $fileName);
-            Features::where('id', $this->featureData['featureId'])->update([
-                'banner' => $path,
-            ]);
-
-            $this->featureData['featureBanner'] = Storage::url($path);
-            $this->featureData['featureBannerDefault'] = false;
+            $this->featureData['featureLogo'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::FEATURE_LOGO->value, $this->featureData['featureId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         } else {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/image/' . $this->featureData['featureId'];
-
-            if (!$this->featureData['featureImageDefault']) {
-                $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('image');
-
-                if ($featureAssetUrl) {
-                    $this->removeFeatureAssetInStorage($featureAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
             Features::where('id', $this->featureData['featureId'])->update([
-                'image' => $path,
+                'banner_media_id' => $this->image_media_id,
             ]);
 
-            $this->featureData['featureImage'] = Storage::url($path);
-            $this->featureData['featureImageDefault'] = false;
+            if ($this->featureData['featureBanner']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::FEATURE_BANNER->value,
+                    $this->featureData['featureId'],
+                    $this->featureData['featureBanner']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::FEATURE_BANNER->value,
+                    $this->featureData['featureId'],
+                    $this->featureData['featureBanner']['media_usage_id']
+                );
+            }
+            
+            $this->featureData['featureBanner'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::FEATURE_BANNER->value, $this->featureData['featureId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         }
 
         $this->dispatchBrowserEvent('swal:success', [
@@ -141,93 +135,48 @@ class FeatureDetails extends Component
         $this->resetEditFeatureAssetFields();
     }
 
-    public function removeFeatureAssetConfirmation()
+
+    // FOR CHOOSING IMAGE MODAL
+    public function chooseImage()
     {
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure you want to remove?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, remove it!",
-            'livewireEmit' => "removeFeatureAssetConfirmed",
-        ]);
+        $this->chooseImageModal = true;
     }
 
-    public function removeFeatureAsset()
+    public function showMediaFileDetails($arrayIndex)
     {
-        if ($this->assetType == "Feature Logo") {
-            $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('logo');
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/logo/' . $this->featureData['featureId'];
-
-            if ($featureAssetUrl) {
-                $this->removeFeatureAssetInStorage($featureAssetUrl, $pathDirectory);
-            }
-
-            Features::where('id', $this->featureData['featureId'])->update([
-                'logo' => null,
-            ]);
-
-            $this->featureData['featureLogo'] = asset('assets/images/logo-placeholder.jpg');
-            $this->featureData['featureLogoDefault'] = true;
-        } else if ($this->assetType == "Feature Banner") {
-            $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('banner');
-
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/banner/' . $this->featureData['featureId'];
-
-            if ($featureAssetUrl) {
-                $this->removeFeatureAssetInStorage($featureAssetUrl, $pathDirectory);
-            }
-
-            Features::where('id', $this->featureData['featureId'])->update([
-                'banner' => null,
-            ]);
-
-            $this->featureData['featureBanner'] = asset('assets/images/banner-placeholder.jpg');
-            $this->featureData['featureBannerDefault'] = true;
-        } else {
-            $featureAssetUrl = Features::where('id', $this->featureData['featureId'])->value('image');
-
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/features/image/' . $this->featureData['featureId'];
-
-            if ($featureAssetUrl) {
-                $this->removeFeatureAssetInStorage($featureAssetUrl, $pathDirectory);
-            }
-
-            Features::where('id', $this->featureData['featureId'])->update([
-                'image' => null,
-            ]);
-
-            $this->featureData['featureImage'] = asset('assets/images/feature-image-placeholder.jpg');
-            $this->featureData['featureImageDefault'] = true;
-        }
-
-        $this->dispatchBrowserEvent('swal:success', [
-            'type' => 'success',
-            'message' => $this->assetType . ' removed succesfully!',
-            'text' => "",
-        ]);
-
-        $this->resetEditFeatureAssetFields();
+        $this->activeSelectedImage = $this->mediaFileList[$arrayIndex];
     }
 
-    public function removeFeatureAssetInStorage($storageUrl, $storageDirectory)
+    public function unshowMediaFileDetails()
     {
-        if (Storage::exists($storageUrl)) {
-            Storage::delete($storageUrl);
-            Storage::deleteDirectory($storageDirectory);
-        }
+        $this->activeSelectedImage = array();
     }
 
+    public function selectChooseImage()
+    {
+        $this->image_media_id = $this->activeSelectedImage['id'];
+        $this->image_placeholder_text = $this->activeSelectedImage['file_name'];
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
+
+    public function cancelChooseImage()
+    {
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
 
 
     // EDIT FEATURE DETAILS
     public function showEditFeatureDetails()
     {
-        $this->name = $this->featureData['featureName'];
+        $this->full_name = $this->featureData['featureFullName'];
         $this->short_name = $this->featureData['featureShortName'];
-        $this->tagline = $this->featureData['featureTagline'];
+        $this->edition = $this->featureData['featureEdition'];
         $this->location = $this->featureData['featureLocation'];
-        $this->short_description = $this->featureData['featureShortDescription'];
-        $this->long_description = $this->featureData['featureLongDescription'];
+        $this->description_html_text = $this->featureData['featureDescriptionHTMLText'];
         $this->link = $this->featureData['featureLink'];
         $this->start_date = $this->featureData['featureStartDate'];
         $this->end_date = $this->featureData['featureEndDate'];
@@ -242,12 +191,11 @@ class FeatureDetails extends Component
     public function resetEditFeatureDetailsFields()
     {
         $this->editFeatureDetailsForm = false;
-        $this->name = null;
+        $this->full_name = null;
         $this->short_name = null;
-        $this->tagline = null;
+        $this->edition = null;
         $this->location = null;
-        $this->short_description = null;
-        $this->long_description = null;
+        $this->description_html_text = null;
         $this->link = null;
         $this->start_date = null;
         $this->end_date = null;
@@ -256,10 +204,7 @@ class FeatureDetails extends Component
     public function editFeatureDetailsConfirmation()
     {
         $this->validate([
-            'name' => 'required',
-            'short_name' => 'required',
-            'location' => 'required',
-            'link' => 'required',
+            'full_name' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
         ]);
@@ -276,23 +221,21 @@ class FeatureDetails extends Component
     public function editFeatureDetails()
     {
         Features::where('id', $this->featureData['featureId'])->update([
-            'name' => $this->name,
+            'full_name' => $this->full_name,
             'short_name' => $this->short_name,
-            'tagline' => $this->tagline,
+            'edition' => $this->edition,
             'location' => $this->location,
-            'short_description' => $this->short_description,
-            'long_description' => $this->long_description,
+            'description_html_text' => $this->description_html_text,
             'link' => $this->link,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
         ]);
 
-        $this->featureData['featureName'] = $this->name;
+        $this->featureData['featureFullName'] = $this->full_name;
         $this->featureData['featureShortName'] = $this->short_name;
-        $this->featureData['featureTagline'] = $this->tagline;
+        $this->featureData['featureEdition'] = $this->edition;
         $this->featureData['featureLocation'] = $this->location;
-        $this->featureData['featureShortDescription'] = $this->short_description;
-        $this->featureData['featureLongDescription'] = $this->long_description;
+        $this->featureData['featureDescriptionHTMLText'] = $this->description_html_text;
         $this->featureData['featureLink'] = $this->link;
         $this->featureData['featureStartDate'] = $this->start_date;
         $this->featureData['featureEndDate'] = $this->end_date;

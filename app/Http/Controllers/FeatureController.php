@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MediaEntityTypes;
 use App\Models\Event;
 use App\Models\Feature;
+use App\Models\Media as Medias;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class FeatureController extends Controller
 {
     public function eventFeaturesView($eventCategory, $eventId){
-        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
         
         return view('admin.event.features.features', [
             "pageTitle" => "Feature",
@@ -27,57 +27,35 @@ class FeatureController extends Controller
         $feature = Feature::where('id', $featureId)->first();
 
         if ($feature) {
-            if ($feature->logo) {
-                $featureLogo = Storage::url($feature->logo);
-                $featureLogoDefault = false;
-            } else {
-                $featureLogo = asset('assets/images/logo-placeholder.jpg');
-                $featureLogoDefault = true;
-            }
-
-            if ($feature->banner) {
-                $featureBanner = Storage::url($feature->banner);
-                $featureBannerDefault = false;
-            } else {
-                $featureBanner = asset('assets/images/banner-placeholder.jpg');
-                $featureBannerDefault = true;
-            }
-
-            if ($feature->image) {
-                $featureImage = Storage::url($feature->image);
-                $featureImageDefault = false;
-            } else {
-                $featureImage = asset('assets/images/feature-image-placeholder.jpg');
-                $featureImageDefault = true;
-            }
-
             $formattedDate =  Carbon::parse($feature->start_date)->format('d M Y') . ' - ' . Carbon::parse($feature->end_date)->format('d M Y');
-
             $featureData = [
                 "featureId" => $feature->id,
-                "featureName" => $feature->name,
+                "featureFullName" => $feature->full_name,
                 "featureShortName" => $feature->short_name,
-                "featureTagline" => $feature->tagline,
+                "featureEdition" => $feature->edition,
                 "featureLocation" => $feature->location,
-                "featureShortDescription" => $feature->short_description,
-                "featureLongDescription" => $feature->long_description,
+                "featureDescriptionHTMLText" => $feature->description_html_text,
                 "featureLink" => $feature->link,
                 "featureStartDate" => $feature->start_date,
                 "featureEndDate" => $feature->end_date,
                 "featureFormattedDate" => $formattedDate,
-                "featureLogo" => $featureLogo,
-                "featureLogoDefault" => $featureLogoDefault,
-                "featureBanner" => $featureBanner,
-                "featureBannerDefault" => $featureBannerDefault,
-                "featureImage" => $featureImage,
-                "featureImageDefault" => $featureImageDefault,
-                "featureStatus" => $feature->active,
+                "featureLogo" => [
+                    'media_id' => $feature->logo_media_id,
+                    'media_usage_id' => getMediaUsageId($feature->logo_media_id, MediaEntityTypes::FEATURE_LOGO->value, $eventId),
+                    'url' => Medias::where('id', $feature->logo_media_id)->value('file_url'),
+                ],
+                "featureBanner" => [
+                    'media_id' => $feature->banner_media_id,
+                    'media_usage_id' => getMediaUsageId($feature->banner_media_id, MediaEntityTypes::FEATURE_BANNER->value, $eventId),
+                    'url' => Medias::where('id', $feature->banner_media_id)->value('file_url'),
+                ],
+                "featureStatus" => $feature->is_active,
                 "featureDateTimeAdded" => Carbon::parse($feature->datetime_added)->format('M j, Y g:i A'),
             ];
 
             return view('admin.event.features.feature', [
                 "pageTitle" => "Feature",
-                "eventName" => $event->name,
+                "eventName" => $event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "featureData" => $featureData,

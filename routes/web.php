@@ -6,6 +6,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FloorPlanController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\MeetingRoomPartnerController;
 use App\Http\Controllers\SessionController;
@@ -31,7 +32,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/dashboard', [EventController::class, 'mainDashboardView'])->name('admin.main-dashboard.view');
         Route::get('/event', [EventController::class, 'eventsView'])->name('admin.events.view');
         Route::get('/event/add', [EventController::class, 'addEventView'])->name('admin.add.event.view');
-        Route::post('/event/add', [EventController::class, 'addEvent'])->name('admin.add.event.post');
+        Route::get('/media', [MediaController::class, 'mediaView'])->name('admin.media.view');
 
         Route::group(['middleware' => 'check.event.exists'], function () {
             Route::prefix('event/{eventCategory}/{eventId}')->group(function () {

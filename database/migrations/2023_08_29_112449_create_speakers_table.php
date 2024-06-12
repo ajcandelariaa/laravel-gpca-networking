@@ -27,21 +27,22 @@ return new class extends Migration
             $table->string('company_name');
             $table->string('job_title');
 
-            $table->longText('biography')->nullable();
+            $table->mediumText('biography')->nullable();
 
-            $table->string('pfp')->nullable();
-            $table->string('cover_photo')->nullable();
+            $table->unsignedBigInteger('pfp_media_id')->nullable();
+            $table->unsignedBigInteger('cover_photo_media_id')->nullable();
 
             $table->string('country')->nullable();
             $table->string('email_address')->nullable();
             $table->string('mobile_number')->nullable();
+            
             $table->string('website')->nullable();
             $table->string('facebook')->nullable();
             $table->string('linkedin')->nullable();
             $table->string('twitter')->nullable();
             $table->string('instagram')->nullable();
 
-            $table->boolean('active')->default(true);
+            $table->boolean('is_active')->default(true);
 
             $table->dateTime('datetime_added');
 

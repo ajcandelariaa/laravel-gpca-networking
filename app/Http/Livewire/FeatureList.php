@@ -10,19 +10,20 @@ use Livewire\Component;
 class FeatureList extends Component
 {
     public $event;
-
     public $finalListOfFeatures = array(), $finalListOfFeaturesConst = array();
 
-    public $addFeatureForm, $name, $short_name, $location, $link, $start_date, $end_date;
+    public $full_name, $short_name, $location, $link, $start_date, $end_date;
+    public $addFeatureForm;
 
-    public $featureId, $featureDateTime, $featureArrayIndex, $editFeatureDateTimeForm;
+    public $featureId, $featureDateTime, $featureArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editFeatureDateTimeForm;
 
     protected $listeners = ['addFeatureConfirmed' => 'addFeature'];
 
     public function mount($eventId, $eventCategory)
     {
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
-
         $features = Features::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
 
         if ($features->isNotEmpty()) {
@@ -30,16 +31,18 @@ class FeatureList extends Component
                 $formattedDate =  Carbon::parse($feature->start_date)->format('d M Y') . ' - ' . Carbon::parse($feature->end_date)->format('d M Y');
                 array_push($this->finalListOfFeatures, [
                     'id' => $feature->id,
-                    'name' => $feature->name,
-                    'short_name' => $feature->short_name,
-                    'location' => $feature->location,
+                    'full_name' => $feature->full_name,
                     'date' => $formattedDate,
-                    'active' => $feature->active,
+                    'is_active' => $feature->is_active,
                     'datetime_added' => Carbon::parse($feature->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
             $this->finalListOfFeaturesConst = $this->finalListOfFeatures;
         }
+
+        $this->inputNameVariableDateTime = "featureDateTime";
+        $this->btnUpdateNameMethodDateTime = "editFeatureDateTime";
+        $this->btnCancelNameMethodDateTime = "resetAddFeatureFields";
 
         $this->addFeatureForm = false;
     }
@@ -57,10 +60,7 @@ class FeatureList extends Component
     public function addFeatureConfirmation()
     {
         $this->validate([
-            'name' => 'required',
-            'short_name' => 'required',
-            'location' => 'required',
-            'link' => 'required',
+            'full_name' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
         ]);
@@ -74,18 +74,10 @@ class FeatureList extends Component
         ]);
     }
 
-    public function cancelAddFeature()
-    {
-        $this->resetAddFeatureFields();
-    }
-
     public function resetAddFeatureFields()
     {
         $this->addFeatureForm = false;
-        $this->name = null;
-        $this->short_name = null;
-        $this->link = null;
-        $this->location = null;
+        $this->full_name = null;
         $this->start_date = null;
         $this->end_date = null;
     }
@@ -94,10 +86,7 @@ class FeatureList extends Component
     {
         $newFeature = Features::create([
             'event_id' => $this->event->id,
-            'name' => $this->name,
-            'short_name' => $this->short_name,
-            'location' => $this->location,
-            'link' => $this->link,
+            'full_name' => $this->full_name,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'datetime_added' => Carbon::now(),
@@ -107,11 +96,9 @@ class FeatureList extends Component
 
         array_push($this->finalListOfFeatures, [
             'id' => $newFeature->id,
-            'name' => $this->name,
-            'short_name' => $this->short_name,
-            'location' => $this->location,
+            'full_name' => $this->full_name,
             'date' => $formattedDate,
-            'active' => true,
+            'is_active' => true,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);
 
@@ -127,21 +114,16 @@ class FeatureList extends Component
     }
 
 
-    public function updateFeatureStatus($arrayIndex, $featureId, $status)
+    public function updateFeatureStatus($arrayIndex)
     {
-        if ($status) {
-            $newStatus = false;
-        } else {
-            $newStatus = true;
-        }
-
-        Features::where('id', $featureId)->update([
-            'active' => $newStatus,
+        Features::where('id', $this->finalListOfFeatures[$arrayIndex]['id'])->update([
+            'is_active' => !$this->finalListOfFeatures[$arrayIndex]['is_active'],
         ]);
 
-        $this->finalListOfFeatures[$arrayIndex]['active'] = $newStatus;
-        $this->finalListOfFeaturesConst[$arrayIndex]['active'] = $newStatus;
+        $this->finalListOfFeatures[$arrayIndex]['is_active'] = !$this->finalListOfFeatures[$arrayIndex]['is_active'];
+        $this->finalListOfFeaturesConst[$arrayIndex]['is_active'] = !$this->finalListOfFeaturesConst[$arrayIndex]['is_active'];
     }
+
 
     // EDIT DATETIME
     public function showEditFeatureDateTime($featureId, $featureArrayIndex)

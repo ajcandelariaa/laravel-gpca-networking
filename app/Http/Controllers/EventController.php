@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MediaEntityTypes;
 use App\Models\Event;
-use App\Models\Icon;
-use Illuminate\Http\Request;
+use App\Models\Media;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class EventController extends Controller
 {
@@ -24,24 +23,20 @@ class EventController extends Controller
 
     public function eventsView()
     {
-        $events = Event::all();
-
-        $events = Event::orderBy('event_start_date', 'desc')->get();
         $finalEvents = array();
+        $events = Event::orderBy('event_start_date', 'desc')->get();
 
         if ($events->isNotEmpty()) {
             foreach ($events as $event) {
                 $eventFormattedDate =  Carbon::parse($event->event_start_date)->format('d M Y') . ' - ' . Carbon::parse($event->event_end_date)->format('d M Y');
-
+                $eventLogoUrl = Media::where('id', $event->event_logo_media_id)->first()->value('file_url');
                 array_push($finalEvents, [
                     'eventId' => $event->id,
-                    'eventLogo' => $event->event_logo,
-                    'eventName' => $event->name,
-                    'eventShortName' => $event->short_name,
+                    'eventLogo' => $eventLogoUrl,
+                    'eventName' => $event->full_name,
                     'eventCategory' => $event->category,
-                    'eventDate' => $eventFormattedDate,
                     'eventLocation' => $event->location,
-                    'eventDescription' => $event->description,
+                    'eventDate' => $eventFormattedDate,
                 ]);
             }
         }
@@ -56,14 +51,12 @@ class EventController extends Controller
     {
         return view('admin.home.add.add_event', [
             "pageTitle" => "Add event",
-            "eventCategories" => config('app.eventCategories'),
         ]);
     }
 
     public function eventDashboardView($eventCategory, $eventId)
     {
-        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
-
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
         return view('admin.event.dashboard.dashboard', [
             "pageTitle" => "Dashboard",
             "eventName" => $eventName,
@@ -79,57 +72,57 @@ class EventController extends Controller
         $finalEventStartDate = Carbon::parse($event->event_start_date)->format('d M Y');
         $finalEventEndDate = Carbon::parse($event->event_end_date)->format('d M Y');
 
-        if ($event->event_logo) {
-            $eventLogo = Storage::url($event->event_logo);
+        if ($event->event_logo_media_id) {
+            $eventLogo = Media::where('id', $event->event_logo_media_id)->value('file_url');
         } else {
             $eventLogo = "https://via.placeholder.com/150";
         }
 
-        if ($event->event_logo_inverted) {
-            $eventLogoInverted = Storage::url($event->event_logo_inverted);
+        if ($event->event_logo_inverted_media_id) {
+            $eventLogoInverted = Media::where('id', $event->event_logo_inverted_media_id)->value('file_url');
         } else {
             $eventLogoInverted = "https://via.placeholder.com/150";
         }
-
-        if ($event->app_sponsor_logo) {
-            $appSponsorLogo = Storage::url($event->app_sponsor_logo);
+        if ($event->app_sponsor_logo_media_id) {
+            $appSponsorLogo = Media::where('id', $event->app_sponsor_logo_media_id)->value('file_url');
         } else {
             $appSponsorLogo = "https://via.placeholder.com/150";
         }
 
-        if ($event->event_splash_screen) {
-            $eventSplashScreen = Storage::url($event->event_splash_screen);
+        if ($event->event_splash_screen_media_id) {
+            $eventSplashScreen = Media::where('id', $event->event_splash_screen_media_id)->value('file_url');
         } else {
             $eventSplashScreen = "http://via.placeholder.com/360x640";
         }
 
 
-        if ($event->event_banner) {
-            $eventBanner = Storage::url($event->event_banner);
+        if ($event->event_banner_media_id) {
+            $eventBanner = Media::where('id', $event->event_banner_media_id)->value('file_url');
         } else {
             $eventBanner = "http://via.placeholder.com/640x360";
         }
 
-        if ($event->app_sponsor_banner) {
-            $appSponsorBanner = Storage::url($event->app_sponsor_banner);
+        if ($event->app_sponsor_banner_media_id) {
+            $appSponsorBanner = Media::where('id', $event->app_sponsor_banner_media_id)->value('file_url');
         } else {
             $appSponsorBanner = "http://via.placeholder.com/640x360";
         }
 
         return view('admin.event.details.details', [
             "pageTitle" => "Event details",
-            "eventName" => $event->name,
+            "eventName" => $event->full_name,
             "eventCategory" => $eventCategory,
             "eventId" => $eventId,
             "eventData" => [
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "eventDetails" => [
-                    'name' => $event->name,
+                    'full_name' => $event->full_name,
                     'short_name' => $event->short_name,
                     'category' => $event->category,
                     'location' => $event->location,
-                    'description' => $event->description,
+                    'edition' => $event->edition,
+                    'description_html_text' => $event->description_html_text,
 
                     'event_full_link' => $event->event_full_link,
                     'event_short_link' => $event->event_short_link,
@@ -139,102 +132,55 @@ class EventController extends Controller
 
                     'finalEventStartDate' => $finalEventStartDate,
                     'finalEventEndDate' => $finalEventEndDate,
+                    
+                    'is_visible_in_the_app' => $event->is_visible_in_the_app,
+                    'is_accessible_in_the_app' => $event->is_accessible_in_the_app,
 
                     'year' => $event->year,
-                    'active' => $event->active,
+                    'is_active' => $event->is_active,
+                ],
+                "eventColors" => [
+                    'primary_bg_color' => $event->primary_bg_color,
+                    'secondary_bg_color' => $event->secondary_bg_color,
+                    'primary_text_color' => $event->primary_text_color,
+                    'secondary_text_color' => $event->secondary_text_color,
                 ],
                 "eventAssets" => [
-                    'event_logo' => $eventLogo,
-                    'event_logo_inverted' => $eventLogoInverted,
-                    'app_sponsor_logo' => $appSponsorLogo,
+                    'event_logo' => [
+                        'media_id' => $event->event_logo_media_id,
+                        'media_usage_id' => getMediaUsageId($event->event_logo_media_id, MediaEntityTypes::EVENT_LOGO->value, $event->id),
+                        'url' => $eventLogo,
+                    ],
+                    'event_logo_inverted' => [
+                        'media_id' => $event->event_logo_inverted_media_id,
+                        'media_usage_id' => getMediaUsageId($event->event_logo_inverted_media_id, MediaEntityTypes::EVENT_LOGO_INVERTED->value, $event->id),
+                        'url' => $eventLogoInverted,
+                    ],
+                    'app_sponsor_logo' => [
+                        'media_id' => $event->app_sponsor_logo_media_id,
+                        'media_usage_id' => getMediaUsageId($event->app_sponsor_logo_media_id, MediaEntityTypes::EVENT_APP_SPONSOR_LOGO->value, $event->id),
+                        'url' => $appSponsorLogo
+                    ],
 
-                    'event_splash_screen' => $eventSplashScreen,
-                    'event_banner' => $eventBanner,
-                    'app_sponsor_banner' => $appSponsorBanner,
+                    'event_splash_screen' => [
+                        'media_id' => $event->event_splash_screen_media_id,
+                        'media_usage_id' => getMediaUsageId($event->event_splash_screen_media_id, MediaEntityTypes::EVENT_SPLASH_SCREEN->value, $event->id),
+                        'url' => $eventSplashScreen,
+                    ],
+                    'event_banner' => [
+                        'media_id' => $event->event_banner_media_id,
+                        'media_usage_id' => getMediaUsageId($event->event_banner_media_id, MediaEntityTypes::EVENT_BANNER->value, $event->id),
+                        'url' => $eventBanner,
+                    ],
+                    'app_sponsor_banner' => [
+                        'media_id' => $event->app_sponsor_banner_media_id,
+                        'media_usage_id' => getMediaUsageId($event->app_sponsor_banner_media_id, MediaEntityTypes::EVENT_APP_SPONSOR_BANNER->value, $event->id),
+                        'url' => $appSponsorBanner,
+                    ],
                 ],
             ],
         ]);
     }
-
-
-
-
-
-
-    // =========================================================
-    //                       RENDER LOGICS
-    // =========================================================
-
-    public function addEvent(Request $request)
-    {
-        $request->validate([
-            'category' => 'required',
-            'name' => 'required',
-            'short_name' => 'required',
-            'location' => 'required',
-            'description' => 'required',
-            'event_full_link' => 'required',
-            'event_short_link' => 'required',
-            'event_start_date' => 'required|date',
-            'event_end_date' => 'required|date',
-
-            'event_logo' => 'required|mimes:jpeg,png,jpg,gif',
-            'event_logo_inverted' => 'required|mimes:jpeg,png,jpg,gif',
-            'app_sponsor_logo' => 'required|mimes:jpeg,png,jpg,gif',
-            'event_splash_screen' => 'required|mimes:jpeg,png,jpg,gif',
-            'event_banner' => 'required|mimes:jpeg,png,jpg,gif',
-            'app_sponsor_banner' => 'required|mimes:jpeg,png,jpg,gif',
-        ]);
-
-        $currentYear = strval(Carbon::parse($request->event_start_date)->year);
-
-        $fileName1 = uniqid() . '-' . Str::of($request->file('event_logo')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-        $fileName2 = uniqid() . '-' . Str::of($request->file('event_logo_inverted')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-        $fileName3 = uniqid() . '-' . Str::of($request->file('app_sponsor_logo')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-        $fileName4 = uniqid() . '-' . Str::of($request->file('event_splash_screen')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-        $fileName5 = uniqid() . '-' . Str::of($request->file('event_banner')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-        $fileName6 = uniqid() . '-' . Str::of($request->file('app_sponsor_banner')->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-
-        $eventLogoPath = $request->file('event_logo')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/logo', $fileName1);
-        $eventLogoInvertedPath = $request->file('event_logo_inverted')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/logo', $fileName2);
-        $appSponsorLogoPath = $request->file('app_sponsor_logo')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/logo', $fileName3);
-
-        $eventSplashScreenPath = $request->file('event_splash_screen')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/splash-screen', $fileName4);
-        $eventBannerPath = $request->file('event_banner')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/banner', $fileName5);
-        $appSponsorBannerPath = $request->file('app_sponsor_banner')->storeAs('public/' . $currentYear . '/' . $request->category . '/details/banner', $fileName6);
-
-        $newEvent = Event::create([
-            'category' => $request->category,
-            'name' => $request->name,
-            'short_name' => $request->short_name,
-            'location' => $request->location,
-            'description' => $request->description,
-            'event_full_link' => $request->event_full_link,
-            'event_short_link' => $request->event_short_link,
-            'event_start_date' => $request->event_start_date,
-            'event_end_date' => $request->event_end_date,
-
-            'event_logo' => $eventLogoPath,
-            'event_logo_inverted' => $eventLogoInvertedPath,
-            'app_sponsor_logo' => $appSponsorLogoPath,
-
-            'event_splash_screen' => $eventSplashScreenPath,
-            'event_banner' => $eventBannerPath,
-            'app_sponsor_banner' => $appSponsorBannerPath,
-
-            'year' => $currentYear,
-            'active' => true,
-        ]);
-
-
-        // Icon::create([
-        //     'event_id' => $newEvent->id,
-        //     'icon' => 'test',
-        // ]);
-
-        return redirect()->route('admin.events.view')->with('success', 'Event added successfully.');;
-    }
-
 
 
 
@@ -291,7 +237,7 @@ class EventController extends Controller
     public function apiEventDetails($eventCategory, $eventId)
     {
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        
+
         return response()->json([
             'status' => 200,
             'message' => "Events Details",

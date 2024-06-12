@@ -33,7 +33,7 @@ class NewAttendee extends Mailable
      */
     public function envelope()
     {
-        $subject = 'Welcome to ' . $this->details['eventName'] . ' - Your Access Details for GPCA Networking';
+        $subject = $this->details['subject'];
 
         return new Envelope(
             from: new Address('forumregistration@gpca.org.ae', 'GPCA Networking App'),

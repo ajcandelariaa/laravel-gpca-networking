@@ -17,21 +17,37 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('event_id');
 
+            $table->string('badge_number');
+            $table->string('registration_type')->default('Delegate');
+
+            $table->string('pass_type');
+            $table->string('company_name');
+            $table->string('company_country')->nullable();
+            $table->string('company_phone_number')->nullable();
+
             $table->string('username');
             $table->string('password');
-
-            $table->string('company_name');
-            $table->string('job_title');
-            $table->string('country');
 
             $table->string('salutation')->nullable();
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
+            $table->string('job_title');
 
             $table->string('email_address');
-            $table->string('mobile_number');
-            $table->string('landline_number')->nullable();
+            $table->string('mobile_number')->nullable();
+
+            $table->unsignedBigInteger('pfp_media_id')->nullable();
+            $table->longText('biography')->nullable();
+
+            $table->string('gender')->nullable();
+            $table->date('birthdate')->nullable();
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
+            $table->string('address')->nullable();
+            $table->string('nationality')->nullable();
+
+            $table->text('interests')->nullable();
 
             $table->string('website')->nullable();
             $table->string('facebook')->nullable();
@@ -39,14 +55,7 @@ return new class extends Migration
             $table->string('twitter')->nullable();
             $table->string('instagram')->nullable();
 
-            $table->string('pfp')->nullable();
-            $table->longText('biography')->nullable();
-
-            $table->string('badge_number');
-            $table->string('pass_type');
-            $table->string('registration_type')->default('Delegate');
-
-            $table->boolean('active')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->dateTime('joined_date_time');
             
             $table->timestamps();

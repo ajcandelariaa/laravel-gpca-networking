@@ -11,19 +11,22 @@ class Feature extends Model
 
     protected $fillable = [
         'event_id',
-        'name',
+
+        'full_name',
         'short_name',
-        'tagline',
+        'edition',
+
         'location',
-        'short_description',
-        'long_description',
+        'description_html_text',
+
         'link',
         'start_date',
         'end_date',
-        'logo',
-        'banner',
-        'image',
-        'active',
+
+        'logo_media_id',
+        'banner_media_id',
+
+        'is_active',
         'datetime_added',
     ];
 }

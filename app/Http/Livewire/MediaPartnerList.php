@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Event as Events;
+use App\Models\Media;
 use App\Models\MediaPartner as MediaPartners;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -10,12 +11,14 @@ use Livewire\Component;
 class MediaPartnerList extends Component
 {
     public $event;
-
     public $finalListOfMediaPartners = array(), $finalListOfMediaPartnersConst = array();
 
-    public $addMediaPartnerForm, $name, $website;
+    public $name;
+    public $addMediaPartnerForm;
 
-    public $mediaPartnerId, $mediaPartnerDateTime, $mediaPartnerArrayIndex, $editMediaPartnerDateTimeForm;
+    public $mediaPartnerId, $mediaPartnerDateTime, $mediaPartnerArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editMediaPartnerDateTimeForm;
 
     protected $listeners = ['addMediaPartnerConfirmed' => 'addMediaPartner'];
 
@@ -31,13 +34,17 @@ class MediaPartnerList extends Component
                     'id' => $mediaPartner->id,
                     'name' => $mediaPartner->name,
                     'website' => $mediaPartner->website,
-                    'active' => $mediaPartner->active,
-                    'logo' => $mediaPartner->logo,
+                    'is_active' => $mediaPartner->is_active,
+                    'logo' => Media::where('id', $mediaPartner->logo_media_id)->value('file_url'),
                     'datetime_added' => Carbon::parse($mediaPartner->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
             $this->finalListOfMediaPartnersConst = $this->finalListOfMediaPartners;
         }
+
+        $this->inputNameVariableDateTime = "mediaPartnerDateTime";
+        $this->btnUpdateNameMethodDateTime = "editMediaPartnerDateTime";
+        $this->btnCancelNameMethodDateTime = "resetEditMediaPartnerDateTimeFields";
 
         $this->addMediaPartnerForm = false;
         $this->editMediaPartnerDateTimeForm = false;
@@ -57,7 +64,6 @@ class MediaPartnerList extends Component
     {
         $this->validate([
             'name' => 'required',
-            'website' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -69,31 +75,23 @@ class MediaPartnerList extends Component
         ]);
     }
 
-    public function cancelAddMediaPartner()
-    {
-        $this->resetAddMediaPartnerFields();
-    }
-
-
     public function resetAddMediaPartnerFields()
     {
         $this->addMediaPartnerForm = false;
         $this->name = null;
-        $this->website = null;
     }
 
     public function addMediaPartner(){
         $newMediaPartner = MediaPartners::create([
             'event_id' => $this->event->id,
             'name' => $this->name,
-            'website' => $this->website,
             'datetime_added' => Carbon::now(),
         ]);
         
         array_push($this->finalListOfMediaPartners, [
             'id' => $newMediaPartner->id,
             'name' => $this->name,
-            'website' => $this->website,
+            'website' => null,
             'active' => true,
             'logo' => null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
@@ -110,19 +108,15 @@ class MediaPartnerList extends Component
         ]);
     }
 
-    public function updateMediaPartnerStatus($arrayIndex, $mediaPartnerId, $status){
-        if($status){
-            $newStatus = false;
-        } else {
-            $newStatus = true;
-        }
 
-        MediaPartners::where('id', $mediaPartnerId)->update([
-            'active' => $newStatus,
+
+    public function updateMediaPartnerStatus($arrayIndex){
+        MediaPartners::where('id', $this->finalListOfMediaPartners[$arrayIndex]['id'])->update([
+            'is_active' => !$this->finalListOfMediaPartners[$arrayIndex]['is_active'],
         ]);
 
-        $this->finalListOfMediaPartners[$arrayIndex]['active'] = $newStatus;
-        $this->finalListOfMediaPartnersConst[$arrayIndex]['active'] = $newStatus;
+        $this->finalListOfMediaPartners[$arrayIndex]['is_active'] = !$this->finalListOfMediaPartners[$arrayIndex]['is_active'];
+        $this->finalListOfMediaPartnersConst[$arrayIndex]['is_active'] = !$this->finalListOfMediaPartnersConst[$arrayIndex]['is_active'];
     }
 
 
@@ -136,11 +130,6 @@ class MediaPartnerList extends Component
         $this->mediaPartnerDateTime = $mediaPartnerDateTime;
         $this->mediaPartnerArrayIndex = $mediaPartnerArrayIndex;
         $this->editMediaPartnerDateTimeForm = true;
-    }
-
-    public function cancelEditMediaPartnerDateTime()
-    {
-        $this->resetEditMediaPartnerDateTimeFields();
     }
 
     public function resetEditMediaPartnerDateTimeFields()

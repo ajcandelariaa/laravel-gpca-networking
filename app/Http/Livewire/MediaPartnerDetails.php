@@ -2,31 +2,30 @@
 
 namespace App\Http\Livewire;
 
+use App\Enums\MediaEntityTypes;
+use App\Enums\MediaUsageUpdateTypes;
 use Livewire\Component;
 use App\Models\Event as Events;
+use App\Models\Media as Medias;
 use App\Models\MediaPartner as MediaPartners;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
 
 class MediaPartnerDetails extends Component
 {
-    use WithFileUploads;
-
     public $event, $mediaPartnerData;
 
-    public $image, $assetType, $editMediaPartnerAssetForm, $imageDefault;
+    public $assetType, $editMediaPartnerAssetForm, $image_media_id, $image_placeholder_text;
+    public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    public $name, $profile, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $editMediaPartnerDetailsForm;
+    public $name, $profile, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram;
+    public $editMediaPartnerDetailsForm;
 
-    protected $listeners = ['editMediaPartnerDetailsConfirmed' => 'editMediaPartnerDetails', 'editMediaPartnerAssetConfirmed' => 'editMediaPartnerAsset', 'removeMediaPartnerAssetConfirmed' => 'removeMediaPartnerAsset'];
+    protected $listeners = ['editMediaPartnerDetailsConfirmed' => 'editMediaPartnerDetails', 'editMediaPartnerAssetConfirmed' => 'editMediaPartnerAsset'];
 
     public function mount($eventId, $eventCategory, $mediaPartnerData)
     {
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
         $this->mediaPartnerData = $mediaPartnerData;
-
+        $this->mediaFileList = getMediaFileList();
         $this->editMediaPartnerAssetForm = false;
         $this->editMediaPartnerDetailsForm = false;
 
@@ -38,13 +37,6 @@ class MediaPartnerDetails extends Component
     }
 
 
-
-
-
-
-
-
-
     // EDIT MEDIA PARTNER ASSET
     public function showEditMediaPartnerAsset($assetType)
     {
@@ -52,23 +44,19 @@ class MediaPartnerDetails extends Component
         $this->editMediaPartnerAssetForm = true;
     }
 
-    public function cancelEditMediaPartnerAsset()
-    {
-        $this->resetEditMediaPartnerAssetFields();
-    }
-
     public function resetEditMediaPartnerAssetFields()
     {
         $this->editMediaPartnerAssetForm = false;
         $this->assetType = null;
-        $this->image = null;
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
     }
 
     public function editMediaPartnerAssetConfirmation()
     {
         
         $this->validate([
-            'image' => 'required|mimes:png,jpg,jpeg'
+            'image_placeholder_text' => 'required'
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -82,43 +70,63 @@ class MediaPartnerDetails extends Component
 
     public function editMediaPartnerAsset()
     {
-        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-
         if ($this->assetType == "Media partner logo") {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/media-partners/logo/' . $this->mediaPartnerData['mediaPartnerId'];
-
-            if(!$this->mediaPartnerData['mediaPartnerLogoDefault']){
-                $mediaPartnerAssetUrl = MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->value('logo');
-                if($mediaPartnerAssetUrl){
-                    $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
             MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
-                'logo' => $path,
+                'logo_media_id' => $this->image_media_id,
             ]);
 
-            $this->mediaPartnerData['mediaPartnerLogo'] = Storage::url($path);
-            $this->mediaPartnerData['mediaPartnerLogoDefault'] = false;
+            if ($this->mediaPartnerData['logo']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::MEDIA_PARTNER_LOGO->value,
+                    $this->mediaPartnerData['mediaPartnerId'],
+                    $this->mediaPartnerData['logo']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::MEDIA_PARTNER_LOGO->value,
+                    $this->mediaPartnerData['mediaPartnerId'],
+                    $this->mediaPartnerData['logo']['media_usage_id']
+                );
+            }
+
+
+            $this->mediaPartnerData['logo'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::MEDIA_PARTNER_LOGO->value, $this->mediaPartnerData['mediaPartnerId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         } else {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/media-partners/banner/' . $this->mediaPartnerData['mediaPartnerId'];
-
-            if(!$this->mediaPartnerData['mediaPartnerBannerDefault']){
-                $mediaPartnerAssetUrl = MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->value('banner');
-
-                if($mediaPartnerAssetUrl){
-                    $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
             MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
-                'banner' => $path,
+                'banner_media_id' => $this->image_media_id,
             ]);
 
-            $this->mediaPartnerData['mediaPartnerBanner'] = Storage::url($path);
-            $this->mediaPartnerData['mediaPartnerBannerDefault'] = false;
+            if ($this->mediaPartnerData['banner']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::MEDIA_PARTNER_BANNER->value,
+                    $this->mediaPartnerData['mediaPartnerId'],
+                    $this->mediaPartnerData['banner']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::MEDIA_PARTNER_BANNER->value,
+                    $this->mediaPartnerData['mediaPartnerId'],
+                    $this->mediaPartnerData['banner']['media_usage_id']
+                );
+            }
+
+            $this->mediaPartnerData['banner'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::MEDIA_PARTNER_BANNER->value, $this->mediaPartnerData['mediaPartnerId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         }
 
         $this->dispatchBrowserEvent('swal:success', [
@@ -130,83 +138,56 @@ class MediaPartnerDetails extends Component
         $this->resetEditMediaPartnerAssetFields();
     }
 
-    public function removeMediaPartnerAssetConfirmation(){
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure you want to remove?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, remove it!",
-            'livewireEmit' => "removeMediaPartnerAssetConfirmed",
-        ]);
+    // FOR CHOOSING IMAGE MODAL
+    public function chooseImage()
+    {
+        $this->chooseImageModal = true;
     }
 
-    public function removeMediaPartnerAsset(){
-        if($this->assetType == "Media partner logo"){
-            $mediaPartnerAssetUrl = MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->value('logo');
-
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/media-partners/logo/' . $this->mediaPartnerData['mediaPartnerId'];
-
-            if($mediaPartnerAssetUrl){
-                $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl, $pathDirectory);
-            }
-
-            MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
-                'logo' => null,
-            ]);
-
-            $this->mediaPartnerData['mediaPartnerLogo'] = asset('assets/images/logo-placeholder.jpg');
-            $this->mediaPartnerData['mediaPartnerLogoDefault'] = true;
-        } else {
-            $mediaPartnerAssetUrl = MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->value('banner');
-
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/media-partners/banner/' . $this->mediaPartnerData['mediaPartnerId'];
-
-            if($mediaPartnerAssetUrl){
-                $this->removeMediaPartnerAssetInStorage($mediaPartnerAssetUrl, $pathDirectory);
-            }
-
-            MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
-                'banner' => null,
-            ]);
-
-            $this->mediaPartnerData['mediaPartnerBanner'] = asset('assets/images/banner-placeholder.jpg');
-            $this->mediaPartnerData['mediaPartnerBannerDefault'] = true;
-        }
-
-        $this->dispatchBrowserEvent('swal:success', [
-            'type' => 'success',
-            'message' => $this->assetType . ' removed succesfully!',
-            'text' => "",
-        ]);
-
-        $this->resetEditMediaPartnerAssetFields();
+    public function showMediaFileDetails($arrayIndex)
+    {
+        $this->activeSelectedImage = $this->mediaFileList[$arrayIndex];
     }
 
-    public function removeMediaPartnerAssetInStorage($storageUrl, $storageDirectory){
-        if(Storage::exists($storageUrl)){
-            Storage::delete($storageUrl);
-            Storage::deleteDirectory($storageDirectory);
-        }
+    public function unshowMediaFileDetails()
+    {
+        $this->activeSelectedImage = array();
     }
 
+    public function selectChooseImage()
+    {
+        $this->image_media_id = $this->activeSelectedImage['id'];
+        $this->image_placeholder_text = $this->activeSelectedImage['file_name'];
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
+
+    public function cancelChooseImage()
+    {
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
 
 
 
     // EDIT MEDIA PARTNER DETAILS
     public function showEditMediaPartnerDetails()
     {
-        $this->name = $this->mediaPartnerData['mediaPartnerName'];
-        $this->profile = $this->mediaPartnerData['mediaPartnerProfile'];
+        $this->name = $this->mediaPartnerData['name'];
+        $this->profile = $this->mediaPartnerData['profile'];
         
-        $this->country = $this->mediaPartnerData['mediaPartnerCountry'];
-        $this->contact_person_name = $this->mediaPartnerData['mediaPartnerContactPersonName'];
-        $this->email_address = $this->mediaPartnerData['mediaPartnerEmailAddress'];
-        $this->mobile_number = $this->mediaPartnerData['mediaPartnerMobileNumber'];
-        $this->website = $this->mediaPartnerData['mediaPartnerWebsite'];
-        $this->facebook = $this->mediaPartnerData['mediaPartnerFacebook'];
-        $this->linkedin = $this->mediaPartnerData['mediaPartnerLinkedin'];
-        $this->twitter = $this->mediaPartnerData['mediaPartnerTwitter'];
-        $this->instagram = $this->mediaPartnerData['mediaPartnerInstagram'];
+        $this->country = $this->mediaPartnerData['country'];
+        $this->contact_person_name = $this->mediaPartnerData['contact_person_name'];
+        $this->email_address = $this->mediaPartnerData['email_address'];
+        $this->mobile_number = $this->mediaPartnerData['mobile_number'];
+        $this->website = $this->mediaPartnerData['website'];
+        $this->facebook = $this->mediaPartnerData['facebook'];
+        $this->linkedin = $this->mediaPartnerData['linkedin'];
+        $this->twitter = $this->mediaPartnerData['twitter'];
+        $this->instagram = $this->mediaPartnerData['instagram'];
+
         $this->editMediaPartnerDetailsForm = true;
     }
 
@@ -236,7 +217,6 @@ class MediaPartnerDetails extends Component
     {
         $this->validate([
             'name' => 'required',
-            'website' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -265,18 +245,18 @@ class MediaPartnerDetails extends Component
             'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
-        $this->mediaPartnerData['mediaPartnerName'] = $this->name;
-        $this->mediaPartnerData['mediaPartnerProfile'] = $this->profile;
+        $this->mediaPartnerData['name'] = $this->name;
+        $this->mediaPartnerData['profile'] = $this->profile;
         
-        $this->mediaPartnerData['mediaPartnerCountry'] = $this->country;
-        $this->mediaPartnerData['mediaPartnerContactPersonName'] = $this->contact_person_name;
-        $this->mediaPartnerData['mediaPartnerEmailAddress'] = $this->email_address;
-        $this->mediaPartnerData['mediaPartnerMobileNumber'] = $this->mobile_number;
-        $this->mediaPartnerData['mediaPartnerWebsite'] = $this->website;
-        $this->mediaPartnerData['mediaPartnerFacebook'] = $this->facebook;
-        $this->mediaPartnerData['mediaPartnerLinkedin'] = $this->linkedin;
-        $this->mediaPartnerData['mediaPartnerTwitter'] = $this->twitter;
-        $this->mediaPartnerData['mediaPartnerInstagram'] = $this->instagram;
+        $this->mediaPartnerData['country'] = $this->country;
+        $this->mediaPartnerData['contact_person_name'] = $this->contact_person_name;
+        $this->mediaPartnerData['email_address'] = $this->email_address;
+        $this->mediaPartnerData['mobile_number'] = $this->mobile_number;
+        $this->mediaPartnerData['website'] = $this->website;
+        $this->mediaPartnerData['facebook'] = $this->facebook;
+        $this->mediaPartnerData['linkedin'] = $this->linkedin;
+        $this->mediaPartnerData['twitter'] = $this->twitter;
+        $this->mediaPartnerData['instagram'] = $this->instagram;
 
         $this->resetEditMediaPartnerDetailsFields();
 

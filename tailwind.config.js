@@ -23,7 +23,8 @@ module.exports = {
       },
       gridTemplateColumns: {
         attendeeDetailGrid: '320px auto',
-        attendeeDetailGrid2: '200px auto',
+        attendeeDetailGrid2: '230px auto',
+        attendeeDetailGrid3: '140px auto',
       },
     },
   },

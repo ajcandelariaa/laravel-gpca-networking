@@ -9,7 +9,7 @@
     {{-- FEATURE DETAILS --}}
     <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-5">
         <div class="flex items-center justify-between">
-            <h1 class="text-headingTextColor text-3xl font-bold">Feature Details</h1> 
+            <h1 class="text-headingTextColor text-3xl font-bold">Feature Details</h1>
             <div>
                 <button wire:click="showEditFeatureDetails"
                     class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
@@ -20,13 +20,13 @@
         </div>
 
         <div class="flex items-center gap-2 mt-5">
-            <p class="font-bold text-2xl">{{ $featureData['featureName'] }}</p> 
-            <p>({{ $featureData['featureShortName'] }})</p>
+            <p class="font-bold text-2xl">{{ $featureData['featureFullName'] }}</p>
+            <p>({{ $featureData['featureEdition'] ?? 'N/A' }} - {{ $featureData['featureShortName'] ?? 'N/A' }})</p>
         </div>
 
         <div class="flex gap-3 items-center mt-3 text-primaryColor">
             <i class="fa-solid fa-location-dot"></i>
-            <p>{{ $featureData['featureLocation'] }}</p>
+            <p>{{ $featureData['featureLocation'] ?? 'N/A' }}</p>
         </div>
 
         <div class="flex gap-3 items-center mt-2 text-primaryColor">
@@ -37,42 +37,20 @@
 
         <div class="flex gap-3 items-center mt-2 text-primaryColor">
             <i class="fa-solid fa-link"></i>
-            <p>{{ $featureData['featureLink'] }}</p>
+            <p>{{ $featureData['featureLink'] ?? 'N/A' }}</p>
         </div>
 
         <div class="mt-5">
             <hr>
         </div>
 
-        <div class="mt-3">
-            <p class="font-semibold">Tagline:</p>
-            <p class="ml-4">
-                @if ($featureData['featureTagline'] == '' || $featureData['featureTagline'] == null)
-                    N/A
-                @else
-                    {{ $featureData['featureTagline'] }}
-                @endif
-            </p>
-        </div>
-
-        <div class="mt-3">
-            <p class="font-semibold">Short description:</p>
-            <p class="ml-4">
-                @if ($featureData['featureShortDescription'] == '' || $featureData['featureShortDescription'] == null)
-                    N/A
-                @else
-                    {{ $featureData['featureShortDescription'] }}
-                @endif
-            </p>
-        </div>
-
         <div class="mt-5">
-            <p class="font-semibold">Long description:</p>
+            <p class="font-semibold">Description:</p>
             <p class="ml-4">
-                @if ($featureData['featureLongDescription'] == '' || $featureData['featureLongDescription'] == null)
+                @if ($featureData['featureDescriptionHTMLText'] == '' || $featureData['featureDescriptionHTMLText'] == null)
                     N/A
                 @else
-                    {{ $featureData['featureLongDescription'] }}
+                    {{ $featureData['featureDescriptionHTMLText'] }}
                 @endif
             </p>
         </div>
@@ -93,7 +71,11 @@
                         <i class="fa-solid fa-pen-to-square"></i> Edit
                     </button>
                 </div>
-                <img src="{{ $featureData['featureLogo'] }}" class="mt-3 w-60">
+                @if ($featureData['featureLogo']['url'])
+                    <img src="{{ $featureData['featureLogo']['url'] }}" class="mt-3 w-60">
+                @else
+                    <p>N/A</p>
+                @endif
             </div>
             <div class="flex items-center flex-col">
                 <div class="relative -ml-5">
@@ -103,20 +85,19 @@
                         <i class="fa-solid fa-pen-to-square"></i> Edit
                     </button>
                 </div>
-                <img src="{{ $featureData['featureBanner'] }}" class="mt-3 w-96">
-            </div>
-            <div class="flex items-center flex-col">
-                <div class="relative -ml-5">
-                    <p class="text-center">Feature Image</p>
-                    <button wire:click="showEditFeatureAsset('Feature Image')"
-                        class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                        <i class="fa-solid fa-pen-to-square"></i> Edit
-                    </button>
-                </div>
-                <img src="{{ $featureData['featureImage'] }}" class="mt-3 w-60">
+                @if ($featureData['featureBanner']['url'])
+                    <img src="{{ $featureData['featureBanner']['url'] }}" class="mt-3 w-96">
+                @else
+                    <p>N/A</p>
+                @endif
             </div>
         </div>
     </div>
+
+    
+    @if ($chooseImageModal)
+        @include('livewire.common.choose_image_modal')
+    @endif
 
     @if ($editFeatureDetailsForm)
         @include('livewire.event.features.edit_details')
@@ -124,5 +105,5 @@
 
     @if ($editFeatureAssetForm)
         @include('livewire.event.features.edit_asset')
-    @endif 
+    @endif
 </div>

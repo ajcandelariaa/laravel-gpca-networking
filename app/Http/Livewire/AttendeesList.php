@@ -8,26 +8,21 @@ use App\Models\Attendee as Attendees;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class AttendeesList extends Component
 {
-    public $event, $salutations, $countries;
-
-    public $finalListOfAttendees = array(), $finalListOfAttendeesConst = array();
-
-    public $searchTerm;
-    public $addAttendeeForm;
-
+    // FROM API
     public $registrationTypes, $members;
 
+    public $event, $salutations, $countries;
+    public $finalListOfAttendees = array(), $finalListOfAttendeesConst = array();
+    public $searchTerm;
+
     // Attendee details
-    public $registration_type, $username, $email_address, $pass_type, $company_name, $job_title, $salutation, $first_name, $middle_name, $last_name, $mobile_number, $landline_number, $country;
-
-    public $badge_number, $password;
-
+    public $addAttendeeForm;
+    public $pass_type, $company_name, $registration_type, $email_address, $first_name, $last_name, $username, $job_title;
     public $emailExistingError, $usernameExistingError;
 
     protected $listeners = ['addAttendeeConfirmed' => 'addAttendee'];
@@ -45,20 +40,19 @@ class AttendeesList extends Component
             foreach ($attendees as $attendee) {
                 array_push($this->finalListOfAttendees, [
                     'id' => $attendee->id,
+                    'badge_number' => $attendee->badge_number,
                     'name' => $attendee->salutation . ' ' . $attendee->first_name . ' ' . $attendee->middle_name . ' ' . $attendee->last_name,
                     'job_title' => $attendee->job_title,
-                    'company_name' => $attendee->company_name,
                     'email_address' => $attendee->email_address,
-                    'country' => $attendee->country,
+                    'company_name' => $attendee->company_name,
                     'registration_type' => $attendee->registration_type,
-                    'badge_number' => $attendee->badge_number,
                 ]);
             }
             $this->finalListOfAttendeesConst = $this->finalListOfAttendees;
         }
 
-        $this->fetchMembersData();
-        $this->fetchEventRegistrationTypesData($this->event->category, $this->event->year);
+        $this->members = fetchMembersData();
+        $this->registrationTypes = fetchEventRegistrationTypesData($this->event->category, $this->event->year);
     }
     public function render()
     {
@@ -76,7 +70,6 @@ class AttendeesList extends Component
                         str_contains(strtolower($item['job_title']), strtolower($this->searchTerm)) ||
                         str_contains(strtolower($item['company_name']), strtolower($this->searchTerm)) ||
                         str_contains(strtolower($item['email_address']), strtolower($this->searchTerm)) ||
-                        str_contains(strtolower($item['country']), strtolower($this->searchTerm)) ||
                         str_contains(strtolower($item['registration_type']), strtolower($this->searchTerm)) ||
                         str_contains(strtolower($item['badge_number']), strtolower($this->searchTerm));
                 })->all();
@@ -88,52 +81,47 @@ class AttendeesList extends Component
         $this->addAttendeeForm = true;
     }
 
-    public function cancelAddAttendee()
-    {
-        $this->addAttendeeForm = false;
-    }
-
     public function resetAddAttendeeFields()
     {
         $this->addAttendeeForm = false;
-        $this->registration_type = null;
-        $this->username = null;
-        $this->email_address = null;
+
         $this->pass_type = null;
         $this->company_name = null;
-        $this->job_title = null;
-        $this->salutation = null;
+
+        $this->registration_type = null;
+        $this->email_address = null;
+
         $this->first_name = null;
-        $this->middle_name = null;
         $this->last_name = null;
-        $this->mobile_number = null;
-        $this->landline_number = null;
-        $this->country = null;
+
+        $this->username = null;
+        $this->job_title = null;
     }
 
     public function addAttendeeConfirmation()
     {
         $this->validate([
-            'registration_type' => 'required',
-            'username' => 'required',
-            'email_address' => 'required|email',
             'pass_type' => 'required',
             'company_name' => 'required',
+
+            'registration_type' => 'required',
+            'email_address' => 'required|email',
+
+            'username' => 'required',
             'job_title' => 'required',
+
             'first_name' => 'required',
             'last_name' => 'required',
-            'mobile_number' => 'required',
-            'country' => 'required',
         ]);
 
-        if ($this->checkEmailIfExistsInDatabase($this->email_address)) {
+        if (checkAttendeeEmailIfExistsInDatabase(null, $this->event->id, $this->email_address)) {
             $this->emailExistingError = "Email is already registered, please use another email!";
         } else {
             $this->emailExistingError = null;
         }
 
 
-        if ($this->checkUsernameIfExistsInDatabase($this->username)) {
+        if (checkAttendeeUsernameIfExistsInDatabase(null, $this->event->id, $this->username)) {
             $this->usernameExistingError = "Username is already registered, please use another username!";
         } else {
             $this->usernameExistingError = null;
@@ -155,24 +143,20 @@ class AttendeesList extends Component
         $newAttendee = Attendees::create([
             'event_id' => $this->event->id,
 
+            'badge_number' => 'temp',
+            'registration_type' => $this->registration_type,
+            
+            'pass_type' => $this->pass_type,
+            'company_name' => $this->company_name,
+
             'username' => $this->username,
             'password' => 'temp',
 
-            'salutation' => $this->salutation,
             'first_name' => $this->first_name,
-            'middle_name' => $this->middle_name,
             'last_name' => $this->last_name,
-            'email_address' => $this->email_address,
-            'mobile_number' => $this->mobile_number,
-            'landline_number' => $this->landline_number,
 
-            'company_name' => $this->company_name,
             'job_title' => $this->job_title,
-            'country' => $this->country,
-
-            'badge_number' => 'temp',
-            'pass_type' => $this->pass_type,
-            'registration_type' => $this->registration_type,
+            'email_address' => $this->email_address,
 
             'joined_date_time' => Carbon::now(),
         ]);
@@ -206,7 +190,8 @@ class AttendeesList extends Component
         $eventFormattedDate = Carbon::parse($this->event->event_start_date)->format('d') . '-' . Carbon::parse($this->event->event_end_date)->format('d M Y');
         
         $details = [
-            'name' => $this->salutation . ' ' . $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name,
+            'subject' => 'Welcome to ' . $this->event->name . ' - Your Access Details for GPCA Networking',
+            'name' => $this->first_name . ' ' . $this->last_name,
             'eventName' => $this->event->name,
             'eventDate' => $eventFormattedDate,
             'eventLocation' => $this->event->location,
@@ -214,17 +199,16 @@ class AttendeesList extends Component
             'password' => $randomPassword,
         ];
 
-        Mail::to($this->email_address)->cc(config('app.ccEmailNotif.test'))->queue(new NewAttendee($details));
+        //Mail::to($this->email_address)->cc(config('app.ccEmailNotif.test'))->send(new NewAttendee($details));
 
         array_push($this->finalListOfAttendees, [
             'id' => $newAttendee->id,
-            'name' => $this->salutation . ' ' . $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name,
-            'job_title' => $this->job_title,
-            'company_name' => $this->company_name,
-            'email_address' => $this->email_address,
-            'country' => $this->country,
-            'registration_type' => $this->registration_type,
             'badge_number' => $badgeNumber,
+            'name' => $this->first_name . ' ' . $this->last_name,
+            'job_title' => $this->job_title,
+            'email_address' => $this->email_address,
+            'company_name' => $this->company_name,
+            'registration_type' => $this->registration_type,
         ]);
 
         $this->finalListOfAttendeesConst = $this->finalListOfAttendees;
@@ -235,47 +219,5 @@ class AttendeesList extends Component
             'message' => 'Attendee added successfully!',
             'text' => ''
         ]);
-    }
-
-    public function fetchMembersData()
-    {
-        $url = env('API_ENDPOINT') . '/members';
-        $response = Http::get($url)->json();
-
-        if ($response['status'] == '200') {
-            $this->members = $response;
-        }
-    }
-
-    public function fetchEventRegistrationTypesData($eventCategory, $eventYear)
-    {
-        $url = env('API_ENDPOINT') . '/event/' . $eventCategory . '/' . $eventYear;
-        $response = Http::get($url)->json();
-
-        if ($response['status'] == '200') {
-            $this->registrationTypes = $response;
-        }
-    }
-
-    public function checkEmailIfExistsInDatabase($emailAddress)
-    {
-        $attendee = Attendees::where('event_id', $this->event->id)->where('email_address', $emailAddress)->first();
-
-        if ($attendee) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function checkUsernameIfExistsInDatabase($username)
-    {
-        $attendee = Attendees::where('event_id', $this->event->id)->where('username', $username)->first();
-
-        if ($attendee) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

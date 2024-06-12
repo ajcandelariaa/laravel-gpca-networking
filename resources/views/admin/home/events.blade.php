@@ -27,7 +27,7 @@
                         <div
                             class="bg-gray-100 px-4 py-4 rounded-lg hover:scale-110 hover:cursor-pointer hover:shadow-md duration-100">
                             <div class="flex items-center gap-4">
-                                <img src="{{ Storage::url($event['eventLogo']) }}" alt="" class="h-16">
+                                <img src="{{ $event['eventLogo'] }}" alt="" class="h-16">
                                 <p class="font-bold text-3xl">{{ $event['eventName'] }}</p>
                                 <p
                                     class="text-primaryColor rounded-full border border-primaryColor px-4 font-bold text-sm">

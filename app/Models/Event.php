@@ -11,24 +11,36 @@ class Event extends Model
 
     protected $fillable = [
         'category',
-        'name',
+        'full_name',
         'short_name',
+        'edition',
         'location',
-        'description',
+        'description_html_text',
         'event_full_link',
         'event_short_link',
         'event_start_date',
         'event_end_date',
 
-        'event_logo',
-        'event_logo_inverted',
-        'app_sponsor_logo',
+        'event_logo_media_id',
+        'event_logo_inverted_media_id',
+        'app_sponsor_logo_media_id',
         
-        'event_splash_screen',
-        'event_banner',
-        'app_sponsor_banner',
+        'event_splash_screen_media_id',
+        'event_banner_media_id',
+        'app_sponsor_banner_media_id',
+
+        'login_html_text',
+        'continue_as_guest_html_text',
+        'forgot_password_html_text',
+
+        'primary_bg_color',
+        'secondary_bg_color',
+        'primary_text_color',
+        'secondary_text_color',
 
         'year',
-        'active',
+
+        'is_visible_in_the_app',
+        'is_accessible_in_the_app',
     ];
 }

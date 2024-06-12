@@ -18,12 +18,12 @@ class Session extends Model
         'session_type',
 
         'title',
-        'description',
+        'description_html_text',
         'start_time',
         'end_time',
         'location',
 
-        'active',
+        'is_active',
         'datetime_added',
     ];
 }

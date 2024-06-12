@@ -11,10 +11,13 @@ class SponsorType extends Model
 
     protected $fillable = [
         'event_id',
+
         'name',
         'description',
+
         'text_color',
         'background_color',
+        
         'datetime_added',
     ];
 }

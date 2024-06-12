@@ -34,14 +34,15 @@
                     Admin Panel
                 </div>
                 <div class="flex justify-center">
-                    <img src="{{ asset('assets/images/gpca-networking-logo-inverted.png') }}" class="max-h-16" alt="logo">
+                    <img src="{{ asset('assets/images/gpca-networking-logo-inverted.png') }}" class="max-h-16"
+                        alt="logo">
                 </div>
                 <div class="text-white font-semibold flex items-center gap-10 justify-end">
-                    <a href="{{ route('admin.main-dashboard.view') }}"
-                        class="{{ request()->is('admin/dashboard*') ? 'text-dashboardNavItemHoverColor' : 'hover:underline' }}">Dashboard</a>
                     <a href="{{ route('admin.events.view') }}"
                         class="{{ request()->is('admin/event*') ? 'text-dashboardNavItemHoverColor' : 'hover:underline' }}">Manage
                         Events</a>
+                    <a href="{{ route('admin.media.view') }}"
+                        class="{{ request()->is('admin/media*') ? 'text-dashboardNavItemHoverColor' : 'hover:underline' }}">Media</a>
                     <a href="{{ route('admin.logout') }}" class="hover:underline">Logout</a>
                 </div>
             </div>
@@ -54,6 +55,7 @@
 
     @livewireScripts()
     <script src="{{ asset('js/home/master.js') }}"></script>
+    <script src="{{ asset('js/allswal.js') }}"></script>
 </body>
 
 </html>

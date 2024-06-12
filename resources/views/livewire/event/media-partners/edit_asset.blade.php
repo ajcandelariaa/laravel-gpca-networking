@@ -16,11 +16,15 @@
                         <div class="text-primaryColor">
                             Choose file <span class="text-red-500">*</span>
                         </div>
-                        <div>
-                            <input type="file" wire:model.lazy="image"
-                                class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-
-                            @error('image')
+                        <div class="mt-2">
+                            <div class="flex gap-5 items-center">
+                                <input wire:model.lazy="image_placeholder_text" placeholder="test.jpg" type="text"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200"
+                                    disabled>
+                                <button type="button" wire:click.prevent="chooseImage"
+                                    class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-5 rounded items-center text-sm cursor-pointer">Choose</button>
+                            </div>
+                            @error('image_placeholder_text')
                                 <div class="text-red-500 text-xs italic mt-1">
                                     {{ $message }}
                                 </div>
@@ -34,21 +38,7 @@
                             wire:click.prevent="editMediaPartnerAssetConfirmation">Update</button>
                         <button type="button"
                             class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                            wire:click.prevent="cancelEditMediaPartnerAsset">Cancel</button>
-
-                        @if ($assetType == 'Media partner banner')
-                            @if (!$mediaPartnerData['mediaPartnerBannerDefault'])
-                                <button type="button"
-                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                    wire:click.prevent="removeMediaPartnerAssetConfirmation">Remove</button>
-                            @endif
-                        @else
-                            @if (!$mediaPartnerData['mediaPartnerLogoDefault'])
-                                <button type="button"
-                                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                                    wire:click.prevent="removeMediaPartnerAssetConfirmation">Remove</button>
-                            @endif
-                        @endif
+                            wire:click.prevent="resetEditMediaPartnerAssetFields">Cancel</button>
                     </div>
                 </div>
             </div>

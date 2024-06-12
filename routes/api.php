@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendeesController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
 use App\Http\Controllers\MediaPartnerController;
@@ -22,13 +23,19 @@ use Illuminate\Support\Facades\Route;
 Route::get('/event', [EventController::class, 'apiEventsList']);
 Route::group(['middleware' => 'api.check.event.exists'], function () {
     Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
-        Route::get('/details', [EventController::class, 'apiEventDetails']);
-        
-        Route::get('/speaker', [SpeakerController::class, 'apiSpeakersList']);
-        Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
+        Route::post('/login', [AttendeesController::class, 'apiAttendeeLogin']);
 
-        Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
-        Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
+        Route::middleware("auth:sanctum")->group(function() {
+            Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
+
+            Route::get('/details', [EventController::class, 'apiEventDetails']);
+            
+            Route::get('/speaker', [SpeakerController::class, 'apiSpeakersList']);
+            Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
+    
+            Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
+            Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
+        });
     });
 });
 

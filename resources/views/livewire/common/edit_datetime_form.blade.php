@@ -17,10 +17,10 @@
                             Choose date time <span class="text-red-500">*</span>
                         </div>
                         <div>
-                            <input type="datetime-local" wire:model.lazy="mediaPartnerDateTime"
+                            <input type="datetime-local" wire:model.lazy="{{ $inputNameVariableDateTime }}"
                                 class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
 
-                            @error('mediaPartnerDateTime')
+                            @error('{{ $inputNameVariableDateTime }}')
                                 <div class="text-red-500 text-xs italic mt-1">
                                     {{ $message }}
                                 </div>
@@ -31,10 +31,10 @@
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button type="button"
                             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                            wire:click.prevent="editMediaPartnerDateTime">Update</button>
+                            wire:click.prevent="{{ $btnUpdateNameMethodDateTime }}">Update</button>
                         <button type="button"
                             class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                            wire:click.prevent="cancelEditMediaPartnerDateTime">Cancel</button>
+                            wire:click.prevent="{{ $btnCancelNameMethodDateTime }}">Cancel</button>
                     </div>
                 </div>
             </div>

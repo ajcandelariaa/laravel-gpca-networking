@@ -16,13 +16,13 @@
                     <div class="mt-5">
                         <div>
                             <div class="text-primaryColor">
-                                Name <span class="text-red-500">*</span>
+                                Full Name <span class="text-red-500">*</span>
                             </div>
                             <div class="mt-2">
-                                <input placeholder="Name" type="text" wire:model.lazy="name"
+                                <input placeholder="Name" type="text" wire:model.lazy="full_name"
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
 
-                                @error('name')
+                                @error('full_name')
                                     <div class="text-red-500 text-xs italic mt-1">
                                         {{ $message }}
                                     </div>
@@ -41,6 +41,25 @@
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
 
                                 @error('short_name')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="mt-5">
+                        <div>
+                            <div class="text-primaryColor">
+                                Edition <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <input placeholder="14" type="text" wire:model.lazy="edition"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+
+                                @error('edition')
                                     <div class="text-red-500 text-xs italic mt-1">
                                         {{ $message }}
                                     </div>
@@ -126,33 +145,10 @@
                     <div class="mt-5">
                         <div>
                             <div class="text-primaryColor">
-                                Tagline
+                                Description
                             </div>
                             <div class="mt-2">
-                                <input placeholder="Tagline" type="text" wire:model.lazy="tagline"
-                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-5">
-                        <div>
-                            <div class="text-primaryColor">
-                                Short description
-                            </div>
-                            <div class="mt-2">
-                                <textarea wire:model.lazy="short_description" cols="30" rows="10" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $short_description }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-5">
-                        <div>
-                            <div class="text-primaryColor">
-                                Long description
-                            </div>
-                            <div class="mt-2">
-                                <textarea wire:model.lazy="long_description" cols="30" rows="10" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $long_description }}</textarea>
+                                <textarea wire:model.lazy="description_html_text" cols="30" rows="10" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $description_html_text }}</textarea>
                             </div>
                         </div>
                     </div>

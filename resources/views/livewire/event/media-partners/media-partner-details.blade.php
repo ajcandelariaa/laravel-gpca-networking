@@ -10,7 +10,7 @@
     
     <div class="mt-5 relative">
         <div>
-            <img src="{{ $mediaPartnerData['mediaPartnerBanner'] }}" alt="" class="w-full relative">
+            <img src="{{ $mediaPartnerData['banner']['url'] }}" alt="" class="w-full relative">
             <button wire:click="showEditMediaPartnerAsset('Media partner banner')"
                 class="absolute top-2 right-3 cursor-pointer z-20">
                 <i
@@ -19,7 +19,7 @@
         </div>
         <div class="absolute -bottom-32 left-1/2 -translate-x-1/2">
             <div>
-                <img src="{{ $mediaPartnerData['mediaPartnerLogo'] }}"
+                <img src="{{ $mediaPartnerData['logo']['url'] }}"
                     class="w-44 h-44 bg-gray-200 p-0.5 z-10 relative">
                 <button wire:click="showEditMediaPartnerAsset('Media partner logo')"
                     class="absolute -top-5 -right-4 cursor-pointer z-20">
@@ -31,8 +31,8 @@
     </div>
 
     <div class="mt-36 text-center">
-        <p class="font-semibold text-xl">{{ $mediaPartnerData['mediaPartnerName'] }}</p>
-        <p class="font-semibold">{{ $mediaPartnerData['mediaPartnerWebsite'] }}</p>
+        <p class="font-semibold text-xl">{{ $mediaPartnerData['name'] }}</p>
+        <p class="font-semibold">{{ $mediaPartnerData['website'] }}</p>
     </div>
 
     <div class="mt-4">
@@ -44,61 +44,61 @@
         <div class="flex items-start gap-10">
             <div>
                 <p><span class="font-semibold">Facebook:</span>
-                    @if ($mediaPartnerData['mediaPartnerFacebook'] == '' || $mediaPartnerData['mediaPartnerFacebook'] == null)
+                    @if ($mediaPartnerData['facebook'] == '' || $mediaPartnerData['facebook'] == null)
                         N/A
                     @else
-                        {{ $mediaPartnerData['mediaPartnerFacebook'] }}
+                        {{ $mediaPartnerData['facebook'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">LinkedIn:</span>
-                    @if ($mediaPartnerData['mediaPartnerLinkedin'] == '' || $mediaPartnerData['mediaPartnerLinkedin'] == null)
+                    @if ($mediaPartnerData['linkedin'] == '' || $mediaPartnerData['linkedin'] == null)
                         N/A
                     @else
-                        {{ $mediaPartnerData['mediaPartnerLinkedin'] }}
+                        {{ $mediaPartnerData['linkedin'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Twitter:</span>
-                    @if ($mediaPartnerData['mediaPartnerTwitter'] == '' || $mediaPartnerData['mediaPartnerTwitter'] == null)
+                    @if ($mediaPartnerData['twitter'] == '' || $mediaPartnerData['twitter'] == null)
                         N/A
                     @else
-                        {{ $mediaPartnerData['mediaPartnerTwitter'] }}
+                        {{ $mediaPartnerData['twitter'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Instagram:</span>
-                    @if ($mediaPartnerData['mediaPartnerInstagram'] == '' || $mediaPartnerData['mediaPartnerInstagram'] == null)
+                    @if ($mediaPartnerData['instagram'] == '' || $mediaPartnerData['instagram'] == null)
                         N/A
                     @else
-                        {{ $mediaPartnerData['mediaPartnerInstagram'] }}
+                        {{ $mediaPartnerData['instagram'] }}
                     @endif
                 </p>
             </div>
             <div>
                 <p><span class="font-semibold">Country:</span>
-                    @if ($mediaPartnerData['mediaPartnerCountry'] == '' || $mediaPartnerData['mediaPartnerCountry'] == null)
+                    @if ($mediaPartnerData['country'] == '' || $mediaPartnerData['country'] == null)
                         N/A
                     @else
-                        {{ $mediaPartnerData['mediaPartnerCountry'] }}
+                        {{ $mediaPartnerData['country'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Contact Name:</span>
-                    @if ($mediaPartnerData['mediaPartnerContactPersonName'] == '' || $mediaPartnerData['mediaPartnerContactPersonName'] == null)
+                    @if ($mediaPartnerData['contact_person_name'] == '' || $mediaPartnerData['contact_person_name'] == null)
                         N/A
                     @else
-                        {{ $mediaPartnerData['mediaPartnerContactPersonName'] }}
+                        {{ $mediaPartnerData['contact_person_name'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Email address:</span>
-                    @if ($mediaPartnerData['mediaPartnerEmailAddress'] == '' || $mediaPartnerData['mediaPartnerEmailAddress'] == null)
+                    @if ($mediaPartnerData['email_address'] == '' || $mediaPartnerData['email_address'] == null)
                         N/A
                     @else
-                        {{ $mediaPartnerData['mediaPartnerEmailAddress'] }}
+                        {{ $mediaPartnerData['email_address'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Mobile Number:</span>
-                    @if ($mediaPartnerData['mediaPartnerMobileNumber'] == '' || $mediaPartnerData['mediaPartnerMobileNumber'] == null)
+                    @if ($mediaPartnerData['mobile_number'] == '' || $mediaPartnerData['mobile_number'] == null)
                         N/A
                     @else
-                        {{ $mediaPartnerData['mediaPartnerMobileNumber'] }}
+                        {{ $mediaPartnerData['mobile_number'] }}
                     @endif
                 </p>
             </div>
@@ -108,10 +108,10 @@
 
         <p class="font-semibold">Company profile:</p>
         <p>
-            @if ($mediaPartnerData['mediaPartnerProfile'] == null || $mediaPartnerData['mediaPartnerProfile'] == '')
+            @if ($mediaPartnerData['profile'] == null || $mediaPartnerData['profile'] == '')
                 N/A
             @else
-                {{ $mediaPartnerData['mediaPartnerProfile'] }}
+                {{ $mediaPartnerData['profile'] }}
             @endif
         </p>
     </div>
@@ -123,6 +123,11 @@
             <span>Edit Profile</span>
         </button>
     </div>
+
+    
+    @if ($chooseImageModal)
+        @include('livewire.common.choose_image_modal')
+    @endif
     
     @if ($editMediaPartnerDetailsForm)
         @include('livewire.event.media-partners.edit_details')

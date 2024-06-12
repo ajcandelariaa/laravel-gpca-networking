@@ -16,20 +16,24 @@ return new class extends Migration
         Schema::create('features', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('event_id');
-            $table->string('name');
-            $table->string('short_name');
-            $table->string('tagline')->nullable();
-            $table->string('location');
-            $table->longText('short_description')->nullable();
-            $table->longText('long_description')->nullable();
-            $table->string('link');
+
+            $table->string('full_name');
+            $table->string('short_name')->nullable();
+            $table->string('edition')->nullable();
+
+            $table->string('location')->nullable();
+            $table->mediumText('description_html_text')->nullable();
+
+            $table->string('link')->nullable();
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('logo')->nullable();
-            $table->string('banner')->nullable();
-            $table->string('image')->nullable();
-            $table->boolean('active')->default(true);
+
+            $table->unsignedBigInteger('logo_media_id')->nullable();
+            $table->unsignedBigInteger('banner_media_id')->nullable();
+
+            $table->boolean('is_active')->default(true);
             $table->dateTime('datetime_added');
+            
             $table->timestamps();
             $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
         });

@@ -2,29 +2,48 @@
 
 namespace App\Http\Livewire;
 
+use App\Enums\MediaEntityTypes;
+use App\Enums\MediaUsageUpdateTypes;
 use App\Models\Event as Events;
+use App\Models\Media as Medias;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
 
 class EventDetails extends Component
 {
-    use WithFileUploads;
-
     public $eventData, $eventCategories;
 
-    public $name, $short_name, $category, $location, $description, $event_full_link, $event_short_link, $event_start_date, $event_end_date, $editEventDetailsForm;
+    public $full_name, $short_name, $category, $edition, $location, $description_html_text, $event_full_link, $event_short_link, $event_start_date, $event_end_date, $editEventDetailsForm;
 
-    public $assetType, $image, $editEventAssetForm;
+    public $primary_bg_color, $secondary_bg_color, $primary_text_color, $secondary_text_color, $editEventColorsForm;
 
-    protected $listeners = ['editEventDetailsConfirmed' => 'editEventDetails', 'editEventAssetConfirmed' => 'editEventAsset'];
+    // EDIT ASSETS
+    public $assetType, $editEventAssetForm, $image_media_id, $image_placeholder_text;
+    public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
+
+    protected $listeners = ['editEventDetailsConfirmed' => 'editEventDetails', 'editEventColorsConfirmed' => 'editEventColors', 'editEventAssetConfirmed' => 'editEventAsset'];
 
     public function mount($eventData)
     {
         $this->eventCategories = config('app.eventCategories');
         $this->eventData = $eventData;
+
+        $mediaFileListTemp = Medias::orderBy('date_uploaded', 'DESC')->get();
+        if ($mediaFileListTemp->isNotEmpty()) {
+            foreach ($mediaFileListTemp as $mediaFile) {
+                array_push($this->mediaFileList, [
+                    'id' => $mediaFile->id,
+                    'file_url' => $mediaFile->file_url,
+                    'file_directory' => $mediaFile->file_directory,
+                    'file_name' => $mediaFile->file_name,
+                    'file_type' => $mediaFile->file_type,
+                    'file_size' => $mediaFile->file_size,
+                    'width' => $mediaFile->width,
+                    'height' => $mediaFile->height,
+                    'date_uploaded' => $mediaFile->date_uploaded,
+                ]);
+            }
+        }
         $this->editEventAssetForm = false;
         $this->editEventDetailsForm = false;
     }
@@ -34,14 +53,33 @@ class EventDetails extends Component
         return view('livewire.event.details.event-details');
     }
 
+
+    // TOGGLE VISIBILITY AND ACCESSIBILITY
+    public function toggleVisibilityInTheApp(){
+        
+        Events::where('id', $this->eventData['eventId'])->update([
+            'is_visible_in_the_app' => !$this->eventData['eventDetails']['is_visible_in_the_app'],
+        ]);
+        $this->eventData['eventDetails']['is_visible_in_the_app'] = !$this->eventData['eventDetails']['is_visible_in_the_app'];
+    }
+
+    public function toggleAccessibilityInTheApp(){
+        Events::where('id', $this->eventData['eventId'])->update([
+            'is_accessible_in_the_app' => !$this->eventData['eventDetails']['is_accessible_in_the_app'],
+        ]);
+        $this->eventData['eventDetails']['is_accessible_in_the_app'] = !$this->eventData['eventDetails']['is_accessible_in_the_app'];
+    }
+
+
     // EDIT EVENT DETAILS
     public function showEditEventDetails()
     {
-        $this->name = $this->eventData['eventDetails']['name'];
+        $this->full_name = $this->eventData['eventDetails']['full_name'];
         $this->short_name = $this->eventData['eventDetails']['short_name'];
         $this->category = $this->eventData['eventDetails']['category'];
+        $this->edition = $this->eventData['eventDetails']['edition'];
         $this->location = $this->eventData['eventDetails']['location'];
-        $this->description = $this->eventData['eventDetails']['description'];
+        $this->description_html_text = $this->eventData['eventDetails']['description_html_text'];
 
         $this->event_full_link = $this->eventData['eventDetails']['event_full_link'];
         $this->event_short_link = $this->eventData['eventDetails']['event_short_link'];
@@ -59,11 +97,12 @@ class EventDetails extends Component
 
     public function resetEditEventDetailsFields()
     {
-        $this->name = null;
+        $this->full_name = null;
         $this->short_name = null;
         $this->category = null;
+        $this->edition = null;
         $this->location = null;
-        $this->description = null;
+        $this->description_html_text = null;
         $this->event_full_link = null;
         $this->event_short_link = null;
         $this->event_start_date = null;
@@ -75,10 +114,10 @@ class EventDetails extends Component
     {
         $this->validate([
             'category' => 'required',
-            'name' => 'required',
+            'full_name' => 'required',
             'short_name' => 'required',
             'location' => 'required',
-            'description' => 'required',
+            'edition' => 'required',
             'event_full_link' => 'required',
             'event_short_link' => 'required',
             'event_start_date' => 'required|date',
@@ -101,16 +140,33 @@ class EventDetails extends Component
 
         Events::where('id', $this->eventData['eventId'])->update([
             'category' => $this->category,
-            'name' => $this->name,
+            'full_name' => $this->full_name,
             'short_name' => $this->short_name,
             'location' => $this->location,
-            'description' => $this->description,
+            'edition' => $this->edition,
+            'description_html_text' => $this->description_html_text,
             'event_full_link' => $this->event_full_link,
             'event_short_link' => $this->event_short_link,
             'event_start_date' => $this->event_start_date,
             'event_end_date' => $this->event_end_date,
             'year' => $currentYear,
         ]);
+
+        $this->eventData['category'] = $this->category;
+        $this->eventData['eventDetails']['full_name'] = $this->full_name;
+        $this->eventData['eventDetails']['short_name'] = $this->short_name;
+        $this->eventData['eventDetails']['category'] = $this->category;
+        $this->eventData['eventDetails']['location'] = $this->location;
+        $this->eventData['eventDetails']['edition'] = $this->edition;
+        $this->eventData['eventDetails']['description_html_text'] = $this->description_html_text;
+        $this->eventData['eventDetails']['event_full_link'] = $this->event_full_link;
+        $this->eventData['eventDetails']['event_short_link'] = $this->event_short_link;
+        $this->eventData['eventDetails']['event_short_link'] = $this->event_short_link;
+        $this->eventData['eventDetails']['event_start_date'] = $this->event_start_date;
+        $this->eventData['eventDetails']['event_end_date'] = $this->event_end_date;
+        $this->eventData['eventDetails']['finalEventStartDate'] = Carbon::parse($this->event_start_date)->format('d M Y');
+        $this->eventData['eventDetails']['finalEventEndDate'] = Carbon::parse($this->event_end_date)->format('d M Y');
+        $this->eventData['eventDetails']['year'] = $currentYear;
 
         if ($this->category == $this->eventData['eventCategory']) {
             $this->dispatchBrowserEvent('swal:success', [
@@ -125,6 +181,74 @@ class EventDetails extends Component
         }
     }
 
+
+    // EDIT EVENT COLORS
+    public function showEditEventColors()
+    {
+        $this->primary_bg_color = $this->eventData['eventColors']['primary_bg_color'];
+        $this->secondary_bg_color = $this->eventData['eventColors']['secondary_bg_color'];
+
+        $this->primary_text_color = $this->eventData['eventColors']['primary_text_color'];
+        $this->secondary_text_color = $this->eventData['eventColors']['secondary_text_color'];
+
+        $this->editEventColorsForm = true;
+    }
+
+    public function cancelEditEventColors()
+    {
+        $this->resetEditEventColorsFields();
+    }
+
+    public function resetEditEventColorsFields()
+    {
+        $this->primary_bg_color = null;
+        $this->secondary_bg_color = null;
+        $this->primary_text_color = null;
+        $this->secondary_text_color = null;
+        $this->editEventColorsForm = false;
+    }
+
+    public function editEventColorsConfirmation()
+    {
+        $this->validate([
+            'primary_bg_color' => 'required',
+            'secondary_bg_color' => 'required',
+            'primary_text_color' => 'required',
+            'secondary_text_color' => 'required',
+        ]);
+
+
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, update it!",
+            'livewireEmit' => "editEventColorsConfirmed",
+        ]);
+    }
+
+    public function editEventColors()
+    {
+        Events::where('id', $this->eventData['eventId'])->update([
+            'primary_bg_color' => $this->primary_bg_color,
+            'secondary_bg_color' => $this->secondary_bg_color,
+            'primary_text_color' => $this->primary_text_color,
+            'secondary_text_color' => $this->secondary_text_color,
+        ]);
+
+        $this->eventData['eventColors']['primary_bg_color'] = $this->primary_bg_color;
+        $this->eventData['eventColors']['secondary_bg_color'] = $this->secondary_bg_color;
+        $this->eventData['eventColors']['primary_text_color'] = $this->primary_text_color;
+        $this->eventData['eventColors']['secondary_text_color'] = $this->secondary_text_color;
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Event colors updated succesfully!',
+            'text' => "",
+        ]);
+
+        $this->resetEditEventColorsFields();
+    }
 
     // EDIT EVENT ASSET
     public function showEditEventAsset($assetType)
@@ -141,14 +265,15 @@ class EventDetails extends Component
     public function resetEditEventAssetFields()
     {
         $this->assetType = null;
-        $this->image = null;
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
         $this->editEventAssetForm = false;
     }
 
     public function editEventAssetConfirmation()
     {
         $this->validate([
-            'image' => 'required|mimes:png,jpg,jpeg'
+            'image_placeholder_text' => 'required'
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -162,75 +287,138 @@ class EventDetails extends Component
 
     public function editEventAsset()
     {
-        $currentYear = strval(Carbon::parse($this->eventData['eventDetails']['event_start_date'])->year);
-        $fileName = uniqid() . '-' . Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-
         if ($this->assetType == "Event Logo") {
-            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('event_logo');
-            if ($prevAssetUrl) {
-                $this->removeEventAssetInStorage($prevAssetUrl);
-            }
-
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
-                'event_logo' => $path,
+                'event_logo_media_id' => $this->image_media_id,
             ]);
-            $this->eventData['eventAssets']['event_logo'] = Storage::url($path);
+
+            if ($this->eventData['eventAssets']['event_logo']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_LOGO->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['event_logo']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_LOGO->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['event_logo']['media_usage_id']
+                );
+            }
         } else if ($this->assetType == 'Event Logo inverted') {
-            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('event_logo_inverted');
-            if ($prevAssetUrl) {
-                $this->removeEventAssetInStorage($prevAssetUrl);
-            }
-
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
-                'event_logo_inverted' => $path,
+                'event_logo_inverted_media_id' => $this->image_media_id,
             ]);
-            $this->eventData['eventAssets']['event_logo_inverted'] = Storage::url($path);
+
+            if ($this->eventData['eventAssets']['event_logo_inverted']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_LOGO_INVERTED->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['event_logo_inverted']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_LOGO_INVERTED->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['event_logo_inverted']['media_usage_id']
+                );
+            }
         } else if ($this->assetType == 'App Sponsor logo') {
-            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('app_sponsor_logo');
-            if ($prevAssetUrl) {
-                $this->removeEventAssetInStorage($prevAssetUrl);
-            }
-
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/logo', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
-                'app_sponsor_logo' => $path,
+                'app_sponsor_logo_media_id' => $this->image_media_id,
             ]);
-            $this->eventData['eventAssets']['app_sponsor_logo'] = Storage::url($path);
+
+            if ($this->eventData['eventAssets']['app_sponsor_logo']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_APP_SPONSOR_LOGO->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['app_sponsor_logo']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_APP_SPONSOR_LOGO->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['app_sponsor_logo']['media_usage_id']
+                );
+            }
         } else if ($this->assetType == 'Event Banner') {
-            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('event_banner');
-            if ($prevAssetUrl) {
-                $this->removeEventAssetInStorage($prevAssetUrl);
-            }
-
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/banner', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
-                'event_banner' => $path,
+                'event_banner_media_id' => $this->image_media_id,
             ]);
-            $this->eventData['eventAssets']['event_banner'] = Storage::url($path);
+
+            if ($this->eventData['eventAssets']['event_banner']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_BANNER->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['event_banner']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_BANNER->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['event_banner']['media_usage_id']
+                );
+            }
         } else if ($this->assetType == 'App Sponsor banner') {
-            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('app_sponsor_banner');
-            if ($prevAssetUrl) {
-                $this->removeEventAssetInStorage($prevAssetUrl);
-            }
-
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/banner', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
-                'app_sponsor_banner' => $path,
+                'app_sponsor_banner_media_id' => $this->image_media_id,
             ]);
-            $this->eventData['eventAssets']['app_sponsor_banner'] = Storage::url($path);
+
+            if ($this->eventData['eventAssets']['app_sponsor_banner']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_APP_SPONSOR_BANNER->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['app_sponsor_banner']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_APP_SPONSOR_BANNER->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['app_sponsor_banner']['media_usage_id']
+                );
+            }
         } else {
-            $prevAssetUrl = Events::where('id', $this->eventData['eventId'])->value('event_splash_screen');
-            if ($prevAssetUrl) {
-                $this->removeEventAssetInStorage($prevAssetUrl);
-            }
-
-            $path = $this->image->storeAs('public/' . $currentYear . '/' . $this->eventData['eventCategory'] . '/details/splash-screen', $fileName);
             Events::where('id', $this->eventData['eventId'])->update([
-                'event_splash_screen' => $path,
+                'event_splash_screen_media_id' => $this->image_media_id,
             ]);
-            $this->eventData['eventAssets']['event_splash_screen'] = Storage::url($path);
+
+            if ($this->eventData['eventAssets']['event_splash_screen']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_SPLASH_SCREEN->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['event_splash_screen']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EVENT_SPLASH_SCREEN->value,
+                    $this->eventData['eventId'],
+                    $this->eventData['eventAssets']['event_splash_screen']['media_usage_id']
+                );
+            }
         }
 
         $this->dispatchBrowserEvent('swal:success', [
@@ -242,10 +430,36 @@ class EventDetails extends Component
         $this->resetEditEventAssetFields();
     }
 
-    
-    public function removeEventAssetInStorage($storageUrl){
-        if(Storage::exists($storageUrl)){
-            Storage::delete($storageUrl);
-        }
+
+    // FOR CHOOSING IMAGE MODAL
+    public function chooseImage()
+    {
+        $this->chooseImageModal = true;
+    }
+
+    public function showMediaFileDetails($arrayIndex)
+    {
+        $this->activeSelectedImage = $this->mediaFileList[$arrayIndex];
+    }
+
+    public function unshowMediaFileDetails()
+    {
+        $this->activeSelectedImage = array();
+    }
+
+    public function selectChooseImage()
+    {
+        $this->image_media_id = $this->activeSelectedImage['id'];
+        $this->image_placeholder_text = $this->activeSelectedImage['file_name'];
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
+
+    public function cancelChooseImage()
+    {
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
     }
 }

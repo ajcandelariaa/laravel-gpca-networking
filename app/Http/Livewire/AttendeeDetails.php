@@ -2,36 +2,41 @@
 
 namespace App\Http\Livewire;
 
+use App\Enums\MediaEntityTypes;
+use App\Enums\MediaUsageUpdateTypes;
 use App\Mail\AttendeeResetPasswordByAdmin;
 use Livewire\Component;
-use Illuminate\Support\Facades\Http;
 use App\Models\Event as Events;
 use App\Models\Attendee as Attendees;
 use App\Models\AttendeePasswordReset as AttendeePasswordResets;
+use App\Models\Media as Medias;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
 
 class AttendeeDetails extends Component
 {
-    use WithFileUploads;
-
-    public $event, $salutations, $countries, $attendeeData;
+    // FROM API
     public $registrationTypes, $members;
 
-    public $editAttendeeForm, $resetPasswordForm, $editAttendeePFPForm;
+    public $event, $salutations, $countries, $attendeeData;
 
-    // Attendee details
-    public $attendee_id, $registration_type, $username, $email_address, $pass_type, $company_name, $job_title, $salutation, $first_name, $middle_name, $last_name, $mobile_number, $landline_number, $country, $pfp, $biography, $password, $website, $facebook, $twitter, $linkedin, $instagram;
-
-    public $newPassword, $confirmPassword, $passwordError;
-
+    // EDIT ATTENDEE DETAILS
+    public $attendee_id, $registration_type, $pass_type, $company_name, $company_country, $company_phone_number, $username, $salutation, $first_name, $middle_name, $last_name, $job_title, $email_address, $mobile_number, $biography, $gender, $birthdate, $country, $city, $address, $nationality, $website, $facebook, $twitter, $linkedin, $instagram;
     public $emailExistingError, $usernameExistingError;
+    public $editAttendeeForm;
 
-    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeePFPConfirmed' => 'editPFPAttendee', 'removeAttendeePFPConfirmed' => 'removeAttendeePFP'];
+
+    // EDIT ATTENDEE PASSWORD
+    public $newPassword, $confirmPassword, $passwordError;
+    public $resetPasswordForm;
+
+    // EDIT ATTENDEE PFP
+    public $image_media_id, $image_placeholder_text;
+    public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
+    public $editAttendeePFPForm;
+
+    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeePFPConfirmed' => 'editPFPAttendee'];
 
     public function mount($eventId, $eventCategory, $attendeeData)
     {
@@ -39,14 +44,14 @@ class AttendeeDetails extends Component
         $this->salutations = config('app.salutations');
 
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
+        $this->mediaFileList = getMediaFileList();
         $this->attendeeData = $attendeeData;
         $this->editAttendeeForm = false;
         $this->resetPasswordForm = false;
         $this->editAttendeePFPForm = false;
 
-        // dd($this->attendeeData);
-        $this->fetchMembersData();
-        $this->fetchEventRegistrationTypesData($this->event->category, $this->event->year);
+        $this->members = fetchMembersData();
+        $this->registrationTypes = fetchEventRegistrationTypesData($this->event->category, $this->event->year);
     }
 
     public function render()
@@ -54,36 +59,45 @@ class AttendeeDetails extends Component
         return view('livewire.event.attendees.attendee-details');
     }
 
-    // EDIT ATTENDE 
+    // EDIT ATTENDEE
     public function showEditAttendee()
     {
-        $this->editAttendeeForm = true;
         $this->attendee_id = $this->attendeeData['attendeeId'];
 
-        $this->salutation = $this->attendeeData['attendeeSalutation'];
-        $this->first_name = $this->attendeeData['attendeeFirstName'];
-        $this->middle_name = $this->attendeeData['attendeeMiddleName'];
-        $this->last_name = $this->attendeeData['attendeeLastName'];
+        $this->registration_type = $this->attendeeData['registration_type'];
 
-        $this->job_title = $this->attendeeData['attendeeJobTitle'];
-        $this->company_name = $this->attendeeData['attendeeCompany'];
-        $this->username = $this->attendeeData['attendeeUsername'];
-        $this->email_address = $this->attendeeData['attendeeEmail'];
+        $this->pass_type = $this->attendeeData['pass_type'];
+        $this->company_name = $this->attendeeData['company_name'];
+        $this->company_country = $this->attendeeData['company_country'];
+        $this->company_phone_number = $this->attendeeData['company_phone_number'];
 
-        $this->mobile_number = $this->attendeeData['attendeeMobileNumber'];
-        $this->landline_number = $this->attendeeData['attendeeLandlineNumber'];
+        $this->username = $this->attendeeData['username'];
 
-        $this->country = $this->attendeeData['attendeeCountry'];
-        $this->pass_type = $this->attendeeData['attendeePassType'];
-        $this->registration_type = $this->attendeeData['attendeeRegistrationType'];
+        $this->salutation = $this->attendeeData['salutation'];
+        $this->first_name = $this->attendeeData['first_name'];
+        $this->middle_name = $this->attendeeData['middle_name'];
+        $this->last_name = $this->attendeeData['last_name'];
+        $this->job_title = $this->attendeeData['job_title'];
 
-        $this->biography = $this->attendeeData['attendeeBiography'];
+        $this->email_address = $this->attendeeData['email_address'];
+        $this->mobile_number = $this->attendeeData['mobile_number'];
 
-        $this->website = $this->attendeeData['attendeeWebsite'];
-        $this->facebook = $this->attendeeData['attendeeFacebook'];
-        $this->linkedin = $this->attendeeData['attendeeLinkedin'];
-        $this->twitter = $this->attendeeData['attendeeTwitter'];
-        $this->instagram = $this->attendeeData['attendeeInstagram'];
+        $this->biography = $this->attendeeData['biography'];
+
+        $this->gender = $this->attendeeData['gender'];
+        $this->birthdate = $this->attendeeData['birthdate'];
+        $this->country = $this->attendeeData['country'];
+        $this->city = $this->attendeeData['city'];
+        $this->address = $this->attendeeData['address'];
+        $this->nationality = $this->attendeeData['nationality'];
+
+        $this->website = $this->attendeeData['website'];
+        $this->facebook = $this->attendeeData['facebook'];
+        $this->linkedin = $this->attendeeData['linkedin'];
+        $this->twitter = $this->attendeeData['twitter'];
+        $this->instagram = $this->attendeeData['instagram'];
+        
+        $this->editAttendeeForm = true;
     }
 
     public function cancelEditAttendee()
@@ -94,26 +108,35 @@ class AttendeeDetails extends Component
     public function resetEditAttendeeFields()
     {
         $this->editAttendeeForm = false;
+
         $this->attendee_id = null;
+
+        $this->registration_type = null;
+
+        $this->pass_type = null;
+        $this->company_name = null;
+        $this->company_country = null;
+        $this->company_phone_number = null;
+
+        $this->username = null;
 
         $this->salutation = null;
         $this->first_name = null;
         $this->middle_name = null;
         $this->last_name = null;
-
         $this->job_title = null;
-        $this->company_name = null;
-        $this->username = null;
+
         $this->email_address = null;
-
         $this->mobile_number = null;
-        $this->landline_number = null;
-
-        $this->country = null;
-        $this->pass_type = null;
-        $this->registration_type = null;
 
         $this->biography = null;
+
+        $this->gender = null;
+        $this->birthdate = null;
+        $this->country = null;
+        $this->city = null;
+        $this->address = null;
+        $this->nationality = null;
 
         $this->website = null;
         $this->facebook = null;
@@ -125,26 +148,27 @@ class AttendeeDetails extends Component
     public function editAttendeeConfirmation()
     {
         $this->validate([
-            'registration_type' => 'required',
-            'username' => 'required',
-            'email_address' => 'required|email',
             'pass_type' => 'required',
             'company_name' => 'required',
+
+            'registration_type' => 'required',
+            'email_address' => 'required|email',
+
+            'username' => 'required',
             'job_title' => 'required',
+
             'first_name' => 'required',
             'last_name' => 'required',
-            'mobile_number' => 'required',
-            'country' => 'required',
         ]);
 
-        if ($this->checkEmailIfExistsInDatabase($this->email_address)) {
+        if (checkAttendeeEmailIfExistsInDatabase($this->attendee_id, $this->event->id, $this->email_address)) {
             $this->emailExistingError = "Email is already registered, please use another email!";
         } else {
             $this->emailExistingError = null;
         }
 
 
-        if ($this->checkUsernameIfExistsInDatabase($this->username)) {
+        if (checkAttendeeUsernameIfExistsInDatabase($this->attendee_id, $this->event->id, $this->username)) {
             $this->usernameExistingError = "Username is already registered, please use another username!";
         } else {
             $this->usernameExistingError = null;
@@ -164,24 +188,32 @@ class AttendeeDetails extends Component
     public function editAttendee()
     {
         Attendees::where('id', $this->attendee_id)->update([
+            'registration_type' => $this->registration_type,
+
+            'pass_type' => $this->pass_type,
+            'company_name' => $this->company_name,
+            'company_country' => $this->company_country == "" ? null : $this->company_country,
+            'company_phone_number' => $this->company_phone_number == "" ? null : $this->company_phone_number,
+
             'username' => $this->username,
 
-            'salutation' => $this->salutation,
+            'salutation' => $this->salutation == "" ? null : $this->salutation,
             'first_name' => $this->first_name,
-            'middle_name' => $this->middle_name,
+            'middle_name' => $this->middle_name == "" ? null : $this->middle_name,
             'last_name' => $this->last_name,
+            'job_title' => $this->job_title,
 
             'email_address' => $this->email_address,
-            'mobile_number' => $this->mobile_number,
-            'landline_number' => $this->landline_number == "" ? null : $this->landline_number,
-
-            'company_name' => $this->company_name,
-            'job_title' => $this->job_title,
-            'country' => $this->country,
+            'mobile_number' => $this->mobile_number == "" ? null : $this->mobile_number,
 
             'biography' => $this->biography == "" ? null : $this->biography,
-            'pass_type' => $this->pass_type,
-            'registration_type' => $this->registration_type,
+
+            'gender' => $this->gender == "" ? null : $this->gender,
+            'birthdate' => $this->birthdate == "" ? null : $this->birthdate,
+            'country' => $this->country == "" ? null : $this->country,
+            'city' => $this->city == "" ? null : $this->city,
+            'address' => $this->address == "" ? null : $this->address,
+            'nationality' => $this->nationality == "" ? null : $this->nationality,
 
             'website' => $this->website == "" ? null : $this->website,
             'facebook' => $this->facebook == "" ? null : $this->facebook,
@@ -190,31 +222,38 @@ class AttendeeDetails extends Component
             'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
+        $this->attendeeData['registration_type'] = $this->registration_type;
 
-        $this->attendeeData['attendeeSalutation'] = $this->salutation;
-        $this->attendeeData['attendeeFirstName'] = $this->first_name;
-        $this->attendeeData['attendeeMiddleName'] = $this->middle_name;
-        $this->attendeeData['attendeeLastName'] = $this->last_name;
+        $this->attendeeData['pass_type'] = $this->pass_type;
+        $this->attendeeData['company_name'] = $this->company_name;
+        $this->attendeeData['company_country'] = $this->company_country;
+        $this->attendeeData['company_phone_number'] = $this->company_phone_number;
 
-        $this->attendeeData['attendeeJobTitle'] = $this->job_title;
-        $this->attendeeData['attendeeCompany'] = $this->company_name;
-        $this->attendeeData['attendeeUsername'] = $this->username;
-        $this->attendeeData['attendeeEmail'] = $this->email_address;
+        $this->attendeeData['username'] = $this->username;
 
-        $this->attendeeData['attendeeMobileNumber'] = $this->mobile_number;
-        $this->attendeeData['attendeeLandlineNumber'] = $this->landline_number;
+        $this->attendeeData['salutation'] = $this->salutation;
+        $this->attendeeData['first_name'] = $this->first_name;
+        $this->attendeeData['middle_name'] = $this->middle_name;
+        $this->attendeeData['last_name'] = $this->last_name;
+        $this->attendeeData['job_title'] = $this->job_title;
 
-        $this->attendeeData['attendeeCountry'] = $this->country;
-        $this->attendeeData['attendeePassType'] = $this->pass_type;
-        $this->attendeeData['attendeeRegistrationType'] = $this->registration_type;
+        $this->attendeeData['email_address'] = $this->email_address;
+        $this->attendeeData['mobile_number'] = $this->mobile_number;
 
-        $this->attendeeData['attendeeBiography'] = $this->biography;
+        $this->attendeeData['biography'] = $this->biography;
 
-        $this->attendeeData['attendeeWebsite'] = $this->website;
-        $this->attendeeData['attendeeFacebook'] = $this->facebook;
-        $this->attendeeData['attendeeLinkedin'] = $this->linkedin;
-        $this->attendeeData['attendeeTwitter'] = $this->twitter;
-        $this->attendeeData['attendeeInstagram'] = $this->instagram;
+        $this->attendeeData['gender'] = $this->gender;
+        $this->attendeeData['birthdate'] = $this->birthdate;
+        $this->attendeeData['country'] = $this->country;
+        $this->attendeeData['city'] = $this->city;
+        $this->attendeeData['address'] = $this->address;
+        $this->attendeeData['nationality'] = $this->nationality;
+
+        $this->attendeeData['website'] = $this->website;
+        $this->attendeeData['facebook'] = $this->facebook;
+        $this->attendeeData['linkedin'] = $this->linkedin;
+        $this->attendeeData['twitter'] = $this->twitter;
+        $this->attendeeData['instagram'] = $this->instagram;
 
         $this->resetEditAttendeeFields();
         $this->dispatchBrowserEvent('swal:success', [
@@ -226,16 +265,12 @@ class AttendeeDetails extends Component
 
 
 
+
     // RESET PASSWORD
     public function showResetPasswordAttendee()
     {
-        $this->resetPasswordForm = true;
         $this->attendee_id = $this->attendeeData['attendeeId'];
-    }
-
-    public function cancelResetPasswordAttendee()
-    {
-        $this->resetResetPasswordAttendeeFields();
+        $this->resetPasswordForm = true;
     }
 
     public function resetResetPasswordAttendeeFields()
@@ -281,13 +316,13 @@ class AttendeeDetails extends Component
         ]);
 
         $details = [
-            'name' => $this->attendeeData['attendeeSalutation'] . ' ' . $this->attendeeData['attendeeFirstName'] . ' ' . $this->attendeeData['attendeeMiddleName'] . ' ' . $this->attendeeData['attendeeLastName'],
+            'name' => $this->attendeeData['salutation'] . ' ' . $this->attendeeData['first_name'] . ' ' . $this->attendeeData['middle_name'] . ' ' . $this->attendeeData['last_name'],
             'eventName' => $this->event->name,
-            'username' => $this->attendeeData['attendeeUsername'],
+            'username' => $this->attendeeData['username'],
             'newPassword' => $this->newPassword,
         ];
 
-        Mail::to($this->attendeeData['attendeeEmail'])->cc(config('app.ccEmailNotif.test'))->queue(new AttendeeResetPasswordByAdmin($details));
+        Mail::to($this->attendeeData['attendeeEmail'])->cc(config('app.ccEmailNotif.test'))->send(new AttendeeResetPasswordByAdmin($details));
 
         array_push($this->attendeeData['attendeePasswordResetDetais'], Carbon::parse(Carbon::now())->format('M j, Y g:i A'));
 
@@ -304,25 +339,19 @@ class AttendeeDetails extends Component
     public function showUpdatePFPAttendee()
     {
         $this->editAttendeePFPForm = true;
-        $this->attendee_id = $this->attendeeData['attendeeId'];
-    }
-
-    public function cancelEditPFPAttendee()
-    {
-        $this->resetPFPAttendeeFields();
     }
 
     public function resetPFPAttendeeFields()
     {
         $this->editAttendeePFPForm = false;
-        $this->attendee_id = null;
-        $this->pfp = null;
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
     }
 
     public function editPFPAttendeeConfirmation()
     {
         $this->validate([
-            'pfp' => 'required|mimes:jpeg,jpg,png',
+            'image_placeholder_text' => 'required'
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -336,119 +365,75 @@ class AttendeeDetails extends Component
 
     public function editPFPAttendee()
     {
-        $attendeePrevPFPUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('pfp');
-        $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/attendees/pfp/' . $this->attendeeData['attendeeId'];
-
-        if ($attendeePrevPFPUrl) {
-            $this->removeAttendeeAssetInStorage($attendeePrevPFPUrl, $pathDirectory);
-        }
-
-        $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/attendees/pfp/' . $this->attendeeData['attendeeId'];
-        $fileName = Str::of($this->pfp->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-
-        $path = $this->pfp->storeAs($tempPath , $fileName);
-
-        Attendees::where('id', $this->attendee_id)->update([
-            'pfp' => $path,
+        Attendees::where('id', $this->attendeeData['attendeeId'])->update([
+            'pfp_media_id' => $this->image_media_id,
         ]);
 
-        $this->attendeeData['attendeePFP'] = Storage::url($path);
-        $this->attendeeData['attendeePFPDefault'] = false;
+        if ($this->attendeeData['pfp']['media_id'] != null) {
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                $this->image_media_id,
+                MediaEntityTypes::ATTENDEE_PFP->value,
+                $this->attendeeData['attendeeId'],
+                $this->attendeeData['pfp']['media_usage_id']
+            );
+        } else {
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::ADD_ONLY->value,
+                $this->image_media_id,
+                MediaEntityTypes::ATTENDEE_PFP->value,
+                $this->attendeeData['attendeeId'],
+                $this->attendeeData['pfp']['media_usage_id']
+            );
+        }
 
-        $this->resetPFPAttendeeFields();
+        $this->attendeeData['pfp'] = [
+            'media_id' => $this->image_media_id,
+            'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::ATTENDEE_PFP->value, $this->attendeeData['attendeeId']),
+            'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+        ];
+
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'PFP updated successfully!',
             'text' => ''
         ]);
-    }
-
-    public function removeAttendeePFPConfirmation()
-    {
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure you want to remove?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, remove it!",
-            'livewireEmit' => "removeAttendeePFPConfirmed",
-        ]);
-    }
-
-    public function removeAttendeePFP()
-    {
-        $attendeePFPUrl = Attendees::where('id', $this->attendeeData['attendeeId'])->value('pfp');
-        $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/attendees/pfp/' . $this->attendeeData['attendeeId'];
-
-        $this->removeAttendeeAssetInStorage($attendeePFPUrl, $pathDirectory);
-
-        Attendees::where('id', $this->attendeeData['attendeeId'])->update([
-            'pfp' => null,
-        ]);
-
-        $this->attendeeData['attendeePFP'] = asset('assets/images/pfp-placeholder.jpg');
-        $this->attendeeData['attendeePFPDefault'] = true;
-
-
-        $this->dispatchBrowserEvent('swal:success', [
-            'type' => 'success',
-            'message' => 'PFP removed succesfully!',
-            'text' => "",
-        ]);
 
         $this->resetPFPAttendeeFields();
     }
 
 
-    public function removeAttendeeAssetInStorage($storageUrl, $storageDirectory){
-        if (Storage::exists($storageUrl)) {
-            Storage::delete($storageUrl);
-            Storage::deleteDirectory($storageDirectory);
-        }
+
+
+    // FOR CHOOSING IMAGE MODAL
+    public function chooseImage()
+    {
+        $this->chooseImageModal = true;
     }
 
-
-
-
-
-    public function fetchMembersData()
+    public function showMediaFileDetails($arrayIndex)
     {
-        $url = env('API_ENDPOINT') . '/members';
-        $response = Http::get($url)->json();
-
-        if ($response['status'] == '200') {
-            $this->members = $response;
-        }
+        $this->activeSelectedImage = $this->mediaFileList[$arrayIndex];
     }
 
-    public function fetchEventRegistrationTypesData($eventCategory, $eventYear)
+    public function unshowMediaFileDetails()
     {
-        $url = env('API_ENDPOINT') . '/event/' . $eventCategory . '/' . $eventYear;
-        $response = Http::get($url)->json();
-
-        if ($response['status'] == '200') {
-            $this->registrationTypes = $response;
-        }
+        $this->activeSelectedImage = array();
     }
 
-    public function checkEmailIfExistsInDatabase($emailAddress)
+    public function selectChooseImage()
     {
-        $attendee = Attendees::where('id', '!=', $this->attendee_id)->where('event_id', $this->event->id)->where('email_address', $emailAddress)->first();
-
-        if ($attendee) {
-            return true;
-        } else {
-            return false;
-        }
+        $this->image_media_id = $this->activeSelectedImage['id'];
+        $this->image_placeholder_text = $this->activeSelectedImage['file_name'];
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
     }
 
-    public function checkUsernameIfExistsInDatabase($username)
+    public function cancelChooseImage()
     {
-        $attendee = Attendees::where('id', '!=', $this->attendee_id)->where('event_id', $this->event->id)->where('username', $username)->first();
-
-        if ($attendee) {
-            return true;
-        } else {
-            return false;
-        }
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
     }
 }

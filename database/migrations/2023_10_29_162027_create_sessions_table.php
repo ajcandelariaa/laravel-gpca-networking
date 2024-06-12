@@ -23,11 +23,12 @@ return new class extends Migration
             $table->string('session_type')->nullable();
             
             $table->string('title');
-            $table->longText('description')->nullable();
+            $table->mediumText('description_html_text')->nullable();
             $table->string('start_time');
             $table->string('end_time');
             $table->string('location')->nullable();
-            $table->boolean('active')->default(true);
+            
+            $table->boolean('is_active')->default(true);
             $table->dateTime('datetime_added');
 
             $table->timestamps();

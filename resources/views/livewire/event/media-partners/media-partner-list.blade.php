@@ -33,18 +33,18 @@
                         @if ($finalListOfMediaPartner['logo'] == null)
                             N/A
                         @else 
-                            <img src="{{ Storage::url($finalListOfMediaPartner['logo']) }}" alt="" class="mx-auto w-14">
+                            <img src="{{ $finalListOfMediaPartner['logo'] }}" alt="" class="mx-auto w-14">
                         @endif
                     </div>
                     <div class="col-span-2">{{ $finalListOfMediaPartner['name'] }}</div>
-                    <div class="col-span-2">{{ $finalListOfMediaPartner['website'] }}</div>
+                    <div class="col-span-2">{{ $finalListOfMediaPartner['website'] ?? 'N/A' }}</div>
                     <div wire:click="showEditMediaPartnerDateTime({{ $finalListOfMediaPartner['id'] }}, {{ $index }})" class="text-blue-700 hover:underline col-span-2 cursor-pointer">{{ $finalListOfMediaPartner['datetime_added'] }}</div>
                     <div class="col-span-1">
-                        @if ($finalListOfMediaPartner['active'])
-                            <button wire:click="updateMediaPartnerStatus({{ $index }}, {{ $finalListOfMediaPartner['id'] }}, true)"
+                        @if ($finalListOfMediaPartner['is_active'])
+                            <button wire:click="updateMediaPartnerStatus({{ $index }})"
                                 class="text-gray-700 bg-green-300 hover:bg-green-500 hover:text-white py-1 px-2 text-sm rounded-md">Active</button>
                         @else
-                            <button wire:click="updateMediaPartnerStatus({{ $index }}, {{ $finalListOfMediaPartner['id'] }}, false)"
+                            <button wire:click="updateMediaPartnerStatus({{ $index }})"
                                 class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
                         @endif
                     </div>
@@ -59,7 +59,7 @@
     @endif
 
     @if ($editMediaPartnerDateTimeForm)
-        @include('livewire.event.media-partners.edit_datetime')
+        @include('livewire.common.edit_datetime_form')
     @endif
     
     @if ($addMediaPartnerForm)

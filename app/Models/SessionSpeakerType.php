@@ -12,10 +12,13 @@ class SessionSpeakerType extends Model
     protected $fillable = [
         'event_id',
         'session_id',
+        
         'name',
         'description',
+
         'text_color',
         'background_color',
+        
         'datetime_added',
     ];
 }

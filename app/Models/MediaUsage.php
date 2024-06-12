@@ -5,17 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Icon extends Model
+class MediaUsage extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'event_id',
-        'icon',
-        'title',
-        'sequence',
-        'hidden',
-        'deletable',
-        'default_icon',
+        'id',
+        'media_id',
+        'entity_type',
+        'entity_id',
     ];
 }

@@ -38,12 +38,30 @@
 
                             <div class="col-span-1">
                                 <div class="text-primaryColor">
-                                    Event Name <span class="text-red-500">*</span>
+                                    Event Edition <span class="text-red-500">*</span>
                                 </div>
                                 <div class="mt-2">
-                                    <input placeholder="14th GPCA Supply Chain" type="text" wire:model.lazy="name"
+                                    <input placeholder="14" type="text" wire:model.lazy="edition"
                                         class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-                                    @error('name')
+                                    @error('edition')
+                                        <div class="text-red-500 text-xs italic mt-1">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="space-y-2 col-span-2 grid grid-cols-2 gap-5 items-start">
+                            <div class="col-span-2 mt-2">
+                                <div class="text-primaryColor">
+                                    Event Full Name <span class="text-red-500">*</span>
+                                </div>
+                                <div class="mt-2">
+                                    <input placeholder="14th GPCA Supply Chain" type="text" wire:model.lazy="full_name"
+                                        class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                    @error('full_name')
                                         <div class="text-red-500 text-xs italic mt-1">
                                             {{ $message }}
                                         </div>
@@ -93,10 +111,10 @@
                                 Event Description <span class="text-red-500">*</span>
                             </div>
                             <div class="mt-2">
-                                <textarea wire:model.lazy="description" rows="3" placeholder="Type a description here..."
+                                <textarea wire:model.lazy="description_html_text" rows="3" placeholder="Type a description here..."
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ old('description') }}</textarea>
 
-                                @error('description')
+                                @error('description_html_text')
                                     <div class="text-red-500 text-xs italic mt-1">
                                         {{ $message }}
                                     </div>

@@ -11,22 +11,24 @@ class MediaPartner extends Model
 
     protected $fillable = [
         'event_id',
+
         'name',
         'profile',
-        'logo',
-        'banner',
+        'logo_media_id',
+        'banner_media_id',
 
         'country',
         'contact_person_name',
         'email_address',
         'mobile_number',
+
         'website',
         'facebook',
         'linkedin',
         'twitter',
         'instagram',
 
-        'active',
+        'is_active',
         'datetime_added',
     ];
 }

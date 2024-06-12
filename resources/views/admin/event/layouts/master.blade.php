@@ -90,7 +90,8 @@
                     <p>Admin Panel - {{ $eventName }}</p>
                 </div>
                 <div class="flex gap-5">
-                    <a href="{{ route('admin.main-dashboard.view') }}" class="hover:underline">Home</a>
+                    <a href="{{ route('admin.events.view') }}" class="hover:underline">Manage events</a>
+                    <a href="{{ route('admin.media.view') }}" class="hover:underline">Media library</a>
                     <a href="{{ route('admin.logout') }}" class="hover:underline">Logout</a>
                 </div>
             </div>

@@ -437,7 +437,7 @@ return [
     ],
     
     'salutations' => [
-        'Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Eng.'
+        'Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Eng.', 'Prof.',
     ],
 
     'eventCategories' => [
@@ -446,15 +446,28 @@ return [
         'ANC' => "03",
         'RIC' => "04",
         'RCC' => "05",
-        'RCCA' => "51",
         'AF' => "06", 
-        'IPAW' => "20",
+        'GLF' => "07", 
+        'PSC' => "08", 
+
+        'SCEA' => "11",
+        'RCCA' => "51",
+        'RCCW1' => "52",
         'AFS' => "61",
         'AFV' => "62",
+        'IPAW' => "20",
+        'PSW' => "21",
+        'DAW' => "22",
+        'DFCLW1' => "23",
+    ],
+
+    'interests' => [
+        'Technology', 'Innovation', 'Leadership', 'Sustainability', 'Startups', 'Digital Transformation', 'CEO', 'Developer', 'Designer', 'Marketing Commercial', 'Engineer', 'EHS&S', 'Procurement', 'Human Resources', 'Consultants', 'Academia', 'Investors', 'Service Providers',
     ],
 
     'ccEmailNotif' => [
         'test' => ['aj@gpca.org.ae'],
         'default' => ['jhoanna@gpca.org.ae', 'wesam@gpca.org.ae', 'aj@gpca.org.ae'],
+        'error' => ['aj@gpca.org.ae'],
     ],
 ];

@@ -58,10 +58,10 @@
         </p>
 
         <p> Session description:
-            @if ($sessionData['sessionType'] == null || $sessionData['sessionType'] == '')
+            @if ($sessionData['sessionDescription'] == null || $sessionData['sessionDescription'] == '')
                 N/A
             @else
-                {{ $sessionData['sessionType'] }}
+                {{ $sessionData['sessionDescription'] }}
             @endif
         </p>
     </div>

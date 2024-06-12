@@ -20,21 +20,22 @@ return new class extends Migration
             $table->unsignedBigInteger('sponsor_type_id')->nullable();
 
             $table->string('name');
-            $table->longText('profile')->nullable();
-            $table->string('logo')->nullable();
-            $table->string('banner')->nullable();
+            $table->mediumText('profile')->nullable();
+            $table->unsignedBigInteger('logo_media_id')->nullable();
+            $table->unsignedBigInteger('banner_media_id')->nullable();
 
             $table->string('country')->nullable();
             $table->string('contact_person_name')->nullable();
             $table->string('email_address')->nullable();
             $table->string('mobile_number')->nullable();
-            $table->string('website');
+            
+            $table->string('website')->nullable();
             $table->string('facebook')->nullable();
             $table->string('linkedin')->nullable();
             $table->string('twitter')->nullable();
             $table->string('instagram')->nullable();
 
-            $table->boolean('active')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->dateTime('datetime_added');
 
             $table->timestamps();

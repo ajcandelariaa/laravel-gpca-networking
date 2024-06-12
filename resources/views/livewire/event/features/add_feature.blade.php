@@ -16,13 +16,13 @@
                     <div class="mt-5">
                         <div>
                             <div class="text-primaryColor">
-                                Name <span class="text-red-500">*</span>
+                                Feature Full Name <span class="text-red-500">*</span>
                             </div>
                             <div class="mt-2">
-                                <input placeholder="Name" type="text" wire:model.lazy="name"
+                                <input placeholder="2nd GPCA Symposium" type="text" wire:model.lazy="full_name"
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
 
-                                @error('name')
+                                @error('full_name')
                                     <div class="text-red-500 text-xs italic mt-1">
                                         {{ $message }}
                                     </div>
@@ -30,64 +30,6 @@
                             </div>
                         </div>
                     </div>
-
-                    
-                    <div class="mt-5">
-                        <div>
-                            <div class="text-primaryColor">
-                                Short Name <span class="text-red-500">*</span>
-                            </div>
-                            <div class="mt-2">
-                                <input placeholder="Short Name" type="text" wire:model.lazy="short_name"
-                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-
-                                @error('short_name')
-                                    <div class="text-red-500 text-xs italic mt-1">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="mt-5">
-                        <div>
-                            <div class="text-primaryColor">
-                                Location <span class="text-red-500">*</span>
-                            </div>
-                            <div class="mt-2">
-                                <input placeholder="Location" type="text" wire:model.lazy="location"
-                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-
-                                @error('location')
-                                    <div class="text-red-500 text-xs italic mt-1">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="mt-5">
-                        <div>
-                            <div class="text-primaryColor">
-                                Link <span class="text-red-500">*</span>
-                            </div>
-                            <div class="mt-2">
-                                <input placeholder="Link" type="text" wire:model.lazy="link"
-                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-
-                                @error('link')
-                                    <div class="text-red-500 text-xs italic mt-1">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
 
                     <div class="mt-5 grid grid-cols-2 gap-5">
                         <div>

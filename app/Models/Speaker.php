@@ -24,19 +24,20 @@ class Speaker extends Model
 
         'biography',
 
-        'pfp',
-        'cover_photo',
+        'pfp_media_id',
+        'cover_photo_media_id',
 
         'country',
         'email_address',
         'mobile_number',
+        
         'website',
         'facebook',
         'linkedin',
         'twitter',
         'instagram',
 
-        'active',
+        'is_active',
         
         'datetime_added',
     ];
