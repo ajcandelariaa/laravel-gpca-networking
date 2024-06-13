@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Enums\MediaEntityTypes;
 use App\Models\Event;
 use App\Models\Media;
+use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
+    use HttpResponses;
     // =========================================================
     //                       RENDER VIEWS
     // =========================================================

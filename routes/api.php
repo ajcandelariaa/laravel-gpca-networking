@@ -7,6 +7,7 @@ use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\SpeakerController;
 use App\Http\Controllers\SponsorController;
 use Illuminate\Http\Request;
+use Illuminate\Routing\RouteGroup;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,21 +21,25 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/event', [EventController::class, 'apiEventsList']);
-Route::group(['middleware' => 'api.check.event.exists'], function () {
-    Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
-        Route::post('/login', [AttendeesController::class, 'apiAttendeeLogin']);
-
-        Route::middleware("auth:sanctum")->group(function() {
-            Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
-
-            Route::get('/details', [EventController::class, 'apiEventDetails']);
+Route::group(['middleware' => 'api.check.secret.code'], function(){
+    Route::prefix('{api_code}')->group(function () {
+        Route::get('/event', [EventController::class, 'apiEventsList']);
+        Route::group(['middleware' => 'api.check.event.exists'], function () {
+            Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
+                Route::post('/login', [AttendeesController::class, 'apiAttendeeLogin']);
+        
+                Route::middleware("auth:sanctum")->group(function() {
+                    Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
+        
+                    Route::get('/details', [EventController::class, 'apiEventDetails']);
+                    
+                    Route::get('/speaker', [SpeakerController::class, 'apiSpeakersList']);
+                    Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
             
-            Route::get('/speaker', [SpeakerController::class, 'apiSpeakersList']);
-            Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
-    
-            Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
-            Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
+                    Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
+                    Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
+                });
+            });
         });
     });
 });
