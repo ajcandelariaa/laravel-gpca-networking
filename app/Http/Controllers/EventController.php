@@ -132,7 +132,7 @@ class EventController extends Controller
 
                     'finalEventStartDate' => $finalEventStartDate,
                     'finalEventEndDate' => $finalEventEndDate,
-                    
+
                     'is_visible_in_the_app' => $event->is_visible_in_the_app,
                     'is_accessible_in_the_app' => $event->is_accessible_in_the_app,
 
@@ -200,37 +200,41 @@ class EventController extends Controller
             foreach ($events as $event) {
                 array_push($data, [
                     'id' => $event->id,
-                    'name' => $event->name,
+                    'category' => $event->category,
+                    'full_name' => $event->full_name,
                     'short_name' => $event->short_name,
+                    'edition' => $event->edition,
                     'location' => $event->location,
-                    'description' => $event->description,
+                    'description_html_text' => $event->description_html_text,
                     'event_full_link' => $event->event_full_link,
                     'event_short_link' => $event->event_short_link,
                     'event_start_date' => $event->event_start_date,
                     'event_end_date' => $event->event_end_date,
 
-                    'event_logo' => asset(Storage::url($event->event_logo)),
-                    'event_logo_inverted' => asset(Storage::url($event->event_logo_inverted)),
-                    'app_sponsor_logo' => asset(Storage::url($event->app_sponsor_logo)),
+                    'event_logo' => Media::where('id', $event->event_logo_media_id)->value('file_url'),
+                    'event_logo_inverted' => Media::where('id', $event->event_logo_inverted_media_id)->value('file_url'),
+                    'app_sponsor_logo' => Media::where('id', $event->app_sponsor_logo_media_id)->value('file_url'),
 
-                    'event_splash_screen' => asset(Storage::url($event->event_splash_screen)),
-                    'event_banner' => asset(Storage::url($event->event_banner)),
-                    'app_sponsor_banner' => asset(Storage::url($event->app_sponsor_banner)),
+                    'event_splash_screen' => Media::where('id', $event->event_splash_screen_media_id)->value('file_url'),
+                    'event_banner' => Media::where('id', $event->event_banner_media_id)->value('file_url'),
+                    'app_sponsor_banner' => Media::where('id', $event->app_sponsor_banner_media_id)->value('file_url'),
 
-                    'year' => $event->year,
-                    'active' => $event->active,
+                    'login_html_text' => $event->login_html_text,
+                    'forgot_password_html_text' => $event->forgot_password_html_text,
+
+                    'primary_bg_color' => $event->primary_bg_color,
+                    'secondary_bg_color' => $event->secondary_bg_color,
+                    'primary_text_color' => $event->primary_text_color,
+                    'secondary_text_color' => $event->secondary_text_color,
+
+                    'is_visible_in_the_app' => $event->is_visible_in_the_app,
+                    'is_accessible_in_the_app' => $event->is_accessible_in_the_app,
                 ]);
             }
-            return response()->json([
-                'status' => 200,
-                'message' => "Events List",
-                'data' => $data
-            ], 200);
+
+            return $this->success($data, "Events List", 200);
         } else {
-            return response()->json([
-                'status' => 200,
-                'message' => "There's no events yet.",
-            ], 200);
+            return $this->success(null, "There's no events yet.", 200);
         }
     }
 
