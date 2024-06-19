@@ -16,7 +16,7 @@ class MediaPartnerDetails extends Component
     public $assetType, $editMediaPartnerAssetForm, $image_media_id, $image_placeholder_text;
     public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    public $name, $profile, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram;
+    public $name, $profile_html_text, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram;
     public $editMediaPartnerDetailsForm;
 
     protected $listeners = ['editMediaPartnerDetailsConfirmed' => 'editMediaPartnerDetails', 'editMediaPartnerAssetConfirmed' => 'editMediaPartnerAsset'];
@@ -176,7 +176,7 @@ class MediaPartnerDetails extends Component
     public function showEditMediaPartnerDetails()
     {
         $this->name = $this->mediaPartnerData['name'];
-        $this->profile = $this->mediaPartnerData['profile'];
+        $this->profile_html_text = $this->mediaPartnerData['profile_html_text'];
         
         $this->country = $this->mediaPartnerData['country'];
         $this->contact_person_name = $this->mediaPartnerData['contact_person_name'];
@@ -191,16 +191,11 @@ class MediaPartnerDetails extends Component
         $this->editMediaPartnerDetailsForm = true;
     }
 
-    public function cancelEditMediaPartnerDetails()
-    {
-        $this->resetEditMediaPartnerDetailsFields();
-    }
-
     public function resetEditMediaPartnerDetailsFields()
     {
         $this->editMediaPartnerDetailsForm = false;
         $this->name = null;
-        $this->profile = null;
+        $this->profile_html_text = null;
 
         $this->country = null;
         $this->contact_person_name = null;
@@ -232,7 +227,7 @@ class MediaPartnerDetails extends Component
     {
         MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
             'name' => $this->name,
-            'profile' => $this->profile,
+            'profile_html_text' => $this->profile_html_text,
 
             'country' => $this->country == "" ? null : $this->country,
             'contact_person_name' => $this->contact_person_name == "" ? null : $this->contact_person_name,
@@ -246,7 +241,7 @@ class MediaPartnerDetails extends Component
         ]);
 
         $this->mediaPartnerData['name'] = $this->name;
-        $this->mediaPartnerData['profile'] = $this->profile;
+        $this->mediaPartnerData['profile_html_text'] = $this->profile_html_text;
         
         $this->mediaPartnerData['country'] = $this->country;
         $this->mediaPartnerData['contact_person_name'] = $this->contact_person_name;

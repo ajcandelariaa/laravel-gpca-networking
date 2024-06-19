@@ -11,30 +11,30 @@ use Livewire\Component;
 class SessionList extends Component
 {
     public $event;
-
     public $finalListOfSessions = array(), $finalListOfSessionsConst = array();
 
-    public $addSessionForm, $category, $session_date, $session_day, $session_type, $title, $start_time, $end_time, $categoryChoices = array();
+    // Add Sesssion
+    public $feature_id, $session_date, $session_day, $session_type, $title, $start_time, $end_time, $categoryChoices = array();
+    public $addSessionForm;
 
     protected $listeners = ['addSessionConfirmed' => 'addSession'];
 
     public function mount($eventId, $eventCategory)
     {
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
-
         $sessions = Sessions::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
 
         if ($sessions->isNotEmpty()) {
             foreach ($sessions as $session) {
                 
                 if ($session->feature_id == 0) {
-                    $category = $this->event->short_name;
+                    $categoryName = $this->event->short_name;
                 } else {
                     $feature = Features::where('event_id', $this->event->id)->where('id', $session->feature_id)->first();
                     if ($feature) {
-                        $category = $feature->short_name;
+                        $categoryName = $feature->short_name;
                     } else {
-                        $category = "Others";
+                        $categoryName = "Others";
                     }
                 }
 
@@ -46,12 +46,12 @@ class SessionList extends Component
 
                 array_push($this->finalListOfSessions, [
                     'id' => $session->id,
-                    'category' => $category,
+                    'categoryName' => $categoryName,
                     'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
                     'session_day' => $session->session_day,
                     'title' => $session->title,
                     'timings' => $timings,
-                    'active' => $session->active,
+                    'is_active' => $session->is_active,
                     'datetime_added' => Carbon::parse($session->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
@@ -90,7 +90,7 @@ class SessionList extends Component
     public function addSessionConfirmation()
     {
         $this->validate([
-            'category' => 'required',
+            'feature_id' => 'required',
             'session_date' => 'required',
             'session_day' => 'required',
             'title' => 'required',
@@ -106,15 +106,10 @@ class SessionList extends Component
         ]);
     }
 
-    public function cancelAddSession()
-    {
-        $this->resetAddSessionFields();
-    }
-
     public function resetAddSessionFields()
     {
         $this->addSessionForm = false;
-        $this->category = null;
+        $this->feature_id = null;
         $this->session_date = null;
         $this->session_day = null;
         $this->session_type = null;
@@ -142,7 +137,7 @@ class SessionList extends Component
 
         $newSession = Sessions::create([
             'event_id' => $this->event->id,
-            'feature_id' => $this->category,
+            'feature_id' => $this->feature_id,
             'session_date' => $this->session_date,
             'session_day' => $this->session_day,
             'session_type' => $finalSessionType,
@@ -154,20 +149,20 @@ class SessionList extends Component
 
 
         foreach ($this->categoryChoices as $categoryChoice) {
-            if ($categoryChoice['id'] == $this->category) {
+            if ($categoryChoice['id'] == $this->feature_id) {
                 $selectedCategory = $categoryChoice['value'];
             }
         }
         
         array_push($this->finalListOfSessions, [
             'id' => $newSession->id,
-            'category' => $selectedCategory,
+            'categoryName' => $selectedCategory,
             'session_date' => $this->session_date,
             'session_day' => $this->session_day,
             'title' => $this->title,
             'timings' => $forArrayTimings,
-            'active' => true,
-            'datetime_added' => Carbon::parse(Carbon::now())->format('F d, Y'),
+            'is_active' => true,
+            'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);
 
         $this->finalListOfSessionsConst = $this->finalListOfSessions;
@@ -182,19 +177,13 @@ class SessionList extends Component
     }
 
 
-    public function updateSessionStatus($arrayIndex, $sessionId, $status)
+    public function updateSessionStatus($arrayIndex)
     {
-        if ($status) {
-            $newStatus = false;
-        } else {
-            $newStatus = true;
-        }
-
-        Sessions::where('id', $sessionId)->update([
-            'active' => $newStatus,
+        Sessions::where('id', $this->finalListOfSessions[$arrayIndex]['id'])->update([
+            'is_active' => !$this->finalListOfSessions[$arrayIndex]['is_active'],
         ]);
 
-        $this->finalListOfSessions[$arrayIndex]['active'] = $newStatus;
-        $this->finalListOfSessionsConst[$arrayIndex]['active'] = $newStatus;
+        $this->finalListOfSessions[$arrayIndex]['is_active'] = !$this->finalListOfSessions[$arrayIndex]['is_active'];
+        $this->finalListOfSessionsConst[$arrayIndex]['is_active'] = !$this->finalListOfSessionsConst[$arrayIndex]['is_active'];
     }
 }

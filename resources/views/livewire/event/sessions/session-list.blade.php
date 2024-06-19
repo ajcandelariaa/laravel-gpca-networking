@@ -28,19 +28,19 @@
                 <div
                     class="grid grid-cols-12 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
                     <div class="col-span-1">{{ $index + 1 }}</div>
-                    <div class="col-span-2">{{ $finalListOfSession['category'] }}</div>
+                    <div class="col-span-2">{{ $finalListOfSession['categoryName'] }}</div>
                     <div class="col-span-2">{{ $finalListOfSession['session_date'] }}</div>
                     <div class="col-span-1">{{ $finalListOfSession['session_day'] }}</div>
                     <div class="col-span-2">{{ $finalListOfSession['title'] }}</div>
                     <div class="col-span-2">{{ $finalListOfSession['timings'] }}</div>
                     <div class="col-span-1">
-                        @if ($finalListOfSession['active'])
+                        @if ($finalListOfSession['is_active'])
                             <button
-                                wire:click="updateSessionStatus({{ $index }}, {{ $finalListOfSession['id'] }}, true)"
+                                wire:click="updateSessionStatus({{ $index }})"
                                 class="text-gray-700 bg-green-300 hover:bg-green-500 hover:text-white py-1 px-2 text-sm rounded-md">Active</button>
                         @else
                             <button
-                                wire:click="updateSessionStatus({{ $index }}, {{ $finalListOfSession['id'] }}, false)"
+                                wire:click="updateSessionStatus({{ $index }})"
                                 class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
                         @endif
                     </div>

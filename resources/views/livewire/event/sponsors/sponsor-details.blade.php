@@ -10,7 +10,7 @@
     
     <div class="mt-5 relative">
         <div>
-            <img src="{{ $sponsorData['sponsorBanner'] }}" alt="" class="w-full relative">
+            <img src="{{ $sponsorData['banner']['url'] }}" alt="" class="w-full relative">
             <button wire:click="showEditSponsorAsset('Sponsor banner')"
                 class="absolute top-2 right-3 cursor-pointer z-20">
                 <i
@@ -19,7 +19,7 @@
         </div>
         <div class="absolute -bottom-32 left-1/2 -translate-x-1/2">
             <div>
-                <img src="{{ $sponsorData['sponsorLogo'] }}"
+                <img src="{{ $sponsorData['logo']['url'] }}"
                     class="w-44 h-44 bg-gray-200 p-0.5 z-10 relative">
                 <button wire:click="showEditSponsorAsset('Sponsor logo')"
                     class="absolute -top-5 -right-4 cursor-pointer z-20">
@@ -31,8 +31,8 @@
     </div>
 
     <div class="mt-36 text-center">
-        <p class="font-semibold text-xl">{{ $sponsorData['sponsorName'] }}</p>
-        <p class="font-semibold">{{ $sponsorData['sponsorWebsite'] }}</p>
+        <p class="font-semibold text-xl">{{ $sponsorData['name'] }}</p>
+        <p class="font-semibold">{{ $sponsorData['website'] ?? 'N/A' }}</p>
     </div>
 
     <div class="mt-4">
@@ -40,69 +40,69 @@
     </div>
 
     <div class="mt-6">
-        <p><span class="font-semibold">Category:</span> {{ $sponsorData['sponsorCategoryName'] }} sponsor</p>
-        <p><span class="font-semibold">Type:</span> {{ $sponsorData['sponsorTypeName'] }} sponsor</p>
+        <p><span class="font-semibold">Category:</span> {{ $sponsorData['categoryName'] }} sponsor</p>
+        <p><span class="font-semibold">Type:</span> {{ $sponsorData['typeName'] }} sponsor</p>
         
         <hr class="my-4">
 
         <div class="flex items-start gap-10">
             <div>
                 <p><span class="font-semibold">Facebook:</span>
-                    @if ($sponsorData['sponsorFacebook'] == '' || $sponsorData['sponsorFacebook'] == null)
+                    @if ($sponsorData['facebook'] == '' || $sponsorData['facebook'] == null)
                         N/A
                     @else
-                        {{ $sponsorData['sponsorFacebook'] }}
+                        {{ $sponsorData['facebook'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">LinkedIn:</span>
-                    @if ($sponsorData['sponsorLinkedin'] == '' || $sponsorData['sponsorLinkedin'] == null)
+                    @if ($sponsorData['linkedin'] == '' || $sponsorData['linkedin'] == null)
                         N/A
                     @else
-                        {{ $sponsorData['sponsorLinkedin'] }}
+                        {{ $sponsorData['linkedin'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Twitter:</span>
-                    @if ($sponsorData['sponsorTwitter'] == '' || $sponsorData['sponsorTwitter'] == null)
+                    @if ($sponsorData['twitter'] == '' || $sponsorData['twitter'] == null)
                         N/A
                     @else
-                        {{ $sponsorData['sponsorTwitter'] }}
+                        {{ $sponsorData['twitter'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Instagram:</span>
-                    @if ($sponsorData['sponsorInstagram'] == '' || $sponsorData['sponsorInstagram'] == null)
+                    @if ($sponsorData['instagram'] == '' || $sponsorData['instagram'] == null)
                         N/A
                     @else
-                        {{ $sponsorData['sponsorInstagram'] }}
+                        {{ $sponsorData['instagram'] }}
                     @endif
                 </p>
             </div>
             <div>
                 <p><span class="font-semibold">Country:</span>
-                    @if ($sponsorData['sponsorCountry'] == '' || $sponsorData['sponsorCountry'] == null)
+                    @if ($sponsorData['country'] == '' || $sponsorData['country'] == null)
                         N/A
                     @else
-                        {{ $sponsorData['sponsorCountry'] }}
+                        {{ $sponsorData['country'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Contact Name:</span>
-                    @if ($sponsorData['sponsorContactPersonName'] == '' || $sponsorData['sponsorContactPersonName'] == null)
+                    @if ($sponsorData['contact_person_name'] == '' || $sponsorData['contact_person_name'] == null)
                         N/A
                     @else
-                        {{ $sponsorData['sponsorContactPersonName'] }}
+                        {{ $sponsorData['contact_person_name'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Email address:</span>
-                    @if ($sponsorData['sponsorEmailAddress'] == '' || $sponsorData['sponsorEmailAddress'] == null)
+                    @if ($sponsorData['email_address'] == '' || $sponsorData['email_address'] == null)
                         N/A
                     @else
-                        {{ $sponsorData['sponsorEmailAddress'] }}
+                        {{ $sponsorData['email_address'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Mobile Number:</span>
-                    @if ($sponsorData['sponsorMobileNumber'] == '' || $sponsorData['sponsorMobileNumber'] == null)
+                    @if ($sponsorData['mobile_number'] == '' || $sponsorData['mobile_number'] == null)
                         N/A
                     @else
-                        {{ $sponsorData['sponsorMobileNumber'] }}
+                        {{ $sponsorData['mobile_number'] }}
                     @endif
                 </p>
             </div>
@@ -112,10 +112,10 @@
 
         <p class="font-semibold">Company profile:</p>
         <p>
-            @if ($sponsorData['sponsorProfile'] == null || $sponsorData['sponsorProfile'] == "")
+            @if ($sponsorData['profile_html_text'] == null || $sponsorData['profile_html_text'] == "")
                 N/A
             @else
-                {{ $sponsorData['sponsorProfile'] }}
+                {{ $sponsorData['profile_html_text'] }}
             @endif
         </p>
     </div>
@@ -128,6 +128,11 @@
         </button>
     </div>
     
+    
+    @if ($chooseImageModal)
+        @include('livewire.common.choose_image_modal')
+    @endif
+
     @if ($editSponsorDetailsForm)
         @include('livewire.event.sponsors.edit_details')
     @endif

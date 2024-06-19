@@ -10,12 +10,13 @@ use Livewire\Component;
 class SpeakerTypeList extends Component
 {
     public $event;
-
     public $finalListOfSpeakerTypes = array(), $finalListOfSpeakerTypesConst = array();
 
     public $name, $description, $text_color, $background_color, $editState, $editId, $editArrayIndex;
     
-    public $speakerTypeId, $speakerTypeDateTime, $speakerTypeArrayIndex, $editSpeakerTypeDateTimeForm;
+    public $speakerTypeId, $speakerTypeDateTime, $speakerTypeArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editSpeakerTypeDateTimeForm;
 
     protected $listeners = ['addSpeakerTypeConfirmed' => 'addSpeakerType'];
 
@@ -38,6 +39,10 @@ class SpeakerTypeList extends Component
             }
             $this->finalListOfSpeakerTypesConst = $this->finalListOfSpeakerTypes;
         }
+
+        $this->inputNameVariableDateTime = "speakerTypeDateTime";
+        $this->btnUpdateNameMethodDateTime = "editSpeakerTypeDateTime";
+        $this->btnCancelNameMethodDateTime = "resetEditSpeakerTypeDateTimeFields";
 
         $this->editState = false;
     }
@@ -106,11 +111,6 @@ class SpeakerTypeList extends Component
         $this->editSpeakerTypeDateTimeForm = true;
     }
 
-    public function cancelEditSpeakerTypeDateTime()
-    {
-        $this->resetEditSpeakerTypeDateTimeFields();
-    }
-
     public function resetEditSpeakerTypeDateTimeFields()
     {
         $this->editSpeakerTypeDateTimeForm = false;
@@ -151,10 +151,6 @@ class SpeakerTypeList extends Component
         $this->editArrayIndex = $arrayIndex;
         $this->editId = $this->finalListOfSpeakerTypes[$arrayIndex]['id'];
         $this->editState = true;
-    }
-
-    public function cancelEditSpeakerType(){
-        $this->resetEditSpeakerTypeFields();
     }
 
     public function resetEditSpeakerTypeFields(){

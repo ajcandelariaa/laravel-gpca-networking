@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MediaEntityTypes;
 use App\Models\Event;
+use App\Models\Media;
 use App\Models\MeetingRoomPartner;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class MeetingRoomPartnerController extends Controller
 {
     public function eventMeetingRoomPartnersView($eventCategory, $eventId){
-        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
 
         return view('admin.event.meeting-room-partners.meeting_room_partners', [
             "pageTitle" => "Meeting room partners",
@@ -26,50 +27,42 @@ class MeetingRoomPartnerController extends Controller
         $meetingRoomPartner = MeetingRoomPartner::where('id', $meetingRoomPartnerId)->first();
 
         if($meetingRoomPartner){
-            if($meetingRoomPartner->logo){
-                $meetingRoomPartnerLogo = Storage::url($meetingRoomPartner->logo);
-                $meetingRoomPartnerLogoDefault = false;
-            } else {
-                $meetingRoomPartnerLogo = asset('assets/images/logo-placeholder.jpg');
-                $meetingRoomPartnerLogoDefault = true;
-            }
-    
-            if($meetingRoomPartner->banner){
-                $meetingRoomPartnerBanner = Storage::url($meetingRoomPartner->banner);
-                $meetingRoomPartnerBannerDefault = false;
-            } else {
-                $meetingRoomPartnerBanner = asset('assets/images/banner-placeholder.jpg');
-                $meetingRoomPartnerBannerDefault = true;
-            }
-    
             $meetingRoomPartnerData = [
                 "meetingRoomPartnerId" => $meetingRoomPartner->id,
-                "meetingRoomPartnerName" => $meetingRoomPartner->name,
-                "meetingRoomPartnerLocation" => $meetingRoomPartner->location,
-                "meetingRoomPartnerProfile" => $meetingRoomPartner->profile,
 
-                "meetingRoomPartnerLogo" => $meetingRoomPartnerLogo,
-                "meetingRoomPartnerLogoDefault" => $meetingRoomPartnerLogoDefault,
-                "meetingRoomPartnerBanner" => $meetingRoomPartnerBanner,
-                "meetingRoomPartnerBannerDefault" => $meetingRoomPartnerBannerDefault,
+                "name" => $meetingRoomPartner->name,
+                "location" => $meetingRoomPartner->location,
+                "profile_html_text" => $meetingRoomPartner->profile_html_text,
 
-                "meetingRoomPartnerCountry" => $meetingRoomPartner->country,
-                "meetingRoomPartnerContactPersonName" => $meetingRoomPartner->contact_person_name,
-                "meetingRoomPartnerEmailAddress" => $meetingRoomPartner->email_address,
-                "meetingRoomPartnerMobileNumber" => $meetingRoomPartner->mobile_number,
-                "meetingRoomPartnerWebsite" => $meetingRoomPartner->website,
-                "meetingRoomPartnerFacebook" => $meetingRoomPartner->facebook,
-                "meetingRoomPartnerLinkedin" => $meetingRoomPartner->linkedin,
-                "meetingRoomPartnerTwitter" => $meetingRoomPartner->twitter,
-                "meetingRoomPartnerInstagram" => $meetingRoomPartner->instagram,
+                "logo" => [
+                    'media_id' => $meetingRoomPartner->logo_media_id,
+                    'media_usage_id' => getMediaUsageId($meetingRoomPartner->logo_media_id, MediaEntityTypes::MEETING_ROOM_PARTNER_LOGO->value, $meetingRoomPartner->id),
+                    'url' => Media::where('id', $meetingRoomPartner->logo_media_id)->value('file_url'),
+                ],
+                "banner" => [
+                    'media_id' => $meetingRoomPartner->banner_media_id,
+                    'media_usage_id' => getMediaUsageId($meetingRoomPartner->banner_media_id, MediaEntityTypes::MEETING_ROOM_PARTNER_BANNER->value, $meetingRoomPartner->id),
+                    'url' => Media::where('id', $meetingRoomPartner->banner_media_id)->value('file_url'),
+                ],
 
-                "meetingRoomPartnerStatus" => $meetingRoomPartner->active,
-                "meetingRoomPartnerDateTimeAdded" => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
+                "country" => $meetingRoomPartner->country,
+                "contact_person_name" => $meetingRoomPartner->contact_person_name,
+                "email_address" => $meetingRoomPartner->email_address,
+                "mobile_number" => $meetingRoomPartner->mobile_number,
+
+                "website" => $meetingRoomPartner->website,
+                "facebook" => $meetingRoomPartner->facebook,
+                "linkedin" => $meetingRoomPartner->linkedin,
+                "twitter" => $meetingRoomPartner->twitter,
+                "instagram" => $meetingRoomPartner->instagram,
+
+                "is_active" => $meetingRoomPartner->is_active,
+                "datetime_added" => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
             ];
             
             return view('admin.event.meeting-room-partners.meeting_room_partner', [
                 "pageTitle" => "Meeting Room Partner",
-                "eventName" => $event->name,
+                "eventName" => $event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "meetingRoomPartnerData" => $meetingRoomPartnerData,

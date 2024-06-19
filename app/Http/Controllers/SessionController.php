@@ -9,13 +9,12 @@ use App\Models\SessionSpeaker;
 use App\Models\SessionSpeakerType;
 use App\Models\Speaker;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class SessionController extends Controller
 {
     public function eventSessionsView($eventCategory, $eventId){
-        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
         
         return view('admin.event.sessions.sessions', [
             "pageTitle" => "Session",
@@ -127,10 +126,10 @@ class SessionController extends Controller
                 "sessionStatus" => $session->active,
                 "sessionDateTimeAdded" => Carbon::parse($session->datetime_added)->format('M j, Y g:i A'),
             ];
-            // dd($sessionData);
+            
             return view('admin.event.sessions.session', [
                 "pageTitle" => "Session",
-                "eventName" => $event->name,
+                "eventName" => $event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "sessionData" => $sessionData,

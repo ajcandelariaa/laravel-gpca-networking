@@ -7,7 +7,7 @@ use App\Models\MediaUsage;
 use Illuminate\Support\Facades\Http;
 
 if (!function_exists('mediaUsageUpdate')) {
-    function mediaUsageUpdate($action, $mediaId, $entityType, $entityId, $previousMediaUsageId)
+    function mediaUsageUpdate($action, $mediaId, $entityType, $entityId, $previousMediaUsageId = null)
     {
         if ($action == MediaUsageUpdateTypes::ADD_ONLY->value) {
             MediaUsage::create([

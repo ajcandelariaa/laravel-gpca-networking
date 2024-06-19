@@ -13,9 +13,11 @@ class MediaPartnerList extends Component
     public $event;
     public $finalListOfMediaPartners = array(), $finalListOfMediaPartnersConst = array();
 
-    public $name;
+    // EDIT DETAILS
+    public $name, $website;
     public $addMediaPartnerForm;
 
+    // EDIT DATE TIME
     public $mediaPartnerId, $mediaPartnerDateTime, $mediaPartnerArrayIndex;
     public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
     public $editMediaPartnerDateTimeForm;
@@ -60,6 +62,13 @@ class MediaPartnerList extends Component
         $this->addMediaPartnerForm = true;
     }
 
+    public function resetAddMediaPartnerFields()
+    {
+        $this->addMediaPartnerForm = false;
+        $this->name = null;
+        $this->website = null;
+    }
+
     public function addMediaPartnerConfirmation()
     {
         $this->validate([
@@ -75,24 +84,19 @@ class MediaPartnerList extends Component
         ]);
     }
 
-    public function resetAddMediaPartnerFields()
-    {
-        $this->addMediaPartnerForm = false;
-        $this->name = null;
-    }
-
     public function addMediaPartner(){
         $newMediaPartner = MediaPartners::create([
             'event_id' => $this->event->id,
             'name' => $this->name,
+            'website' => $this->website,
             'datetime_added' => Carbon::now(),
         ]);
         
         array_push($this->finalListOfMediaPartners, [
             'id' => $newMediaPartner->id,
             'name' => $this->name,
-            'website' => null,
-            'active' => true,
+            'website' => $this->website,
+            'is_active' => true,
             'logo' => null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);

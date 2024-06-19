@@ -14,7 +14,7 @@ class MeetingRoomPartner extends Model
         
         'name',
         'location',
-        'profile',
+        'profile_html_text',
         'logo_media_id',
         'banner_media_id',
 

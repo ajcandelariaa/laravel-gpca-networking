@@ -100,11 +100,6 @@ class AttendeeDetails extends Component
         $this->editAttendeeForm = true;
     }
 
-    public function cancelEditAttendee()
-    {
-        $this->resetEditAttendeeFields();
-    }
-
     public function resetEditAttendeeFields()
     {
         $this->editAttendeeForm = false;
@@ -256,6 +251,7 @@ class AttendeeDetails extends Component
         $this->attendeeData['instagram'] = $this->instagram;
 
         $this->resetEditAttendeeFields();
+        
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'Attendee updated successfully!',

@@ -55,7 +55,7 @@ class AttendeesController extends Controller
 
             "username" => $attendee->username,
             "password" => $attendee->password,
-            
+
             "salutation" => $attendee->salutation,
             "first_name" => $attendee->first_name,
             "middle_name" => $attendee->middle_name,
@@ -122,7 +122,7 @@ class AttendeesController extends Controller
         }
 
         $token = $attendee->createToken('api token of ' . $attendee->id)->plainTextToken;
-        return $this->success(['token' => $token], "Logged in successfully", 200);
+        return $this->success(['token' => $token, 'attendeeId' => $attendee->id], "Logged in successfully", 200);
     }
 
     public function apiAttendeeLogout(Request $request)

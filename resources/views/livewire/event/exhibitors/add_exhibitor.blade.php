@@ -35,7 +35,7 @@
                     <div class="mt-5">
                         <div>
                             <div class="text-primaryColor">
-                                Website <span class="text-red-500">*</span>
+                                Website
                             </div>
                             <div class="mt-2">
                                 <input placeholder="Website" type="text" wire:model.lazy="website"
@@ -54,7 +54,7 @@
                     <div class="mt-5">
                         <div>
                             <div class="text-primaryColor">
-                                Stand No. <span class="text-red-500">*</span>
+                                Stand No.
                             </div>
                             <div class="mt-2">
                                 <input placeholder="Stand No." type="text" wire:model.lazy="stand_number"

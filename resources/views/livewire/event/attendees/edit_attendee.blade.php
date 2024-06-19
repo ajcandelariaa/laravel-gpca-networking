@@ -403,6 +403,6 @@
             <span>Update</span>
         </button>
 
-        <button type="button" wire:click.prevent="cancelEditAttendee" wire:key="cancelEditAttendee" class="bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm w-40 h-10">Cancel</button>
+        <button type="button" wire:click.prevent="resetEditAttendeeFields" wire:key="resetEditAttendeeFields" class="bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm w-40 h-10">Cancel</button>
     </div>
 </div>

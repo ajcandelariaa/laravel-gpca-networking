@@ -21,23 +21,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => 'api.check.secret.code'], function(){
+Route::group(['middleware' => 'api.check.secret.code'], function () {
     Route::prefix('{api_code}')->group(function () {
         Route::get('/event', [EventController::class, 'apiEventsList']);
         Route::group(['middleware' => 'api.check.event.exists'], function () {
             Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
                 Route::post('/login', [AttendeesController::class, 'apiAttendeeLogin']);
-        
-                Route::middleware("auth:sanctum")->group(function() {
-                    Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
-        
-                    Route::get('/details', [EventController::class, 'apiEventDetails']);
-                    
-                    Route::get('/speaker', [SpeakerController::class, 'apiSpeakersList']);
-                    Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
-            
-                    Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
-                    Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
+
+                Route::middleware("auth:sanctum")->group(function () {
+                    Route::group(['middleware' => 'api.check.attendee.exists'], function () {
+                        Route::prefix('attendee/{attendeeId}')->group(function () {
+                            Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
+                            Route::get('/homepage', [EventController::class, 'apiEventHomepage']);
+
+                            Route::get('/speaker', [SpeakerController::class, 'apiSpeakersList']);
+                            Route::get('/sponsor', [SponsorController::class, 'getListOfSponsors']);
+
+                            Route::get('/exhibitor', [ExhibitorController::class, 'getListOfExhibitors']);
+                            Route::get('/media-partner', [MediaPartnerController::class, 'getListOfMediaPartners']);
+                        });
+                    });
                 });
             });
         });
@@ -45,7 +48,7 @@ Route::group(['middleware' => 'api.check.secret.code'], function(){
 });
 
 
-Route::fallback(function(){
+Route::fallback(function () {
     return response()->json([
         'status' => 404,
         'message' => "Page not found",
@@ -55,4 +58,3 @@ Route::fallback(function(){
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-

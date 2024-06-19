@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MediaEntityTypes;
 use App\Models\Event;
 use App\Models\Feature;
+use App\Models\Media;
 use App\Models\Sponsor;
 use App\Models\SponsorType;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class SponsorController extends Controller
 {
     public function eventSponsorsView($eventCategory, $eventId){
-        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
         
         return view('admin.event.sponsors.sponsors', [
             "pageTitle" => "Sponsors",
@@ -24,7 +24,7 @@ class SponsorController extends Controller
     }
 
     public function eventSponsorTypesView($eventCategory, $eventId){
-        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
         
         return view('admin.event.sponsors.sponsor_types', [
             "pageTitle" => "Sponsors Type",
@@ -42,72 +42,63 @@ class SponsorController extends Controller
         $sponsor = Sponsor::where('id', $sponsorId)->first();
 
         if ($sponsor) {
-            if ($sponsor->logo) {
-                $sponsorLogo = Storage::url($sponsor->logo);
-                $sponsorLogoDefault = false;
-            } else {
-                $sponsorLogo = asset('assets/images/logo-placeholder.jpg');
-                $sponsorLogoDefault = true;
-            }
-
-            if ($sponsor->banner) {
-                $sponsorBanner = Storage::url($sponsor->banner);
-                $sponsorBannerDefault = false;
-            } else {
-                $sponsorBanner = asset('assets/images/banner-placeholder.jpg');
-                $sponsorBannerDefault = true;
-            }
-
             if($sponsor->feature_id == 0){
-                $category = $event->short_name;
+                $categoryName = $event->short_name;
             } else {
                 $feature = Feature::where('event_id', $event->id)->where('id', $sponsor->feature_id)->first();
                 if($feature){
-                    $category = $feature->short_name;
+                    $categoryName = $feature->short_name;
                 } else {
-                    $category = "Others";
+                    $categoryName = "Others";
                 }
             }
 
             $sponsorType = SponsorType::where('event_id', $event->id)->where('id', $sponsor->sponsor_type_id)->first();
             if($sponsorType){
-                $type = $sponsorType->name;
+                $typeName = $sponsorType->name;
             } else {
-                $type = "N/A";
+                $typeName = "N/A";
             }
 
             $sponsorData = [
                 "sponsorId" => $sponsor->id,
-                "sponsorCategoryName" => $category,
-                "sponsorFeatureId" => $sponsor->feature_id,
-                "sponsorTypeName" => $type,
-                "sponsorTypeId" => $sponsor->sponsor_type_id,
 
-                "sponsorName" => $sponsor->name,
-                "sponsorProfile" => $sponsor->profile,
-                
-                "sponsorLogo" => $sponsorLogo,
-                "sponsorLogoDefault" => $sponsorLogoDefault,
-                "sponsorBanner" => $sponsorBanner,
-                "sponsorBannerDefault" => $sponsorBannerDefault,
+                "categoryName" => $categoryName,
+                "feature_id" => $sponsor->feature_id,
+                "typeName" => $typeName,
+                "sponsor_type_id" => $sponsor->sponsor_type_id,
 
-                "sponsorCountry" => $sponsor->country,
-                "sponsorContactPersonName" => $sponsor->contact_person_name,
-                "sponsorEmailAddress" => $sponsor->email_address,
-                "sponsorMobileNumber" => $sponsor->mobile_number,
-                "sponsorWebsite" => $sponsor->website,
-                "sponsorFacebook" => $sponsor->facebook,
-                "sponsorLinkedin" => $sponsor->linkedin,
-                "sponsorTwitter" => $sponsor->twitter,
-                "sponsorInstagram" => $sponsor->instagram,
+                "name" => $sponsor->name,
+                "profile_html_text" => $sponsor->profile_html_text,
 
-                "sponsorStatus" => $sponsor->active,
-                "sponsorDateTimeAdded" => Carbon::parse($sponsor->datetime_added)->format('M j, Y g:i A'),
+                "logo" => [
+                    'media_id' => $sponsor->logo_media_id,
+                    'media_usage_id' => getMediaUsageId($sponsor->logo_media_id, MediaEntityTypes::SPONSOR_LOGO->value, $sponsor->id),
+                    'url' => Media::where('id', $sponsor->logo_media_id)->value('file_url'),
+                ],
+                "banner" => [
+                    'media_id' => $sponsor->banner_media_id,
+                    'media_usage_id' => getMediaUsageId($sponsor->banner_media_id, MediaEntityTypes::SPONSOR_BANNER->value, $sponsor->id),
+                    'url' => Media::where('id', $sponsor->banner_media_id)->value('file_url'),
+                ],
+
+                "country" => $sponsor->country,
+                "contact_person_name" => $sponsor->contact_person_name,
+                "email_address" => $sponsor->email_address,
+                "mobile_number" => $sponsor->mobile_number,
+                "website" => $sponsor->website,
+                "facebook" => $sponsor->facebook,
+                "linkedin" => $sponsor->linkedin,
+                "twitter" => $sponsor->twitter,
+                "instagram" => $sponsor->instagram,
+
+                "is_active" => $sponsor->is_active,
+                "datetime_added" => Carbon::parse($sponsor->datetime_added)->format('M j, Y g:i A'),
             ];
 
             return view('admin.event.sponsors.sponsor', [
                 "pageTitle" => "Sponsor",
-                "eventName" => $event->name,
+                "eventName" => $event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "sponsorData" => $sponsorData,

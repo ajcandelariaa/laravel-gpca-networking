@@ -21,42 +21,44 @@
 
         <div class="shadow-lg my-5 bg-white rounded-md">
             <div
-                class="grid grid-cols-11 pt-2 pb-2 mt-3 text-center items-center gap-10 text-sm text-white bg-primaryColor rounded-tl-md rounded-tr-md">
+                class="grid grid-cols-12 pt-2 pb-2 mt-3 text-center items-center gap-10 text-sm text-white bg-primaryColor rounded-tl-md rounded-tr-md">
                 <div class="col-span-1">No.</div>
                 <div class="col-span-2">Logo</div>
                 <div class="col-span-2">Company Name</div>
                 <div class="col-span-1">Category</div>
                 <div class="col-span-1">Type</div>
+                <div class="col-span-1">Website</div>
                 <div class="col-span-2">Date time added</div>
                 <div class="col-span-1">Status</div>
                 <div class="col-span-1">Action</div>
             </div>
             @foreach ($finalListOfSponsors as $index => $finalListOfSponsor)
                 <div
-                    class="grid grid-cols-11 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
+                    class="grid grid-cols-12 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
                     <div class="col-span-1">{{ $index + 1 }}</div>
                     <div class="col-span-2">
                         @if ($finalListOfSponsor['logo'] == null)
                             N/A
                         @else
-                            <img src="{{ Storage::url($finalListOfSponsor['logo']) }}" alt=""
+                            <img src="{{ $finalListOfSponsor['logo'] }}" alt=""
                                 class="mx-auto w-14">
                         @endif
                     </div>
                     <div class="col-span-2">{{ $finalListOfSponsor['name'] }}</div>
                     <div class="col-span-1">{{ $finalListOfSponsor['category'] }}</div>
                     <div class="col-span-1">{{ $finalListOfSponsor['type'] }}</div>
+                    <div class="col-span-1">{{ $finalListOfSponsor['website'] ?? 'N/A' }}</div>
                     <div wire:click="showEditSponsorDateTime({{ $finalListOfSponsor['id'] }}, {{ $index }})"
                         class="text-blue-700 hover:underline col-span-2 cursor-pointer">
                         {{ $finalListOfSponsor['datetime_added'] }}</div>
                     <div class="col-span-1">
-                        @if ($finalListOfSponsor['active'])
+                        @if ($finalListOfSponsor['is_active'])
                             <button
-                                wire:click="updateSponsorStatus({{ $index }}, {{ $finalListOfSponsor['id'] }}, true)"
+                                wire:click="updateSponsorStatus({{ $index }})"
                                 class="text-gray-700 bg-green-300 hover:bg-green-500 hover:text-white py-1 px-2 text-sm rounded-md">Active</button>
                         @else
                             <button
-                                wire:click="updateSponsorStatus({{ $index }}, {{ $finalListOfSponsor['id'] }}, false)"
+                                wire:click="updateSponsorStatus({{ $index }})"
                                 class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
                         @endif
                     </div>
@@ -72,8 +74,9 @@
     @endif
 
 
+
     @if ($editSponsorDateTimeForm)
-        @include('livewire.event.sponsors.edit_datetime')
+        @include('livewire.common.edit_datetime_form')
     @endif
     
     @if ($addSponsorForm)

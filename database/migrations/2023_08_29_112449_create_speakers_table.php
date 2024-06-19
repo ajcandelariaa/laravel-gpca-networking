@@ -24,10 +24,10 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name');
 
-            $table->string('company_name');
-            $table->string('job_title');
+            $table->string('company_name')->nullable();
+            $table->string('job_title')->nullable();
 
-            $table->mediumText('biography')->nullable();
+            $table->text('biography_html_text')->nullable();
 
             $table->unsignedBigInteger('pfp_media_id')->nullable();
             $table->unsignedBigInteger('cover_photo_media_id')->nullable();

@@ -3,8 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Enums\MediaEntityTypes;
+use App\Models\Attendee;
 use App\Models\Event;
+use App\Models\Exhibitor;
 use App\Models\Media;
+use App\Models\MediaPartner;
+use App\Models\MeetingRoomPartner;
+use App\Models\Session;
+use App\Models\Speaker;
+use App\Models\Sponsor;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -124,7 +131,6 @@ class EventController extends Controller
                     'category' => $event->category,
                     'location' => $event->location,
                     'edition' => $event->edition,
-                    'description_html_text' => $event->description_html_text,
 
                     'event_full_link' => $event->event_full_link,
                     'event_short_link' => $event->event_short_link,
@@ -146,6 +152,12 @@ class EventController extends Controller
                     'secondary_bg_color' => $event->secondary_bg_color,
                     'primary_text_color' => $event->primary_text_color,
                     'secondary_text_color' => $event->secondary_text_color,
+                ],
+                "eventHTMLTexts" => [
+                    'description_html_text' => $event->description_html_text,
+                    'login_html_text' => $event->login_html_text,
+                    'continue_as_guest_html_text' => $event->continue_as_guest_html_text,
+                    'forgot_password_html_text' => $event->forgot_password_html_text,
                 ],
                 "eventAssets" => [
                     'event_logo' => [
@@ -240,35 +252,32 @@ class EventController extends Controller
         }
     }
 
-    public function apiEventDetails($eventCategory, $eventId)
+    public function apiEventHomepage($eventCategory, $eventId, $attendeeId)
     {
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
 
-        return response()->json([
-            'status' => 200,
-            'message' => "Events Details",
-            'data' => [
-                'id' => $event->id,
-                'name' => $event->name,
-                'short_name' => $event->short_name,
-                'location' => $event->location,
-                'description' => $event->description,
-                'event_full_link' => $event->event_full_link,
-                'event_short_link' => $event->event_short_link,
-                'event_start_date' => $event->event_start_date,
-                'event_end_date' => $event->event_end_date,
+        if($event){
+            $attendee = Attendee::where('id', $attendeeId)->where('event_id', $eventId)->where('is_active', true)->first();
 
-                'event_logo' => asset(Storage::url($event->event_logo)),
-                'event_logo_inverted' => asset(Storage::url($event->event_logo_inverted)),
-                'app_sponsor_logo' => asset(Storage::url($event->app_sponsor_logo)),
-
-                'event_splash_screen' => asset(Storage::url($event->event_splash_screen)),
-                'event_banner' => asset(Storage::url($event->event_banner)),
-                'app_sponsor_banner' => asset(Storage::url($event->app_sponsor_banner)),
-
-                'year' => $event->year,
-                'active' => $event->active,
-            ],
-        ]);
+            $data = [
+                'event_logo_inverted' => Media::where('id', $event->event_logo_inverted_media_id)->value('file_url'),
+                'event_banner' => Media::where('id', $event->event_banner_media_id)->value('file_url'),
+                'speaker_count' => Speaker::where('event_id', $eventId)->where('is_active', true)->count(),
+                'session_count' => Session::where('event_id', $eventId)->where('is_active', true)->count(),
+                'sponsor_count' => Sponsor::where('event_id', $eventId)->where('is_active', true)->count(),
+                'exhibitor_count' => Exhibitor::where('event_id', $eventId)->where('is_active', true)->count(),
+                'media_partner_count' => MediaPartner::where('event_id', $eventId)->where('is_active', true)->count(),
+                'meeting_room_partner_count' => MeetingRoomPartner::where('event_id', $eventId)->where('is_active', true)->count(),
+                'attendee_details' => [
+                    'pfp' => Media::where('id', $attendee->pfp_media_id)->value('file_url'),
+                    'name' => $attendee->salutation . ' ' . $attendee->first_name . ' ' . $attendee->middle_name . ' ' . $attendee->last_name,
+                    'email_address' => $attendee->email_address,
+                ],
+                'notification_count' => 0,
+            ];
+            return $this->success($data, "Event Homepage details", 200);
+        } else {
+            return $this->success(null, "Event doesn't exist.", 200);
+        }
     }
 }

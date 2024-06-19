@@ -2,31 +2,31 @@
 
 namespace App\Http\Livewire;
 
+use App\Enums\MediaEntityTypes;
+use App\Enums\MediaUsageUpdateTypes;
 use Livewire\Component;
 use App\Models\Event as Events;
 use App\Models\Exhibitor as Exhibitors;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Livewire\WithFileUploads;
+use App\Models\Media as Medias;
 use Illuminate\Support\Str;
 
 class ExhibitorDetails extends Component
 {
-    use WithFileUploads;
-
     public $event, $exhibitorData;
 
-    public $image, $assetType, $editExhibitorAssetForm, $imageDefault;
+    public $assetType, $editExhibitorAssetForm, $image_media_id, $image_placeholder_text;
+    public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    public $name, $profile, $stand_number, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram,  $editExhibitorDetailsForm;
+    public $name, $profile_html_text, $stand_number, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram;
+    public $editExhibitorDetailsForm;
 
-    protected $listeners = ['editExhibitorDetailsConfirmed' => 'editExhibitorDetails', 'editExhibitorAssetConfirmed' => 'editExhibitorAsset', 'removeExhibitorAssetConfirmed' => 'removeExhibitorAsset'];
+    protected $listeners = ['editExhibitorDetailsConfirmed' => 'editExhibitorDetails', 'editExhibitorAssetConfirmed' => 'editExhibitorAsset'];
 
     public function mount($eventId, $eventCategory, $exhibitorData)
     {
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
         $this->exhibitorData = $exhibitorData;
-
+        $this->mediaFileList = getMediaFileList();
         $this->editExhibitorAssetForm = false;
         $this->editExhibitorDetailsForm = false;
     }
@@ -45,22 +45,18 @@ class ExhibitorDetails extends Component
         $this->editExhibitorAssetForm = true;
     }
 
-    public function cancelEditExhibitorAsset()
-    {
-        $this->resetEditExhibitorAssetFields();
-    }
-
     public function resetEditExhibitorAssetFields()
     {
         $this->editExhibitorAssetForm = false;
         $this->assetType = null;
-        $this->image = null;
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
     }
 
     public function editExhibitorAssetConfirmation()
     {
         $this->validate([
-            'image' => 'required|mimes:png,jpg,jpeg'
+            'image_placeholder_text' => 'required'
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -74,40 +70,62 @@ class ExhibitorDetails extends Component
 
     public function editExhibitorAsset()
     {
-        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-
         if ($this->assetType == "Exhibitor logo") {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/exhibitors/logo/' . $this->exhibitorData['exhibitorId'];
-            if (!$this->exhibitorData['exhibitorLogoDefault']) {
-                $exhibitorAssetUrl = Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->value('logo');
-                if ($exhibitorAssetUrl) {
-                    $this->removeExhibitorAssetInStorage($exhibitorAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
             Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
-                'logo' => $path,
+                'logo_media_id' => $this->image_media_id,
             ]);
 
-            $this->exhibitorData['exhibitorLogo'] = Storage::url($path);
-            $this->exhibitorData['exhibitorLogoDefault'] = false;
+            if ($this->exhibitorData['logo']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EXHIBITOR_LOGO->value,
+                    $this->exhibitorData['exhibitorId'],
+                    $this->exhibitorData['logo']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EXHIBITOR_LOGO->value,
+                    $this->exhibitorData['exhibitorId'],
+                    $this->exhibitorData['logo']['media_usage_id']
+                );
+            }
+
+            $this->exhibitorData['logo'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EXHIBITOR_LOGO->value, $this->exhibitorData['exhibitorId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         } else {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/exhibitors/banner/' . $this->exhibitorData['exhibitorId'];
-            if (!$this->exhibitorData['exhibitorBannerDefault']) {
-                $exhibitorAssetUrl = Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->value('banner');
-                if ($exhibitorAssetUrl) {
-                    $this->removeExhibitorAssetInStorage($exhibitorAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
             Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
-                'banner' => $path,
+                'banner_media_id' => $this->image_media_id,
             ]);
 
-            $this->exhibitorData['exhibitorBanner'] = Storage::url($path);
-            $this->exhibitorData['exhibitorBannerDefault'] = false;
+            if ($this->exhibitorData['banner']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EXHIBITOR_BANNER->value,
+                    $this->exhibitorData['exhibitorId'],
+                    $this->exhibitorData['banner']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::EXHIBITOR_BANNER->value,
+                    $this->exhibitorData['exhibitorId'],
+                    $this->exhibitorData['banner']['media_usage_id']
+                );
+            }
+
+            $this->exhibitorData['banner'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EXHIBITOR_BANNER->value, $this->exhibitorData['exhibitorId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         }
 
         $this->dispatchBrowserEvent('swal:success', [
@@ -119,64 +137,36 @@ class ExhibitorDetails extends Component
         $this->resetEditExhibitorAssetFields();
     }
 
-    public function removeExhibitorAssetConfirmation()
+    // FOR CHOOSING IMAGE MODAL
+    public function chooseImage()
     {
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure you want to remove?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, remove it!",
-            'livewireEmit' => "removeExhibitorAssetConfirmed",
-        ]);
+        $this->chooseImageModal = true;
     }
 
-    public function removeExhibitorAsset()
+    public function showMediaFileDetails($arrayIndex)
     {
-        if ($this->assetType == "Exhibitor logo") {
-            $exhibitorAssetUrl = Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->value('logo');
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/exhibitors/logo/' . $this->exhibitorData['exhibitorId'];
-
-            if ($exhibitorAssetUrl) {
-                $this->removeExhibitorAssetInStorage($exhibitorAssetUrl, $pathDirectory);
-            }
-
-            Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
-                'logo' => null,
-            ]);
-
-            $this->exhibitorData['exhibitorLogo'] = asset('assets/images/logo-placeholder.jpg');
-            $this->exhibitorData['exhibitorLogoDefault'] = true;
-        } else {
-            $exhibitorAssetUrl = Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->value('banner');
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/exhibitors/banner/' . $this->exhibitorData['exhibitorId'];
-
-            if ($exhibitorAssetUrl) {
-                $this->removeExhibitorAssetInStorage($exhibitorAssetUrl, $pathDirectory);
-            }
-
-            Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
-                'banner' => null,
-            ]);
-
-            $this->exhibitorData['exhibitorBanner'] = asset('assets/images/banner-placeholder.jpg');
-            $this->exhibitorData['exhibitorBannerDefault'] = true;
-        }
-
-        $this->dispatchBrowserEvent('swal:success', [
-            'type' => 'success',
-            'message' => $this->assetType . ' removed succesfully!',
-            'text' => "",
-        ]);
-
-        $this->resetEditExhibitorAssetFields();
+        $this->activeSelectedImage = $this->mediaFileList[$arrayIndex];
     }
 
-    public function removeExhibitorAssetInStorage($storageUrl, $storageDirectory)
+    public function unshowMediaFileDetails()
     {
-        if (Storage::exists($storageUrl)) {
-            Storage::delete($storageUrl);
-            Storage::deleteDirectory($storageDirectory);
-        }
+        $this->activeSelectedImage = array();
+    }
+
+    public function selectChooseImage()
+    {
+        $this->image_media_id = $this->activeSelectedImage['id'];
+        $this->image_placeholder_text = $this->activeSelectedImage['file_name'];
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
+
+    public function cancelChooseImage()
+    {
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
     }
 
 
@@ -184,33 +174,28 @@ class ExhibitorDetails extends Component
     // EDIT EXHIBITOR DETAILS
     public function showEditExhibitorDetails()
     {
-        $this->name = $this->exhibitorData['exhibitorName'];
-        $this->profile = $this->exhibitorData['exhibitorProfile'];
-        $this->stand_number = $this->exhibitorData['exhibitorStandNumber'];
+        $this->name = $this->exhibitorData['name'];
+        $this->profile_html_text = $this->exhibitorData['profile_html_text'];
+        $this->stand_number = $this->exhibitorData['stand_number'];
 
-        $this->country = $this->exhibitorData['exhibitorCountry'];
-        $this->contact_person_name = $this->exhibitorData['exhibitorContactPersonName'];
-        $this->email_address = $this->exhibitorData['exhibitorEmailAddress'];
-        $this->mobile_number = $this->exhibitorData['exhibitorMobileNumber'];
-        $this->website = $this->exhibitorData['exhibitorWebsite'];
-        $this->facebook = $this->exhibitorData['exhibitorFacebook'];
-        $this->linkedin = $this->exhibitorData['exhibitorLinkedin'];
-        $this->twitter = $this->exhibitorData['exhibitorTwitter'];
-        $this->instagram = $this->exhibitorData['exhibitorInstagram'];
+        $this->country = $this->exhibitorData['country'];
+        $this->contact_person_name = $this->exhibitorData['contact_person_name'];
+        $this->email_address = $this->exhibitorData['email_address'];
+        $this->mobile_number = $this->exhibitorData['mobile_number'];
+        $this->website = $this->exhibitorData['website'];
+        $this->facebook = $this->exhibitorData['facebook'];
+        $this->linkedin = $this->exhibitorData['linkedin'];
+        $this->twitter = $this->exhibitorData['twitter'];
+        $this->instagram = $this->exhibitorData['instagram'];
 
         $this->editExhibitorDetailsForm = true;
-    }
-
-    public function cancelEditExhibitorDetails()
-    {
-        $this->resetEditExhibitorDetailsFields();
     }
 
     public function resetEditExhibitorDetailsFields()
     {
         $this->editExhibitorDetailsForm = false;
         $this->name = null;
-        $this->profile = null;
+        $this->profile_html_text = null;
         $this->stand_number = null;
 
         $this->country = null;
@@ -228,8 +213,6 @@ class ExhibitorDetails extends Component
     {
         $this->validate([
             'name' => 'required',
-            'website' => 'required',
-            'stand_number' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -245,7 +228,7 @@ class ExhibitorDetails extends Component
     {
         Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
             'name' => $this->name,
-            'profile' => $this->profile,
+            'profile_html_text' => $this->profile_html_text,
             'stand_number' => $this->stand_number,
 
             'country' => $this->country == "" ? null : $this->country,
@@ -259,19 +242,19 @@ class ExhibitorDetails extends Component
             'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
-        $this->exhibitorData['exhibitorName'] = $this->name;
-        $this->exhibitorData['exhibitorProfile'] = $this->profile;
-        $this->exhibitorData['exhibitorStandNumber'] = $this->stand_number;
+        $this->exhibitorData['name'] = $this->name;
+        $this->exhibitorData['profile_html_text'] = $this->profile_html_text;
+        $this->exhibitorData['stand_number'] = $this->stand_number;
 
-        $this->exhibitorData['exhibitorCountry'] = $this->country;
-        $this->exhibitorData['exhibitorContactPersonName'] = $this->contact_person_name;
-        $this->exhibitorData['exhibitorEmailAddress'] = $this->email_address;
-        $this->exhibitorData['exhibitorMobileNumber'] = $this->mobile_number;
-        $this->exhibitorData['exhibitorWebsite'] = $this->website;
-        $this->exhibitorData['exhibitorFacebook'] = $this->facebook;
-        $this->exhibitorData['exhibitorLinkedin'] = $this->linkedin;
-        $this->exhibitorData['exhibitorTwitter'] = $this->twitter;
-        $this->exhibitorData['exhibitorInstagram'] = $this->instagram;
+        $this->exhibitorData['country'] = $this->country;
+        $this->exhibitorData['contact_person_name'] = $this->contact_person_name;
+        $this->exhibitorData['email_address'] = $this->email_address;
+        $this->exhibitorData['mobile_number'] = $this->mobile_number;
+        $this->exhibitorData['website'] = $this->website;
+        $this->exhibitorData['facebook'] = $this->facebook;
+        $this->exhibitorData['linkedin'] = $this->linkedin;
+        $this->exhibitorData['twitter'] = $this->twitter;
+        $this->exhibitorData['instagram'] = $this->instagram;
 
         $this->resetEditExhibitorDetailsFields();
 

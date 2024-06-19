@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Event as Events;
+use App\Models\Media as Medias;
 use App\Models\MeetingRoomPartner as MeetingRoomPartners;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -10,12 +11,16 @@ use Livewire\Component;
 class MeetingRoomPartnerList extends Component
 {
     public $event;
-
     public $finalListOfMeetingRoomPartners = array(), $finalListOfMeetingRoomPartnersConst = array();
 
-    public $addMeetingRoomPartnerForm, $name, $website, $location;
+    // ADD MRP
+    public $name, $website, $location;
+    public $addMeetingRoomPartnerForm;
 
-    public $meetingRoomPartnerId, $meetingRoomPartnerDateTime, $meetingRoomPartnerArrayIndex, $editMeetingRoomPartnerDateTimeForm;
+    // EDIT DATE TIME
+    public $meetingRoomPartnerId, $meetingRoomPartnerDateTime, $meetingRoomPartnerArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editMeetingRoomPartnerDateTimeForm;
 
     protected $listeners = ['addMeetingRoomPartnerConfirmed' => 'addMeetingRoomPartner'];
 
@@ -32,13 +37,17 @@ class MeetingRoomPartnerList extends Component
                     'name' => $meetingRoomPartner->name,
                     'location' => $meetingRoomPartner->location,
                     'website' => $meetingRoomPartner->website,
-                    'active' => $meetingRoomPartner->active,
-                    'logo' => $meetingRoomPartner->logo,
+                    'is_active' => $meetingRoomPartner->is_active,
+                    'logo' => Medias::where('id', $meetingRoomPartner->logo_media_id)->value('file_url'),
                     'datetime_added' => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
             $this->finalListOfMeetingRoomPartnersConst = $this->finalListOfMeetingRoomPartners;
         }
+
+        $this->inputNameVariableDateTime = "meetingRoomPartnerDateTime";
+        $this->btnUpdateNameMethodDateTime = "editMeetingRoomPartnerDateTime";
+        $this->btnCancelNameMethodDateTime = "resetEditMeetingRoomPartnerDateTimeFields";
 
         $this->addMeetingRoomPartnerForm = false;
         $this->editMeetingRoomPartnerDateTimeForm = false;
@@ -58,8 +67,6 @@ class MeetingRoomPartnerList extends Component
     {
         $this->validate([
             'name' => 'required',
-            'website' => 'required',
-            'location' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -69,11 +76,6 @@ class MeetingRoomPartnerList extends Component
             'buttonConfirmText' => "Yes, add it!",
             'livewireEmit' => "addMeetingRoomPartnerConfirmed",
         ]);
-    }
-
-    public function cancelAddMeetingRoomPartner()
-    {
-        $this->resetAddMeetingRoomPartnerFields();
     }
 
     public function resetAddMeetingRoomPartnerFields()
@@ -98,7 +100,7 @@ class MeetingRoomPartnerList extends Component
             'name' => $this->name,
             'location' => $this->location,
             'website' => $this->website,
-            'active' => true,
+            'is_active' => true,
             'logo' => null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);
@@ -115,19 +117,14 @@ class MeetingRoomPartnerList extends Component
     }
 
 
-    public function updateMeetingRoomPartnerStatus($arrayIndex, $meetingRoomPartnerId, $status){
-        if($status){
-            $newStatus = false;
-        } else {
-            $newStatus = true;
-        }
-
-        MeetingRoomPartners::where('id', $meetingRoomPartnerId)->update([
-            'active' => $newStatus,
+    
+    public function updateMeetingRoomPartnerStatus($arrayIndex){
+        MeetingRoomPartners::where('id', $this->finalListOfMeetingRoomPartners[$arrayIndex]['id'])->update([
+            'is_active' => !$this->finalListOfMeetingRoomPartners[$arrayIndex]['is_active'],
         ]);
 
-        $this->finalListOfMeetingRoomPartners[$arrayIndex]['active'] = $newStatus;
-        $this->finalListOfMeetingRoomPartnersConst[$arrayIndex]['active'] = $newStatus;
+        $this->finalListOfMeetingRoomPartners[$arrayIndex]['is_active'] = !$this->finalListOfMeetingRoomPartners[$arrayIndex]['is_active'];
+        $this->finalListOfMeetingRoomPartnersConst[$arrayIndex]['is_active'] = !$this->finalListOfMeetingRoomPartnersConst[$arrayIndex]['is_active'];
     }
 
 
@@ -141,11 +138,6 @@ class MeetingRoomPartnerList extends Component
         $this->meetingRoomPartnerDateTime = $meetingRoomPartnerDateTime;
         $this->meetingRoomPartnerArrayIndex = $meetingRoomPartnerArrayIndex;
         $this->editMeetingRoomPartnerDateTimeForm = true;
-    }
-
-    public function cancelEditMeetingRoomPartnerDateTime()
-    {
-        $this->resetEditMeetingRoomPartnerDateTimeFields();
     }
 
     public function resetEditMeetingRoomPartnerDateTimeFields()

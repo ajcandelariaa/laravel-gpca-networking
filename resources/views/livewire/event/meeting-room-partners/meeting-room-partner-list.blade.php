@@ -34,24 +34,24 @@
                         @if ($finalListOfMeetingRoomPartner['logo'] == null)
                             N/A
                         @else
-                            <img src="{{ Storage::url($finalListOfMeetingRoomPartner['logo']) }}" alt=""
+                            <img src="{{ $finalListOfMeetingRoomPartner['logo'] }}" alt=""
                                 class="mx-auto w-14">
                         @endif
                     </div>
                     <div class="col-span-2">{{ $finalListOfMeetingRoomPartner['name'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfMeetingRoomPartner['website'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfMeetingRoomPartner['location'] }}</div>
+                    <div class="col-span-1">{{ $finalListOfMeetingRoomPartner['website'] ?? 'N/A' }}</div>
+                    <div class="col-span-1">{{ $finalListOfMeetingRoomPartner['location'] ?? 'N/A' }}</div>
                     <div wire:click="showEditMeetingRoomPartnerDateTime({{ $finalListOfMeetingRoomPartner['id'] }}, {{ $index }})"
                         class="text-blue-700 hover:underline col-span-2 cursor-pointer">
                         {{ $finalListOfMeetingRoomPartner['datetime_added'] }}</div>
                     <div class="col-span-1">
-                        @if ($finalListOfMeetingRoomPartner['active'])
+                        @if ($finalListOfMeetingRoomPartner['is_active'])
                             <button
-                                wire:click="updateMeetingRoomPartnerStatus({{ $index }}, {{ $finalListOfMeetingRoomPartner['id'] }}, true)"
+                                wire:click="updateMeetingRoomPartnerStatus({{ $index }})"
                                 class="text-gray-700 bg-green-300 hover:bg-green-500 hover:text-white py-1 px-2 text-sm rounded-md">Active</button>
                         @else
                             <button
-                                wire:click="updateMeetingRoomPartnerStatus({{ $index }}, {{ $finalListOfMeetingRoomPartner['id'] }}, false)"
+                                wire:click="updateMeetingRoomPartnerStatus({{ $index }})"
                                 class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
                         @endif
                     </div>
@@ -67,7 +67,7 @@
     @endif
 
     @if ($editMeetingRoomPartnerDateTimeForm)
-        @include('livewire.event.meeting-room-partners.edit_datetime')
+        @include('livewire.common.edit_datetime_form')
     @endif
 
     @if ($addMeetingRoomPartnerForm)

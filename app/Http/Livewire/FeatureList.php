@@ -42,7 +42,7 @@ class FeatureList extends Component
 
         $this->inputNameVariableDateTime = "featureDateTime";
         $this->btnUpdateNameMethodDateTime = "editFeatureDateTime";
-        $this->btnCancelNameMethodDateTime = "resetAddFeatureFields";
+        $this->btnCancelNameMethodDateTime = "resetEditFeatureDateTimeFields";
 
         $this->addFeatureForm = false;
     }
@@ -134,11 +134,6 @@ class FeatureList extends Component
         $this->featureDateTime = $featureDateTime;
         $this->featureArrayIndex = $featureArrayIndex;
         $this->editFeatureDateTimeForm = true;
-    }
-
-    public function cancelEditFeatureDateTime()
-    {
-        $this->resetEditFeatureDateTimeFields();
     }
 
     public function resetEditFeatureDateTimeFields()

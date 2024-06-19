@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('location')->nullable();
-            $table->mediumText('profile')->nullable();
+            $table->text('profile_html_text')->nullable();
             $table->unsignedBigInteger('logo_media_id')->nullable();
             $table->unsignedBigInteger('banner_media_id')->nullable();
             

@@ -2,31 +2,31 @@
 
 namespace App\Http\Livewire;
 
+use App\Enums\MediaEntityTypes;
+use App\Enums\MediaUsageUpdateTypes;
 use Livewire\Component;
 use App\Models\Event as Events;
+use App\Models\Media as Medias;
 use App\Models\MeetingRoomPartner as MeetingRoomPartners;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
 
 class MeetingRoomPartnerDetails extends Component
 {
-    use WithFileUploads;
-
     public $event, $meetingRoomPartnerData;
 
-    public $image, $assetType, $editMeetingRoomPartnerAssetForm, $imageDefault;
+    public $assetType, $editMeetingRoomPartnerAssetForm, $image_media_id, $image_placeholder_text;
+    public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    public $name, $profile, $location, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $editMeetingRoomPartnerDetailsForm;
+    public $name, $profile_html_text, $location, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram;
+    public $editMeetingRoomPartnerDetailsForm;
 
-    protected $listeners = ['editMeetingRoomPartnerDetailsConfirmed' => 'editMeetingRoomPartnerDetails', 'editMeetingRoomPartnerAssetConfirmed' => 'editMeetingRoomPartnerAsset', 'removeMeetingRoomPartnerAssetConfirmed' => 'removeMeetingRoomPartnerAsset'];
+    protected $listeners = ['editMeetingRoomPartnerDetailsConfirmed' => 'editMeetingRoomPartnerDetails', 'editMeetingRoomPartnerAssetConfirmed' => 'editMeetingRoomPartnerAsset'];
 
     public function mount($eventId, $eventCategory, $meetingRoomPartnerData)
     {
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
         $this->meetingRoomPartnerData = $meetingRoomPartnerData;
-
+        $this->mediaFileList = getMediaFileList();
         $this->editMeetingRoomPartnerAssetForm = false;
         $this->editMeetingRoomPartnerDetailsForm = false;
 
@@ -48,23 +48,19 @@ class MeetingRoomPartnerDetails extends Component
         $this->editMeetingRoomPartnerAssetForm = true;
     }
 
-    public function cancelEditMeetingRoomPartnerAsset()
-    {
-        $this->resetEditMeetingRoomPartnerAssetFields();
-    }
-
     public function resetEditMeetingRoomPartnerAssetFields()
     {
         $this->editMeetingRoomPartnerAssetForm = false;
         $this->assetType = null;
-        $this->image = null;
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
     }
 
     public function editMeetingRoomPartnerAssetConfirmation()
     {
         
         $this->validate([
-            'image' => 'required|mimes:png,jpg,jpeg'
+            'image_placeholder_text' => 'required'
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -78,42 +74,62 @@ class MeetingRoomPartnerDetails extends Component
 
     public function editMeetingRoomPartnerAsset()
     {
-        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-
         if ($this->assetType == "Meeting room partner logo") {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/meeting-room-partners/logo/' . $this->meetingRoomPartnerData['meetingRoomPartnerId'];
-            if(!$this->meetingRoomPartnerData['meetingRoomPartnerLogoDefault']){
-                $meetingRoomPartnerAssetUrl = MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->value('logo');
-                if($meetingRoomPartnerAssetUrl){
-                    $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
             MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
-                'logo' => $path,
+                'logo_media_id' => $this->image_media_id,
             ]);
 
-            $this->meetingRoomPartnerData['meetingRoomPartnerLogo'] = Storage::url($path);
-            $this->meetingRoomPartnerData['meetingRoomPartnerLogoDefault'] = false;
+            if ($this->meetingRoomPartnerData['logo']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::MEETING_ROOM_PARTNER_LOGO->value,
+                    $this->meetingRoomPartnerData['meetingRoomPartnerId'],
+                    $this->meetingRoomPartnerData['logo']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::MEETING_ROOM_PARTNER_LOGO->value,
+                    $this->meetingRoomPartnerData['meetingRoomPartnerId'],
+                    $this->meetingRoomPartnerData['logo']['media_usage_id']
+                );
+            }
+
+            $this->meetingRoomPartnerData['logo'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::MEETING_ROOM_PARTNER_LOGO->value, $this->meetingRoomPartnerData['meetingRoomPartnerId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         } else {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/meeting-room-partners/banner/' . $this->meetingRoomPartnerData['meetingRoomPartnerId'];
-
-            if(!$this->meetingRoomPartnerData['meetingRoomPartnerBannerDefault']){
-                $meetingRoomPartnerAssetUrl = MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->value('banner');
-
-                if($meetingRoomPartnerAssetUrl){
-                    $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
             MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
-                'banner' => $path,
+                'banner_media_id' => $this->image_media_id,
             ]);
 
-            $this->meetingRoomPartnerData['meetingRoomPartnerBanner'] = Storage::url($path);
-            $this->meetingRoomPartnerData['meetingRoomPartnerBannerDefault'] = false;
+            if ($this->meetingRoomPartnerData['banner']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::MEETING_ROOM_PARTNER_BANNER->value,
+                    $this->meetingRoomPartnerData['meetingRoomPartnerId'],
+                    $this->meetingRoomPartnerData['banner']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::MEETING_ROOM_PARTNER_BANNER->value,
+                    $this->meetingRoomPartnerData['meetingRoomPartnerId'],
+                    $this->meetingRoomPartnerData['banner']['media_usage_id']
+                );
+            }
+
+            $this->meetingRoomPartnerData['banner'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::MEETING_ROOM_PARTNER_BANNER->value, $this->meetingRoomPartnerData['meetingRoomPartnerId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         }
 
         $this->dispatchBrowserEvent('swal:success', [
@@ -124,99 +140,66 @@ class MeetingRoomPartnerDetails extends Component
 
         $this->resetEditMeetingRoomPartnerAssetFields();
     }
-
-    public function removeMeetingRoomPartnerAssetConfirmation(){
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure you want to remove?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, remove it!",
-            'livewireEmit' => "removeMeetingRoomPartnerAssetConfirmed",
-        ]);
+    
+    // FOR CHOOSING IMAGE MODAL
+    public function chooseImage()
+    {
+        $this->chooseImageModal = true;
     }
 
-    public function removeMeetingRoomPartnerAsset(){
-        if($this->assetType == "Meeting room partner logo"){
-            $meetingRoomPartnerAssetUrl = MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->value('logo');
-
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/meeting-room-partners/logo/' . $this->meetingRoomPartnerData['meetingRoomPartnerId'];
-
-            if($meetingRoomPartnerAssetUrl){
-                $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl, $pathDirectory);
-            }
-
-            MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
-                'logo' => null,
-            ]);
-
-            $this->meetingRoomPartnerData['meetingRoomPartnerLogo'] = asset('assets/images/logo-placeholder.jpg');
-            $this->meetingRoomPartnerData['meetingRoomPartnerLogoDefault'] = true;
-        } else {
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/meeting-room-partners/banner/' . $this->meetingRoomPartnerData['meetingRoomPartnerId'];
-
-            $meetingRoomPartnerAssetUrl = MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->value('banner');
-            
-            if($meetingRoomPartnerAssetUrl){
-                $this->removeMeetingRoomPartnerAssetInStorage($meetingRoomPartnerAssetUrl, $pathDirectory);
-            }
-
-            MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
-                'banner' => null,
-            ]);
-
-            $this->meetingRoomPartnerData['meetingRoomPartnerBanner'] = asset('assets/images/banner-placeholder.jpg');
-            $this->meetingRoomPartnerData['meetingRoomPartnerBannerDefault'] = true;
-        }
-
-        $this->dispatchBrowserEvent('swal:success', [
-            'type' => 'success',
-            'message' => $this->assetType . ' removed succesfully!',
-            'text' => "",
-        ]);
-
-        $this->resetEditMeetingRoomPartnerAssetFields();
+    public function showMediaFileDetails($arrayIndex)
+    {
+        $this->activeSelectedImage = $this->mediaFileList[$arrayIndex];
     }
 
-    public function removeMeetingRoomPartnerAssetInStorage($storageUrl, $storageDirectory){
-        if(Storage::exists($storageUrl)){
-            Storage::delete($storageUrl);
-            Storage::deleteDirectory($storageDirectory);
-        }
+    public function unshowMediaFileDetails()
+    {
+        $this->activeSelectedImage = array();
     }
 
+    public function selectChooseImage()
+    {
+        $this->image_media_id = $this->activeSelectedImage['id'];
+        $this->image_placeholder_text = $this->activeSelectedImage['file_name'];
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
+
+    public function cancelChooseImage()
+    {
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
 
 
 
     // EDIT MEETING ROOM PARTNER DETAILS
     public function showEditMeetingRoomPartnerDetails()
     {
-        $this->name = $this->meetingRoomPartnerData['meetingRoomPartnerName'];
-        $this->profile = $this->meetingRoomPartnerData['meetingRoomPartnerProfile'];
-        $this->location = $this->meetingRoomPartnerData['meetingRoomPartnerLocation'];
+        $this->name = $this->meetingRoomPartnerData['name'];
+        $this->profile_html_text = $this->meetingRoomPartnerData['profile_html_text'];
+        $this->location = $this->meetingRoomPartnerData['location'];
         
-        
-        $this->country = $this->meetingRoomPartnerData['meetingRoomPartnerCountry'];
-        $this->contact_person_name = $this->meetingRoomPartnerData['meetingRoomPartnerContactPersonName'];
-        $this->email_address = $this->meetingRoomPartnerData['meetingRoomPartnerEmailAddress'];
-        $this->mobile_number = $this->meetingRoomPartnerData['meetingRoomPartnerMobileNumber'];
-        $this->website = $this->meetingRoomPartnerData['meetingRoomPartnerWebsite'];
-        $this->facebook = $this->meetingRoomPartnerData['meetingRoomPartnerFacebook'];
-        $this->linkedin = $this->meetingRoomPartnerData['meetingRoomPartnerLinkedin'];
-        $this->twitter = $this->meetingRoomPartnerData['meetingRoomPartnerTwitter'];
-        $this->instagram = $this->meetingRoomPartnerData['meetingRoomPartnerInstagram'];
-        $this->editMeetingRoomPartnerDetailsForm = true;
-    }
+        $this->country = $this->meetingRoomPartnerData['country'];
+        $this->contact_person_name = $this->meetingRoomPartnerData['contact_person_name'];
+        $this->email_address = $this->meetingRoomPartnerData['email_address'];
+        $this->mobile_number = $this->meetingRoomPartnerData['mobile_number'];
 
-    public function cancelEditMeetingRoomPartnerDetails()
-    {
-        $this->resetEditMeetingRoomPartnerDetailsFields();
+        $this->website = $this->meetingRoomPartnerData['website'];
+        $this->facebook = $this->meetingRoomPartnerData['facebook'];
+        $this->linkedin = $this->meetingRoomPartnerData['linkedin'];
+        $this->twitter = $this->meetingRoomPartnerData['twitter'];
+        $this->instagram = $this->meetingRoomPartnerData['instagram'];
+        $this->editMeetingRoomPartnerDetailsForm = true;
     }
 
     public function resetEditMeetingRoomPartnerDetailsFields()
     {
         $this->editMeetingRoomPartnerDetailsForm = false;
         $this->name = null;
-        $this->profile = null;
+        $this->profile_html_text = null;
         $this->location = null;
 
         $this->country = null;
@@ -234,8 +217,6 @@ class MeetingRoomPartnerDetails extends Component
     {
         $this->validate([
             'name' => 'required',
-            'website' => 'required',
-            'location' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -251,7 +232,7 @@ class MeetingRoomPartnerDetails extends Component
     {
         MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
             'name' => $this->name,
-            'profile' => $this->profile,
+            'profile_html_text' => $this->profile_html_text,
             'location' => $this->location,
 
             'country' => $this->country == "" ? null : $this->country,
@@ -265,19 +246,19 @@ class MeetingRoomPartnerDetails extends Component
             'instagram' => $this->instagram == "" ? null : $this->instagram,
         ]);
 
-        $this->meetingRoomPartnerData['meetingRoomPartnerName'] = $this->name;
-        $this->meetingRoomPartnerData['meetingRoomPartnerProfile'] = $this->profile;
-        $this->meetingRoomPartnerData['meetingRoomPartnerLocation'] = $this->location;
+        $this->meetingRoomPartnerData['name'] = $this->name;
+        $this->meetingRoomPartnerData['profile_html_text'] = $this->profile_html_text;
+        $this->meetingRoomPartnerData['location'] = $this->location;
         
-        $this->meetingRoomPartnerData['meetingRoomPartnerCountry'] = $this->country;
-        $this->meetingRoomPartnerData['meetingRoomPartnerContactPersonName'] = $this->contact_person_name;
-        $this->meetingRoomPartnerData['meetingRoomPartnerEmailAddress'] = $this->email_address;
-        $this->meetingRoomPartnerData['meetingRoomPartnerMobileNumber'] = $this->mobile_number;
-        $this->meetingRoomPartnerData['meetingRoomPartnerWebsite'] = $this->website;
-        $this->meetingRoomPartnerData['meetingRoomPartnerFacebook'] = $this->facebook;
-        $this->meetingRoomPartnerData['meetingRoomPartnerLinkedin'] = $this->linkedin;
-        $this->meetingRoomPartnerData['meetingRoomPartnerTwitter'] = $this->twitter;
-        $this->meetingRoomPartnerData['meetingRoomPartnerInstagram'] = $this->instagram;
+        $this->meetingRoomPartnerData['country'] = $this->country;
+        $this->meetingRoomPartnerData['contact_person_name'] = $this->contact_person_name;
+        $this->meetingRoomPartnerData['email_address'] = $this->email_address;
+        $this->meetingRoomPartnerData['mobile_number'] = $this->mobile_number;
+        $this->meetingRoomPartnerData['website'] = $this->website;
+        $this->meetingRoomPartnerData['facebook'] = $this->facebook;
+        $this->meetingRoomPartnerData['linkedin'] = $this->linkedin;
+        $this->meetingRoomPartnerData['twitter'] = $this->twitter;
+        $this->meetingRoomPartnerData['instagram'] = $this->instagram;
 
         $this->resetEditMeetingRoomPartnerDetailsFields();
 

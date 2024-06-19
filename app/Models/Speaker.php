@@ -22,7 +22,7 @@ class Speaker extends Model
         'company_name',
         'job_title',
 
-        'biography',
+        'biography_html_text',
 
         'pfp_media_id',
         'cover_photo_media_id',

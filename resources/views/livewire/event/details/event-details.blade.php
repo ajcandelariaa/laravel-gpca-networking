@@ -57,10 +57,6 @@
             <i class="fa-solid fa-link"></i>
             <p>{{ $eventData['eventDetails']['event_short_link'] }}</p>
         </div>
-
-        <div class="mt-5">
-            {{ $eventData['eventDetails']['description_html_text'] }}
-        </div>
     </div>
 
 
@@ -98,6 +94,39 @@
         </div>
     </div>
 
+    {{-- EVENT HTML TEXTS --}}
+    <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-5">
+        <div class="flex items-center justify-between">
+            <h1 class="text-headingTextColor text-3xl font-bold">Event HTML Texts</h1>
+            <div>
+                <button wire:click="showEditEventHTMLTexts"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
+                    <span class="mr-2"><i class="fa-solid fa-file-pen"></i></span>
+                    <span>Edit</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Description HTML Text: </p>
+            <p>{{ $eventData['eventHTMLTexts']['description_html_text'] }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Login HTML Text: </p>
+            <p>{{ $eventData['eventHTMLTexts']['login_html_text'] }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Continue as guest HTML Text: </p>
+            <p>{{ $eventData['eventHTMLTexts']['continue_as_guest_html_text'] }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Forgot password HTML Text: </p>
+            <p>{{ $eventData['eventHTMLTexts']['forgot_password_html_text'] }}</p>
+        </div>
+    </div>
 
     {{-- EVENT ASSETS --}}
     <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-10">
@@ -177,6 +206,10 @@
 
     @if ($chooseImageModal)
         @include('livewire.common.choose_image_modal')
+    @endif
+
+    @if ($editEventHTMLTextsForm)
+        @include('livewire.event.details.edit_html_texts_details')
     @endif
 
     @if ($editEventDetailsForm)

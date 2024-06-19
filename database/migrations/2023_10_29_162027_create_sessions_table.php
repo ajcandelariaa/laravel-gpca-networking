@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('session_type')->nullable();
             
             $table->string('title');
-            $table->mediumText('description_html_text')->nullable();
+            $table->text('description_html_text')->nullable();
             $table->string('start_time');
             $table->string('end_time');
             $table->string('location')->nullable();

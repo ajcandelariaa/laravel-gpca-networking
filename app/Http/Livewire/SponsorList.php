@@ -6,18 +6,23 @@ use App\Models\Event as Events;
 use App\Models\Sponsor as Sponsors;
 use App\Models\SponsorType as SponsorTypes;
 use App\Models\Feature as Features;
+use App\Models\Media as Medias;
 use Carbon\Carbon;
 use Livewire\Component;
 
 class SponsorList extends Component
 {
     public $event;
-
     public $finalListOfSponsors = array(), $finalListOfSponsorsConst = array();
 
-    public $addSponsorForm, $category, $type, $name, $website, $categoryChoices = array(), $typeChoices = array();
+    // EDIT DETAILS
+    public $feature_id, $sponsor_type_id, $name, $website, $categoryChoices = array(), $typeChoices = array();
+    public $addSponsorForm;
 
-    public $sponsorId, $sponsorDateTime, $sponsorArrayIndex, $editSponsorDateTimeForm;
+    // EDIT DATE TIME
+    public $sponsorId, $sponsorDateTime, $sponsorArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editSponsorDateTimeForm;
 
     protected $listeners = ['addSponsorConfirmed' => 'addSponsor'];
 
@@ -49,16 +54,21 @@ class SponsorList extends Component
 
                 array_push($this->finalListOfSponsors, [
                     'id' => $sponsor->id,
-                    'logo' => $sponsor->logo,
+                    'logo' => Medias::where('id', $sponsor->logo_media_id)->value('file_url'),
                     'name' => $sponsor->name,
                     'category' => $category,
                     'type' => $type,
-                    'active' => $sponsor->active,
+                    'website' => $sponsor->website,
+                    'is_active' => $sponsor->is_active,
                     'datetime_added' => Carbon::parse($sponsor->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
             $this->finalListOfSponsorsConst = $this->finalListOfSponsors;
         }
+
+        $this->inputNameVariableDateTime = "sponsorDateTime";
+        $this->btnUpdateNameMethodDateTime = "editSponsorDateTime";
+        $this->btnCancelNameMethodDateTime = "resetEditSponsorDateTimeFields";
 
         $this->addSponsorForm = false;
         $this->editSponsorDateTimeForm = false;
@@ -111,9 +121,8 @@ class SponsorList extends Component
     {
         $this->validate([
             'name' => 'required',
-            'website' => 'required',
-            'category' => 'required',
-            'type' => 'required',
+            'feature_id' => 'required',
+            'sponsor_type_id' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -125,16 +134,11 @@ class SponsorList extends Component
         ]);
     }
 
-    public function cancelAddSponsor()
-    {
-        $this->resetAddSponsorFields();
-    }
-
     public function resetAddSponsorFields()
     {
         $this->addSponsorForm = false;
-        $this->category = null;
-        $this->type = null;
+        $this->feature_id = null;
+        $this->sponsor_type_id = null;
         $this->name = null;
         $this->website = null;
         $this->categoryChoices = array();
@@ -145,8 +149,8 @@ class SponsorList extends Component
     {
         $newSponsor = Sponsors::create([
             'event_id' => $this->event->id,
-            'feature_id' => $this->category,
-            'sponsor_type_id' => $this->type,
+            'feature_id' => $this->feature_id,
+            'sponsor_type_id' => $this->sponsor_type_id,
             'name' => $this->name,
             'website' => $this->website,
             'datetime_added' => Carbon::now(),
@@ -154,13 +158,13 @@ class SponsorList extends Component
 
 
         foreach ($this->categoryChoices as $categoryChoice) {
-            if ($categoryChoice['id'] == $this->category) {
+            if ($categoryChoice['id'] == $this->feature_id) {
                 $selectedCategory = $categoryChoice['value'];
             }
         }
 
         foreach ($this->typeChoices as $typeChoice) {
-            if ($typeChoice['id'] == $this->type) {
+            if ($typeChoice['id'] == $this->sponsor_type_id) {
                 $selectedType = $typeChoice['value'];
             }
         }
@@ -171,7 +175,8 @@ class SponsorList extends Component
             'name' => $this->name,
             'category' => $selectedCategory,
             'type' => $selectedType,
-            'active' => true,
+            'website' => $this->website,
+            'is_active' => true,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);
 
@@ -187,20 +192,14 @@ class SponsorList extends Component
     }
 
 
-    public function updateSponsorStatus($arrayIndex, $sponsorId, $status)
+    public function updateSponsorStatus($arrayIndex)
     {
-        if ($status) {
-            $newStatus = false;
-        } else {
-            $newStatus = true;
-        }
-
-        Sponsors::where('id', $sponsorId)->update([
-            'active' => $newStatus,
+        Sponsors::where('id', $this->finalListOfSponsors[$arrayIndex]['id'])->update([
+            'is_active' => !$this->finalListOfSponsors[$arrayIndex]['is_active'],
         ]);
 
-        $this->finalListOfSponsors[$arrayIndex]['active'] = $newStatus;
-        $this->finalListOfSponsorsConst[$arrayIndex]['active'] = $newStatus;
+        $this->finalListOfSponsors[$arrayIndex]['is_active'] = !$this->finalListOfSponsors[$arrayIndex]['is_active'];
+        $this->finalListOfSponsorsConst[$arrayIndex]['is_active'] = !$this->finalListOfSponsorsConst[$arrayIndex]['is_active'];
     }
 
 
@@ -214,11 +213,6 @@ class SponsorList extends Component
         $this->sponsorDateTime = $sponsorDateTime;
         $this->sponsorArrayIndex = $sponsorArrayIndex;
         $this->editSponsorDateTimeForm = true;
-    }
-
-    public function cancelEditSponsorDateTime()
-    {
-        $this->resetEditSponsorDateTimeFields();
     }
 
     public function resetEditSponsorDateTimeFields()

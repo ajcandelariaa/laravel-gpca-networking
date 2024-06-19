@@ -2,12 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Event;
+use App\Models\Attendee;
 use App\Traits\HttpResponses;
 use Closure;
 use Illuminate\Http\Request;
 
-class APICheckEventExists
+class APICheckAttendeeExists
 {
     use HttpResponses;
     /**
@@ -19,13 +19,13 @@ class APICheckEventExists
      */
     public function handle(Request $request, Closure $next)
     {
-        $eventId = $request->route('eventId'); 
-        $eventCategory = $request->route('eventCategory');
+        $eventId = $request->route('eventId');
+        $attendeeId = $request->route('attendeeId');
 
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
+        $attendee = Attendee::where('id', $attendeeId)->where('event_id', $eventId)->where('is_active', true)->first();
 
-        if ($event == null) {
-            return $this->error(null, "Event doesn't exist", 404);
+        if ($attendee == null) {
+            return $this->error(null, "Attendee doesn't exist", 404);
         } else{
             return $next($request);
         }

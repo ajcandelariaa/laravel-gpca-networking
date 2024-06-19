@@ -6,6 +6,7 @@ use App\Models\Event as Events;
 use App\Models\Speaker as Speakers;
 use App\Models\SpeakerType as SpeakerTypes;
 use App\Models\Feature as Features;
+use App\Models\Media as Medias;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -15,12 +16,15 @@ class SpeakersList extends Component
 
     public $finalListOfSpeakers = array(), $finalListOfSpeakersConst = array();
 
-    public $searchTerm;
-
-    public $speakerId, $speakerDateTime, $speakerArrayIndex, $editSpeakerDateTimeForm;
+    // Speaker datetime
+    public $speakerId, $speakerDateTime, $speakerArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editSpeakerDateTimeForm;
 
     // Speaker details
-    public $category, $type, $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $bio, $addSpeakerForm, $categoryChoices = array(), $typeChoices = array();
+    public $category, $type, $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $biography_html_text;
+    public $categoryChoices = array(), $typeChoices = array();
+    public $addSpeakerForm;
 
     protected $listeners = ['addSpeakerConfirmed' => 'addSpeaker'];
 
@@ -28,6 +32,11 @@ class SpeakersList extends Component
     {
         $this->salutations = config('app.salutations');
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
+
+        $this->inputNameVariableDateTime = "speakerDateTime";
+        $this->btnUpdateNameMethodDateTime = "editSpeakerDateTime";
+        $this->btnCancelNameMethodDateTime = "resetEditSpeakerDateTimeFields";
+
         $this->addSpeakerForm = false;
         $this->editSpeakerDateTimeForm = false;
 
@@ -52,20 +61,26 @@ class SpeakersList extends Component
                     $type = "N/A";
                 }
 
+                if ($speaker->pfp_media_id) {
+                    $speakerPFPUrl = Medias::where('id', $speaker->pfp_media_id)->value('file_url');
+                } else {
+                    $speakerPFPUrl = asset('assets/images/pfp-placeholder.jpg');
+                }
+
                 array_push($this->finalListOfSpeakers, [
                     'id' => $speaker->id,
+                    'pfp' => $speakerPFPUrl,
                     'name' => $speaker->salutation . ' ' . $speaker->first_name . ' ' . $speaker->middle_name . ' ' . $speaker->last_name,
                     'category' => $category,
                     'type' => $type,
                     'job_title' => $speaker->job_title,
                     'company_name' => $speaker->company_name,
-                    'active' => $speaker->active,
+                    'is_active' => $speaker->is_active,
                     'datetime_added' => Carbon::parse($speaker->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
             $this->finalListOfSpeakersConst = $this->finalListOfSpeakers;
         }
-        // dd($this->finalListOfSpeakers);
     }
 
     public function render()
@@ -79,21 +94,6 @@ class SpeakersList extends Component
         return redirect()->route('admin.event.speaker.types.view', ['eventCategory' => $this->event->category, 'eventId' => $this->event->id]);
     }
 
-    public function search()
-    {
-        if (empty($this->searchTerm)) {
-            $this->finalListOfSpeakers = $this->finalListOfSpeakersConst;
-        } else {
-            $this->finalListOfSpeakers = collect($this->finalListOfSpeakersConst)
-                ->filter(function ($item) {
-                    return str_contains(strtolower($item['name']), strtolower($this->searchTerm)) ||
-                        str_contains(strtolower($item['company_name']), strtolower($this->searchTerm)) ||
-                        str_contains(strtolower($item['job_title']), strtolower($this->searchTerm)) ||
-                        str_contains(strtolower($item['datetime_added']), strtolower($this->searchTerm));
-                })->all();
-        }
-    }
-
 
     // EDIT DATETIME
     public function showEditSpeakerDateTime($speakerId, $speakerArrayIndex)
@@ -104,11 +104,6 @@ class SpeakersList extends Component
         $this->speakerDateTime = $speakerDateTime;
         $this->speakerArrayIndex = $speakerArrayIndex;
         $this->editSpeakerDateTimeForm = true;
-    }
-
-    public function cancelEditSpeakerDateTime()
-    {
-        $this->resetEditSpeakerDateTimeFields();
     }
 
     public function resetEditSpeakerDateTimeFields()
@@ -176,11 +171,6 @@ class SpeakersList extends Component
         $this->addSpeakerForm = true;
     }
 
-    public function cancelAddSpeaker()
-    {
-        $this->resetAddSpeakerFields();
-    }
-
     public function resetAddSpeakerFields()
     {
         $this->addSpeakerForm = false;
@@ -201,8 +191,6 @@ class SpeakersList extends Component
         $this->validate([
             'first_name' => 'required',
             'last_name' => 'required',
-            'company_name' => 'required',
-            'job_title' => 'required',
             'category' => 'required',
             'type' => 'required',
         ]);
@@ -231,8 +219,6 @@ class SpeakersList extends Component
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
 
-            'active' => true,
-
             'datetime_added' => Carbon::now(),
         ]);
 
@@ -250,12 +236,13 @@ class SpeakersList extends Component
 
         array_push($this->finalListOfSpeakers, [
             'id' => $newSpeaker->id,
+            'pfp' => asset('assets/images/pfp-placeholder.jpg'),
             'name' => $this->salutation . ' ' . $this->first_name . ' ' . $this->middle_name . ' ' . $this->last_name,
             'category' => $selectedCategory,
             'type' => $selectedType,
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
-            'active' => true,
+            'is_active' => true,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);
 
@@ -270,19 +257,15 @@ class SpeakersList extends Component
         ]);
     }
 
-    public function updateSpeakerStatus($arrayIndex, $speakerId, $status)
-    {
-        if ($status) {
-            $newStatus = false;
-        } else {
-            $newStatus = true;
-        }
 
-        Speakers::where('id', $speakerId)->update([
-            'active' => $newStatus,
+    // UPDATE SPEAKER STATUS
+    public function updateSpeakerStatus($arrayIndex)
+    {
+        Speakers::where('id', $this->finalListOfSpeakers[$arrayIndex]['id'])->update([
+            'is_active' => !$this->finalListOfSpeakers[$arrayIndex]['is_active'],
         ]);
 
-        $this->finalListOfSpeakers[$arrayIndex]['active'] = $newStatus;
-        $this->finalListOfSpeakersConst[$arrayIndex]['active'] = $newStatus;
+        $this->finalListOfSpeakers[$arrayIndex]['is_active'] = !$this->finalListOfSpeakers[$arrayIndex]['is_active'];
+        $this->finalListOfSpeakersConst[$arrayIndex]['is_active'] = !$this->finalListOfSpeakersConst[$arrayIndex]['is_active'];
     }
 }

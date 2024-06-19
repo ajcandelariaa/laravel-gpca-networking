@@ -86,11 +86,10 @@ class AddEvent extends Component
         ]);
 
         mediaUsageUpdate(
-            MediaUsageUpdateTypes::ADD_ONLY,
+            MediaUsageUpdateTypes::ADD_ONLY->value,
             $this->event_logo_media_id,
             MediaEntityTypes::EVENT_LOGO->value,
             $event->id,
-            null,
         );
 
         return redirect()->route('admin.events.view')->with('success', 'Event added successfully.');

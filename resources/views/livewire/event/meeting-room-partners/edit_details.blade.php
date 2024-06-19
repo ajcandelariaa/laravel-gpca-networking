@@ -35,17 +35,11 @@
                     <div class="mt-5">
                         <div>
                             <div class="text-primaryColor">
-                                Location <span class="text-red-500">*</span>
+                                Location
                             </div>
                             <div class="mt-2">
                                 <input placeholder="Location" type="text" wire:model.lazy="location"
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-
-                                @error('location')
-                                    <div class="text-red-500 text-xs italic mt-1">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
                         </div>
                     </div>
@@ -95,17 +89,11 @@
 
                         <div class="col-span-1">
                             <div class="text-primaryColor">
-                                Website <span class="text-red-500">*</span>
+                                Website
                             </div>
                             <div>
                                 <input placeholder="" type="text" wire:model.lazy="website"
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-
-                                @error('website')
-                                    <div class="text-red-500 text-xs italic mt-1">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
                             </div>
                         </div>
 
@@ -158,8 +146,8 @@
                                 Company profile
                             </div>
                             <div class="mt-2">
-                                <textarea wire:model.lazy="profile" cols="30" rows="10"
-                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $profile }}</textarea>
+                                <textarea wire:model.lazy="profile_html_text" cols="30" rows="10"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $profile_html_text }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -171,7 +159,7 @@
                         wire:click.prevent="editMeetingRoomPartnerDetailsConfirmation">Update</button>
                     <button type="button"
                         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                        wire:click.prevent="cancelEditMeetingRoomPartnerDetails">Cancel</button>
+                        wire:click.prevent="resetEditMeetingRoomPartnerDetailsFields">Cancel</button>
                 </div>
             </div>
         </div>

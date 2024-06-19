@@ -34,24 +34,24 @@
                         @if ($finalListOfExhibitor['logo'] == null)
                             N/A
                         @else
-                            <img src="{{ Storage::url($finalListOfExhibitor['logo']) }}" alt=""
+                            <img src="{{ $finalListOfExhibitor['logo'] }}" alt=""
                                 class="mx-auto w-14">
                         @endif
                     </div>
                     <div class="col-span-2">{{ $finalListOfExhibitor['name'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfExhibitor['website'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfExhibitor['stand_number'] }}</div>
+                    <div class="col-span-1">{{ $finalListOfExhibitor['website'] ?? 'N/A' }}</div>
+                    <div class="col-span-1">{{ $finalListOfExhibitor['stand_number'] ?? 'N/A' }}</div>
                     <div wire:click="showEditExhibitorDateTime({{ $finalListOfExhibitor['id'] }}, {{ $index }})"
                         class="text-blue-700 hover:underline col-span-2 cursor-pointer">
                         {{ $finalListOfExhibitor['datetime_added'] }}</div>
                     <div class="col-span-1">
-                        @if ($finalListOfExhibitor['active'])
+                        @if ($finalListOfExhibitor['is_active'])
                             <button
-                                wire:click="updateExhibitorStatus({{ $index }}, {{ $finalListOfExhibitor['id'] }}, true)"
+                                wire:click="updateExhibitorStatus({{ $index }})"
                                 class="text-gray-700 bg-green-300 hover:bg-green-500 hover:text-white py-1 px-2 text-sm rounded-md">Active</button>
                         @else
                             <button
-                                wire:click="updateExhibitorStatus({{ $index }}, {{ $finalListOfExhibitor['id'] }}, false)"
+                                wire:click="updateExhibitorStatus({{ $index }})"
                                 class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
                         @endif
                     </div>
@@ -67,7 +67,7 @@
     @endif
 
     @if ($editExhibitorDateTimeForm)
-        @include('livewire.event.exhibitors.edit_datetime')
+        @include('livewire.common.edit_datetime_form')
     @endif
 
     @if ($addExhibitorForm)

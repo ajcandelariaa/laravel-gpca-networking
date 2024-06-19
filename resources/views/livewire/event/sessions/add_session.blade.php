@@ -18,7 +18,7 @@
                             Category <span class="text-red-500">*</span>
                         </div>
                         <div class="mt-2">
-                            <select wire:model.lazy="category"
+                            <select wire:model.lazy="feature_id"
                                 class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                                 <option value=""></option>
                                 @foreach ($categoryChoices as $categoryChoice)
@@ -26,7 +26,7 @@
                                 @endforeach
                             </select>
 
-                            @error('category')
+                            @error('feature_id')
                                 <div class="text-red-500 text-xs italic mt-1">
                                     {{ $message }}
                                 </div>
@@ -134,7 +134,7 @@
                         wire:click.prevent="addSessionConfirmation">Add</button>
                     <button type="button"
                         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                        wire:click.prevent="cancelAddSession">Cancel</button>
+                        wire:click.prevent="resetAddSessionFields">Cancel</button>
                 </div>
             </div>
         </div>

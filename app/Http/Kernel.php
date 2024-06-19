@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'check.event.exists' => \App\Http\Middleware\CheckEventExists::class,
         'api.check.event.exists' => \App\Http\Middleware\APICheckEventExists::class,
         'api.check.secret.code' => \App\Http\Middleware\APICheckSecretCode::class,
+        'api.check.attendee.exists' => \App\Http\Middleware\APICheckAttendeeExists::class,
     ];
 }

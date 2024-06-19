@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('event_id');
 
             $table->string('name');
-            $table->mediumText('profile')->nullable();
+            $table->text('profile_html_text')->nullable();
             $table->unsignedBigInteger('logo_media_id')->nullable();
             $table->unsignedBigInteger('banner_media_id')->nullable();
             

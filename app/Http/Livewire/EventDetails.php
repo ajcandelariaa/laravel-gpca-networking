@@ -13,39 +13,33 @@ class EventDetails extends Component
 {
     public $eventData, $eventCategories;
 
-    public $full_name, $short_name, $category, $edition, $location, $description_html_text, $event_full_link, $event_short_link, $event_start_date, $event_end_date, $editEventDetailsForm;
+    // EDIT DETAILS
+    public $full_name, $short_name, $category, $edition, $location, $event_full_link, $event_short_link, $event_start_date, $event_end_date;
+    public $editEventDetailsForm;
 
-    public $primary_bg_color, $secondary_bg_color, $primary_text_color, $secondary_text_color, $editEventColorsForm;
+    // EDIT COLORS
+    public $primary_bg_color, $secondary_bg_color, $primary_text_color, $secondary_text_color;
+    public $editEventColorsForm;
+
+    // EDIT HTML Texts
+    public $description_html_text, $login_html_text, $continue_as_guest_html_text, $forgot_password_html_text;
+    public $editEventHTMLTextsForm;
 
     // EDIT ASSETS
     public $assetType, $editEventAssetForm, $image_media_id, $image_placeholder_text;
     public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    protected $listeners = ['editEventDetailsConfirmed' => 'editEventDetails', 'editEventColorsConfirmed' => 'editEventColors', 'editEventAssetConfirmed' => 'editEventAsset'];
+    protected $listeners = ['editEventDetailsConfirmed' => 'editEventDetails', 'editEventColorsConfirmed' => 'editEventColors', 'editEventHTMLTextsConfirmed' => 'editEventHTMLTexts', 'editEventAssetConfirmed' => 'editEventAsset'];
 
     public function mount($eventData)
     {
         $this->eventCategories = config('app.eventCategories');
         $this->eventData = $eventData;
-
-        $mediaFileListTemp = Medias::orderBy('date_uploaded', 'DESC')->get();
-        if ($mediaFileListTemp->isNotEmpty()) {
-            foreach ($mediaFileListTemp as $mediaFile) {
-                array_push($this->mediaFileList, [
-                    'id' => $mediaFile->id,
-                    'file_url' => $mediaFile->file_url,
-                    'file_directory' => $mediaFile->file_directory,
-                    'file_name' => $mediaFile->file_name,
-                    'file_type' => $mediaFile->file_type,
-                    'file_size' => $mediaFile->file_size,
-                    'width' => $mediaFile->width,
-                    'height' => $mediaFile->height,
-                    'date_uploaded' => $mediaFile->date_uploaded,
-                ]);
-            }
-        }
+        $this->mediaFileList = getMediaFileList();
         $this->editEventAssetForm = false;
         $this->editEventDetailsForm = false;
+        $this->editEventColorsForm = false;
+        $this->editEventHTMLTextsForm = false;
     }
 
     public function render()
@@ -55,15 +49,17 @@ class EventDetails extends Component
 
 
     // TOGGLE VISIBILITY AND ACCESSIBILITY
-    public function toggleVisibilityInTheApp(){
-        
+    public function toggleVisibilityInTheApp()
+    {
+
         Events::where('id', $this->eventData['eventId'])->update([
             'is_visible_in_the_app' => !$this->eventData['eventDetails']['is_visible_in_the_app'],
         ]);
         $this->eventData['eventDetails']['is_visible_in_the_app'] = !$this->eventData['eventDetails']['is_visible_in_the_app'];
     }
 
-    public function toggleAccessibilityInTheApp(){
+    public function toggleAccessibilityInTheApp()
+    {
         Events::where('id', $this->eventData['eventId'])->update([
             'is_accessible_in_the_app' => !$this->eventData['eventDetails']['is_accessible_in_the_app'],
         ]);
@@ -79,7 +75,6 @@ class EventDetails extends Component
         $this->category = $this->eventData['eventDetails']['category'];
         $this->edition = $this->eventData['eventDetails']['edition'];
         $this->location = $this->eventData['eventDetails']['location'];
-        $this->description_html_text = $this->eventData['eventDetails']['description_html_text'];
 
         $this->event_full_link = $this->eventData['eventDetails']['event_full_link'];
         $this->event_short_link = $this->eventData['eventDetails']['event_short_link'];
@@ -90,24 +85,21 @@ class EventDetails extends Component
         $this->editEventDetailsForm = true;
     }
 
-    public function cancelEditEventDetails()
-    {
-        $this->resetEditEventDetailsFields();
-    }
-
     public function resetEditEventDetailsFields()
     {
+        $this->editEventDetailsForm = false;
+
         $this->full_name = null;
         $this->short_name = null;
         $this->category = null;
         $this->edition = null;
         $this->location = null;
-        $this->description_html_text = null;
+
         $this->event_full_link = null;
         $this->event_short_link = null;
+
         $this->event_start_date = null;
         $this->event_end_date = null;
-        $this->editEventDetailsForm = false;
     }
 
     public function editEventDetailsConfirmation()
@@ -144,7 +136,6 @@ class EventDetails extends Component
             'short_name' => $this->short_name,
             'location' => $this->location,
             'edition' => $this->edition,
-            'description_html_text' => $this->description_html_text,
             'event_full_link' => $this->event_full_link,
             'event_short_link' => $this->event_short_link,
             'event_start_date' => $this->event_start_date,
@@ -158,7 +149,6 @@ class EventDetails extends Component
         $this->eventData['eventDetails']['category'] = $this->category;
         $this->eventData['eventDetails']['location'] = $this->location;
         $this->eventData['eventDetails']['edition'] = $this->edition;
-        $this->eventData['eventDetails']['description_html_text'] = $this->description_html_text;
         $this->eventData['eventDetails']['event_full_link'] = $this->event_full_link;
         $this->eventData['eventDetails']['event_short_link'] = $this->event_short_link;
         $this->eventData['eventDetails']['event_short_link'] = $this->event_short_link;
@@ -194,18 +184,13 @@ class EventDetails extends Component
         $this->editEventColorsForm = true;
     }
 
-    public function cancelEditEventColors()
-    {
-        $this->resetEditEventColorsFields();
-    }
-
     public function resetEditEventColorsFields()
     {
+        $this->editEventColorsForm = false;
         $this->primary_bg_color = null;
         $this->secondary_bg_color = null;
         $this->primary_text_color = null;
         $this->secondary_text_color = null;
-        $this->editEventColorsForm = false;
     }
 
     public function editEventColorsConfirmation()
@@ -250,6 +235,64 @@ class EventDetails extends Component
         $this->resetEditEventColorsFields();
     }
 
+
+
+    // EDIT HTML Texts
+    public function showEditEventHTMLTexts()
+    {
+        $this->description_html_text = $this->eventData['eventHTMLTexts']['description_html_text'];
+        $this->login_html_text = $this->eventData['eventHTMLTexts']['login_html_text'];
+        $this->continue_as_guest_html_text = $this->eventData['eventHTMLTexts']['continue_as_guest_html_text'];
+        $this->forgot_password_html_text = $this->eventData['eventHTMLTexts']['forgot_password_html_text'];
+        $this->editEventHTMLTextsForm = true;
+    }
+
+    public function resetEditEventHTMLTextsFields()
+    {
+        $this->editEventHTMLTextsForm = false;
+        $this->description_html_text = null;
+        $this->login_html_text = null;
+        $this->continue_as_guest_html_text = null;
+        $this->forgot_password_html_text = null;
+    }
+
+    public function editEventHTMLTextsConfirmation()
+    {
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, update it!",
+            'livewireEmit' => "editEventHTMLTextsConfirmed",
+        ]);
+    }
+
+    public function editEventHTMLTexts()
+    {
+        Events::where('id', $this->eventData['eventId'])->update([
+            'description_html_text' => $this->description_html_text,
+            'login_html_text' => $this->login_html_text,
+            'continue_as_guest_html_text' => $this->continue_as_guest_html_text,
+            'forgot_password_html_text' => $this->forgot_password_html_text,
+        ]);
+
+        $this->eventData['eventHTMLTexts']['description_html_text'] = $this->description_html_text;
+        $this->eventData['eventHTMLTexts']['login_html_text'] = $this->login_html_text;
+        $this->eventData['eventHTMLTexts']['continue_as_guest_html_text'] = $this->continue_as_guest_html_text;
+        $this->eventData['eventHTMLTexts']['forgot_password_html_text'] = $this->forgot_password_html_text;
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Event html texts updated succesfully!',
+            'text' => "",
+        ]);
+
+        $this->resetEditEventHTMLTextsFields();
+    }
+
+
+
+
     // EDIT EVENT ASSET
     public function showEditEventAsset($assetType)
     {
@@ -257,17 +300,12 @@ class EventDetails extends Component
         $this->editEventAssetForm = true;
     }
 
-    public function cancelEditEventAsset()
-    {
-        $this->resetEditEventAssetFields();
-    }
-
     public function resetEditEventAssetFields()
     {
+        $this->editEventAssetForm = false;
         $this->assetType = null;
         $this->image_media_id = null;
         $this->image_placeholder_text = null;
-        $this->editEventAssetForm = false;
     }
 
     public function editEventAssetConfirmation()

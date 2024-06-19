@@ -108,10 +108,10 @@
 
         <p class="font-semibold">Company profile:</p>
         <p>
-            @if ($mediaPartnerData['profile'] == null || $mediaPartnerData['profile'] == '')
+            @if ($mediaPartnerData['profile_html_text'] == null || $mediaPartnerData['profile_html_text'] == '')
                 N/A
             @else
-                {{ $mediaPartnerData['profile'] }}
+                {{ $mediaPartnerData['profile_html_text'] }}
             @endif
         </p>
     </div>

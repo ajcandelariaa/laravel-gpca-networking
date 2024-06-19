@@ -2,34 +2,38 @@
 
 namespace App\Http\Livewire;
 
+use App\Enums\MediaEntityTypes;
+use App\Enums\MediaUsageUpdateTypes;
 use App\Models\Event as Events;
 use App\Models\Speaker as Speakers;
 use App\Models\SpeakerType as SpeakerTypes;
 use App\Models\Feature as Features;
-use Carbon\Carbon;
+use App\Models\Media as Medias;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
 
 class SpeakerDetails extends Component
 {
-    use WithFileUploads;
-
     public $event, $salutations, $speakerData;
 
-    public $image, $assetType, $editSpeakerAssetForm, $imageDefault;
+    // EDIT ASSETS
+    public $assetType, $editSpeakerAssetForm, $image_media_id, $image_placeholder_text;
+    public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    public $category, $type, $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $biography, $country, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $editSpeakerDetailsForm, $categoryChoices = array(), $typeChoices = array();
+    // EDIT DETAILS
+    public $feature_id, $speaker_type_id, $salutation, $first_name, $middle_name, $last_name, $company_name, $job_title, $biography_html_text, $country, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram;
+    public $categoryChoices = array(), $typeChoices = array();
+    public $editSpeakerDetailsForm;
 
-    protected $listeners = ['editSpeakerDetailsConfirmed' => 'editSpeakerDetails', 'editSpeakerAssetConfirmed' => 'editSpeakerAsset', 'removeSpeakerAssetConfirmed' => 'removeSpeakerAsset'];
+    protected $listeners = ['editSpeakerDetailsConfirmed' => 'editSpeakerDetails', 'editSpeakerAssetConfirmed' => 'editSpeakerAsset'];
 
     public function mount($eventId, $eventCategory, $speakerData)
     {
         $this->salutations = config('app.salutations');
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
         $this->speakerData = $speakerData;
-
+        $this->mediaFileList = getMediaFileList();
         $this->editSpeakerAssetForm = false;
         $this->editSpeakerDetailsForm = false;
     }
@@ -68,45 +72,40 @@ class SpeakerDetails extends Component
                 ]);
             }
         }
-        $this->category = $this->speakerData['speakerFeatureId'];
-        $this->type = $this->speakerData['speakerTypeId'];
+        $this->feature_id = $this->speakerData['feature_id'];
+        $this->speaker_type_id = $this->speakerData['speaker_type_id'];
 
-        $this->salutation = $this->speakerData['speakerSalutation'];
-        $this->first_name = $this->speakerData['speakerFirstName'];
-        $this->middle_name = $this->speakerData['speakerMiddleName'];
-        $this->last_name = $this->speakerData['speakerLastName'];
-        $this->company_name = $this->speakerData['speakerCompanyName'];
-        $this->job_title = $this->speakerData['speakerJobTitle'];
-        $this->biography = $this->speakerData['speakerBiography'];
+        $this->salutation = $this->speakerData['salutation'];
+        $this->first_name = $this->speakerData['first_name'];
+        $this->middle_name = $this->speakerData['middle_name'];
+        $this->last_name = $this->speakerData['last_name'];
+        $this->company_name = $this->speakerData['company_name'];
+        $this->job_title = $this->speakerData['job_title'];
+        $this->biography_html_text = $this->speakerData['biography_html_text'];
 
-        $this->country = $this->speakerData['speakerCountry'];
-        $this->email_address = $this->speakerData['speakerEmailAddress'];
-        $this->mobile_number = $this->speakerData['speakerMobileNumber'];
-        $this->website = $this->speakerData['speakerWebsite'];
-        $this->facebook = $this->speakerData['speakerFacebook'];
-        $this->linkedin = $this->speakerData['speakerLinkedin'];
-        $this->twitter = $this->speakerData['speakerTwitter'];
-        $this->instagram = $this->speakerData['speakerInstagram'];
+        $this->country = $this->speakerData['country'];
+        $this->email_address = $this->speakerData['email_address'];
+        $this->mobile_number = $this->speakerData['mobile_number'];
+        $this->website = $this->speakerData['website'];
+        $this->facebook = $this->speakerData['facebook'];
+        $this->linkedin = $this->speakerData['linkedin'];
+        $this->twitter = $this->speakerData['twitter'];
+        $this->instagram = $this->speakerData['instagram'];
         $this->editSpeakerDetailsForm = true;
-    }
-
-    public function cancelEditSpeakerDetails()
-    {
-        $this->resetEditSpeakerDetailsFields();
     }
 
     public function resetEditSpeakerDetailsFields()
     {
         $this->editSpeakerDetailsForm = false;
-        $this->category = null;
-        $this->type = null;
+        $this->feature_id = null;
+        $this->speaker_type_id = null;
         $this->salutation = null;
         $this->first_name = null;
         $this->middle_name = null;
         $this->last_name = null;
         $this->company_name = null;
         $this->job_title = null;
-        $this->biography = null;
+        $this->biography_html_text = null;
 
         $this->country = null;
         $this->email_address = null;
@@ -123,12 +122,10 @@ class SpeakerDetails extends Component
     public function editSpeakerDetailsConfirmation()
     {
         $this->validate([
-            'category' => 'required',
-            'type' => 'required',
+            'feature_id' => 'required',
+            'speaker_type_id' => 'required',
             'first_name' => 'required',
             'last_name' => 'required',
-            'company_name' => 'required',
-            'job_title' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -142,16 +139,16 @@ class SpeakerDetails extends Component
 
     public function editSpeakerDetails()
     {
-        Speakers::where('id', $this->speakerData['speakerId'])->update([
-            'feature_id' => $this->category,
-            'speaker_type_id' => $this->type,
+        Speakers::where('id', $this->speakerData['id'])->update([
+            'feature_id' => $this->feature_id,
+            'speaker_type_id' => $this->speaker_type_id,
             'salutation' => $this->salutation,
             'first_name' => $this->first_name,
             'middle_name' => $this->middle_name,
             'last_name' => $this->last_name,
             'company_name' => $this->company_name,
             'job_title' => $this->job_title,
-            'biography' => $this->biography,
+            'biography_html_text' => $this->biography_html_text,
 
             'country' => $this->country == "" ? null : $this->country,
             'email_address' => $this->email_address == "" ? null : $this->email_address,
@@ -164,37 +161,38 @@ class SpeakerDetails extends Component
         ]);
 
         foreach($this->categoryChoices as $categoryChoice){
-            if($categoryChoice['id'] == $this->category){
+            if($categoryChoice['id'] == $this->feature_id){
                 $selectedCategory = $categoryChoice['value'];
             }
         }
 
         foreach($this->typeChoices as $typeChoice){
-            if($typeChoice['id'] == $this->type){
+            if($typeChoice['id'] == $this->speaker_type_id){
                 $selectedType = $typeChoice['value'];
             }
         }
         
-        $this->speakerData['speakerCategoryName'] = $selectedCategory;
-        $this->speakerData['speakerFeatureId'] = $this->category;
-        $this->speakerData['speakerTypeName'] = $selectedType;
-        $this->speakerData['speakerTypeId'] = $this->type;
-        $this->speakerData['speakerSalutation'] = $this->salutation;
-        $this->speakerData['speakerFirstName'] = $this->first_name;
-        $this->speakerData['speakerMiddleName'] = $this->middle_name;
-        $this->speakerData['speakerLastName'] = $this->last_name;
-        $this->speakerData['speakerCompanyName'] = $this->company_name;
-        $this->speakerData['speakerJobTitle'] = $this->job_title;
-        $this->speakerData['speakerBiography'] = $this->biography;
+        $this->speakerData['categoryName'] = $selectedCategory;
+        $this->speakerData['feature_id'] = $this->feature_id;
+        $this->speakerData['typeName'] = $selectedType;
+        $this->speakerData['speaker_type_id'] = $this->speaker_type_id;
 
-        $this->speakerData['speakerCountry'] = $this->country;
-        $this->speakerData['speakerEmailAddress'] = $this->email_address;
-        $this->speakerData['speakerMobileNumber'] = $this->mobile_number;
-        $this->speakerData['speakerWebsite'] = $this->website;
-        $this->speakerData['speakerFacebook'] = $this->facebook;
-        $this->speakerData['speakerLinkedin'] = $this->linkedin;
-        $this->speakerData['speakerTwitter'] = $this->twitter;
-        $this->speakerData['speakerInstagram'] = $this->instagram;
+        $this->speakerData['salutation'] = $this->salutation;
+        $this->speakerData['first_name'] = $this->first_name;
+        $this->speakerData['middle_name'] = $this->middle_name;
+        $this->speakerData['last_name'] = $this->last_name;
+        $this->speakerData['company_name'] = $this->company_name;
+        $this->speakerData['job_title'] = $this->job_title;
+        $this->speakerData['biography_html_text'] = $this->biography_html_text;
+
+        $this->speakerData['country'] = $this->country;
+        $this->speakerData['email_address'] = $this->email_address;
+        $this->speakerData['mobile_number'] = $this->mobile_number;
+        $this->speakerData['website'] = $this->website;
+        $this->speakerData['facebook'] = $this->facebook;
+        $this->speakerData['linkedin'] = $this->linkedin;
+        $this->speakerData['twitter'] = $this->twitter;
+        $this->speakerData['instagram'] = $this->instagram;
 
         $this->resetEditSpeakerDetailsFields();
 
@@ -212,28 +210,23 @@ class SpeakerDetails extends Component
     // EDIT SPEAKER ASSET
     public function showEditSpeakerAsset($assetType)
     {
-        // dd($this->speakerData);
         $this->assetType = $assetType;
         $this->editSpeakerAssetForm = true;
-    }
-
-    public function cancelEditSpeakerAsset()
-    {
-        $this->resetEditSpeakerAssetFields();
     }
 
     public function resetEditSpeakerAssetFields()
     {
         $this->editSpeakerAssetForm = false;
         $this->assetType = null;
-        $this->image = null;
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
     }
 
     public function editSpeakerAssetConfirmation()
     {
 
         $this->validate([
-            'image' => 'required|mimes:png,jpg,jpeg'
+            'image_placeholder_text' => 'required'
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -247,41 +240,62 @@ class SpeakerDetails extends Component
 
     public function editSpeakerAsset()
     {
-        $fileName = Str::of($this->image->getClientOriginalName())->replace([' ', '-'], '_')->lower();
-
         if ($this->assetType == "Speaker PFP") {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/speakers/pfp/' . $this->speakerData['speakerId'];
-            if (!$this->speakerData['speakerPFPDefault']) {
-                $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('pfp');
-                if ($speakerAssetUrl) {
-                    $this->removeSpeakerAssetInStorage($speakerAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
-            Speakers::where('id', $this->speakerData['speakerId'])->update([
-                'pfp' => $path,
+            Speakers::where('id', $this->speakerData['id'])->update([
+                'pfp_media_id' => $this->image_media_id,
             ]);
 
-            $this->speakerData['speakerPFP'] = Storage::url($path);
-            $this->speakerData['speakerPFPDefault'] = false;
+            if ($this->speakerData['pfp']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::SPEAKER_PFP->value,
+                    $this->speakerData['id'],
+                    $this->speakerData['pfp']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::SPEAKER_PFP->value,
+                    $this->speakerData['id'],
+                    $this->speakerData['pfp']['media_usage_id']
+                );
+            }
+            
+            $this->speakerData['pfp'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::SPEAKER_PFP->value, $this->speakerData['id']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         } else {
-            $tempPath = 'public/' . $this->event->year  . '/' . $this->event->category . '/speakers/cover-photo/' . $this->speakerData['speakerId'];
-            if (!$this->speakerData['speakerCoverPhotoDefault']) {
-                $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
-
-                if ($speakerAssetUrl) {
-                    $this->removeSpeakerAssetInStorage($speakerAssetUrl, $tempPath);
-                }
-            }
-
-            $path = $this->image->storeAs($tempPath, $fileName);
-            Speakers::where('id', $this->speakerData['speakerId'])->update([
-                'cover_photo' => $path,
+            Speakers::where('id', $this->speakerData['id'])->update([
+                'cover_photo_media_id' => $this->image_media_id,
             ]);
 
-            $this->speakerData['speakerCoverPhoto'] = Storage::url($path);
-            $this->speakerData['speakerCoverPhotoDefault'] = false;
+            if ($this->speakerData['cover_photo']['media_id'] != null) {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_THEN_ADD->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::SPEAKER_COVER_PHOTO->value,
+                    $this->speakerData['id'],
+                    $this->speakerData['cover_photo']['media_usage_id']
+                );
+            } else {
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::ADD_ONLY->value,
+                    $this->image_media_id,
+                    MediaEntityTypes::SPEAKER_COVER_PHOTO->value,
+                    $this->speakerData['id'],
+                    $this->speakerData['cover_photo']['media_usage_id']
+                );
+            }
+            
+            $this->speakerData['cover_photo'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::SPEAKER_COVER_PHOTO->value, $this->speakerData['id']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         }
 
         $this->dispatchBrowserEvent('swal:success', [
@@ -293,77 +307,36 @@ class SpeakerDetails extends Component
         $this->resetEditSpeakerAssetFields();
     }
 
-    public function removeSpeakerAssetConfirmation()
+    
+    // FOR CHOOSING IMAGE MODAL
+    public function chooseImage()
     {
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure you want to remove?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, remove it!",
-            'livewireEmit' => "removeSpeakerAssetConfirmed",
-        ]);
+        $this->chooseImageModal = true;
     }
 
-    public function removeSpeakerAsset()
+    public function showMediaFileDetails($arrayIndex)
     {
-        if ($this->assetType == "Speaker PFP") {
-            $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('pfp');
-
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/speakers/pfp/' . $this->speakerData['speakerId'];
-
-            if ($speakerAssetUrl) {
-                $this->removeSpeakerAssetInStorage($speakerAssetUrl, $pathDirectory);
-            }
-
-            Speakers::where('id', $this->speakerData['speakerId'])->update([
-                'pfp' => null,
-            ]);
-
-            $this->speakerData['speakerPFP'] = asset('assets/images/pfp-placeholder.jpg');
-            $this->speakerData['speakerPFPDefault'] = true;
-        } else {
-            $speakerAssetUrl = Speakers::where('id', $this->speakerData['speakerId'])->value('cover_photo');
-
-            $pathDirectory = 'public/' . $this->event->year  . '/' . $this->event->category . '/speakers/cover-photo/' . $this->speakerData['speakerId'];
-
-            if ($speakerAssetUrl) {
-                $this->removeSpeakerAssetInStorage($speakerAssetUrl, $pathDirectory);
-            }
-
-            Speakers::where('id', $this->speakerData['speakerId'])->update([
-                'cover_photo' => null,
-            ]);
-
-            $this->speakerData['speakerCoverPhoto'] = asset('assets/images/cover-photo-placeholder.jpg');
-            $this->speakerData['speakerCoverPhotoDefault'] = true;
-        }
-
-        $this->dispatchBrowserEvent('swal:success', [
-            'type' => 'success',
-            'message' => $this->assetType . ' removed succesfully!',
-            'text' => "",
-        ]);
-
-        $this->resetEditSpeakerAssetFields();
+        $this->activeSelectedImage = $this->mediaFileList[$arrayIndex];
     }
 
-    public function removeSpeakerAssetInStorage($storageUrl, $storageDirectory)
+    public function unshowMediaFileDetails()
     {
-        if (Storage::exists($storageUrl)) {
-            Storage::delete($storageUrl);
-            Storage::deleteDirectory($storageDirectory);
-        }
+        $this->activeSelectedImage = array();
     }
 
-
-    public function deleteSpeakerConfirmation()
+    public function selectChooseImage()
     {
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure you want to remove?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, remove it!",
-            'livewireEmit' => "removeSpeakerAssetConfirmed",
-        ]);
+        $this->image_media_id = $this->activeSelectedImage['id'];
+        $this->image_placeholder_text = $this->activeSelectedImage['file_name'];
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
+
+    public function cancelChooseImage()
+    {
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
     }
 }

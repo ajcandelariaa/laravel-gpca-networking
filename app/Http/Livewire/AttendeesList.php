@@ -21,9 +21,9 @@ class AttendeesList extends Component
     public $searchTerm;
 
     // Attendee details
-    public $addAttendeeForm;
     public $pass_type, $company_name, $registration_type, $email_address, $first_name, $last_name, $username, $job_title;
     public $emailExistingError, $usernameExistingError;
+    public $addAttendeeForm;
 
     protected $listeners = ['addAttendeeConfirmed' => 'addAttendee'];
 

@@ -10,12 +10,13 @@ use Livewire\Component;
 class SponsorTypeList extends Component
 {
     public $event;
-
     public $finalListOfSponsorTypes = array(), $finalListOfSponsorTypesConst = array();
 
     public $name, $description, $text_color, $background_color, $editState, $editId, $editArrayIndex;
     
-    public $sponsorTypeId, $sponsorTypeDateTime, $sponsorTypeArrayIndex, $editSponsorTypeDateTimeForm;
+    public $sponsorTypeId, $sponsorTypeDateTime, $sponsorTypeArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editSponsorTypeDateTimeForm;
 
     protected $listeners = ['addSponsorTypeConfirmed' => 'addSponsorType'];
 
@@ -38,6 +39,10 @@ class SponsorTypeList extends Component
             }
             $this->finalListOfSponsorTypesConst = $this->finalListOfSponsorTypes;
         }
+
+        $this->inputNameVariableDateTime = "sponsorTypeDateTime";
+        $this->btnUpdateNameMethodDateTime = "editSponsorTypeDateTime";
+        $this->btnCancelNameMethodDateTime = "resetEditSponsorTypeDateTimeFields";
 
         $this->editState = false;
     }
@@ -106,11 +111,6 @@ class SponsorTypeList extends Component
         $this->editSponsorTypeDateTimeForm = true;
     }
 
-    public function cancelEditSponsorTypeDateTime()
-    {
-        $this->resetEditSponsorTypeDateTimeFields();
-    }
-
     public function resetEditSponsorTypeDateTimeFields()
     {
         $this->editSponsorTypeDateTimeForm = false;
@@ -151,10 +151,6 @@ class SponsorTypeList extends Component
         $this->editArrayIndex = $arrayIndex;
         $this->editId = $this->finalListOfSponsorTypes[$arrayIndex]['id'];
         $this->editState = true;
-    }
-
-    public function cancelEditSponsorType(){
-        $this->resetEditSponsorTypeFields();
     }
 
     public function resetEditSponsorTypeFields(){

@@ -10,7 +10,7 @@
     
     <div class="mt-5 relative">
         <div>
-            <img src="{{ $exhibitorData['exhibitorBanner'] }}" alt="" class="w-full relative">
+            <img src="{{ $exhibitorData['banner']['url'] }}" alt="" class="w-full relative">
             <button wire:click="showEditExhibitorAsset('Exhibitor banner')"
                 class="absolute top-2 right-3 cursor-pointer z-20">
                 <i
@@ -19,7 +19,7 @@
         </div>
         <div class="absolute -bottom-32 left-1/2 -translate-x-1/2">
             <div>
-                <img src="{{ $exhibitorData['exhibitorLogo'] }}"
+                <img src="{{ $exhibitorData['logo']['url'] }}"
                     class="w-44 h-44 bg-gray-200 p-0.5 z-10 relative">
                 <button wire:click="showEditExhibitorAsset('Exhibitor logo')"
                     class="absolute -top-5 -right-4 cursor-pointer z-20">
@@ -31,8 +31,8 @@
     </div>
 
     <div class="mt-36 text-center">
-        <p class="font-semibold text-xl">{{ $exhibitorData['exhibitorName'] }}</p>
-        <p class="font-semibold">{{ $exhibitorData['exhibitorWebsite'] }}</p>
+        <p class="font-semibold text-xl">{{ $exhibitorData['name'] }}</p>
+        <p class="font-semibold">{{ $exhibitorData['website'] ?? 'N/A' }}</p>
     </div>
 
     <div class="mt-4">
@@ -41,68 +41,68 @@
 
     
     <div class="mt-6">
-        <p><span class="font-semibold">Stand number:</span> {{ $exhibitorData['exhibitorStandNumber'] }}</p>
+        <p><span class="font-semibold">Stand number:</span> {{ $exhibitorData['stand_number'] ?? 'N/A' }}</p>
         
         <hr class="my-4">
 
         <div class="flex items-start gap-10">
             <div>
                 <p><span class="font-semibold">Facebook:</span>
-                    @if ($exhibitorData['exhibitorFacebook'] == '' || $exhibitorData['exhibitorFacebook'] == null)
+                    @if ($exhibitorData['facebook'] == '' || $exhibitorData['facebook'] == null)
                         N/A
                     @else
-                        {{ $exhibitorData['exhibitorFacebook'] }}
+                        {{ $exhibitorData['facebook'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">LinkedIn:</span>
-                    @if ($exhibitorData['exhibitorLinkedin'] == '' || $exhibitorData['exhibitorLinkedin'] == null)
+                    @if ($exhibitorData['linkedin'] == '' || $exhibitorData['linkedin'] == null)
                         N/A
                     @else
-                        {{ $exhibitorData['exhibitorLinkedin'] }}
+                        {{ $exhibitorData['linkedin'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Twitter:</span>
-                    @if ($exhibitorData['exhibitorTwitter'] == '' || $exhibitorData['exhibitorTwitter'] == null)
+                    @if ($exhibitorData['twitter'] == '' || $exhibitorData['twitter'] == null)
                         N/A
                     @else
-                        {{ $exhibitorData['exhibitorTwitter'] }}
+                        {{ $exhibitorData['twitter'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Instagram:</span>
-                    @if ($exhibitorData['exhibitorInstagram'] == '' || $exhibitorData['exhibitorInstagram'] == null)
+                    @if ($exhibitorData['instagram'] == '' || $exhibitorData['instagram'] == null)
                         N/A
                     @else
-                        {{ $exhibitorData['exhibitorInstagram'] }}
+                        {{ $exhibitorData['instagram'] }}
                     @endif
                 </p>
             </div>
             <div>
                 <p><span class="font-semibold">Country:</span>
-                    @if ($exhibitorData['exhibitorCountry'] == '' || $exhibitorData['exhibitorCountry'] == null)
+                    @if ($exhibitorData['country'] == '' || $exhibitorData['country'] == null)
                         N/A
                     @else
-                        {{ $exhibitorData['exhibitorCountry'] }}
+                        {{ $exhibitorData['country'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Contact Name:</span>
-                    @if ($exhibitorData['exhibitorContactPersonName'] == '' || $exhibitorData['exhibitorContactPersonName'] == null)
+                    @if ($exhibitorData['contact_person_name'] == '' || $exhibitorData['contact_person_name'] == null)
                         N/A
                     @else
-                        {{ $exhibitorData['exhibitorContactPersonName'] }}
+                        {{ $exhibitorData['contact_person_name'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Email address:</span>
-                    @if ($exhibitorData['exhibitorEmailAddress'] == '' || $exhibitorData['exhibitorEmailAddress'] == null)
+                    @if ($exhibitorData['email_address'] == '' || $exhibitorData['email_address'] == null)
                         N/A
                     @else
-                        {{ $exhibitorData['exhibitorEmailAddress'] }}
+                        {{ $exhibitorData['email_address'] }}
                     @endif
                 </p>
                 <p><span class="font-semibold">Mobile Number:</span>
-                    @if ($exhibitorData['exhibitorMobileNumber'] == '' || $exhibitorData['exhibitorMobileNumber'] == null)
+                    @if ($exhibitorData['mobile_number'] == '' || $exhibitorData['mobile_number'] == null)
                         N/A
                     @else
-                        {{ $exhibitorData['exhibitorMobileNumber'] }}
+                        {{ $exhibitorData['mobile_number'] }}
                     @endif
                 </p>
             </div>
@@ -112,10 +112,10 @@
 
         <p class="font-semibold">Company profile:</p>
         <p>
-            @if ($exhibitorData['exhibitorProfile'] == null || $exhibitorData['exhibitorProfile'] == "")
+            @if ($exhibitorData['profile_html_text'] == null || $exhibitorData['profile_html_text'] == "")
                 N/A
             @else
-                {{ $exhibitorData['exhibitorProfile'] }}
+                {{ $exhibitorData['profile_html_text'] }}
             @endif
         </p>
     </div>
@@ -128,6 +128,10 @@
         </button>
     </div>
     
+    @if ($chooseImageModal)
+        @include('livewire.common.choose_image_modal')
+    @endif
+
     @if ($editExhibitorDetailsForm)
         @include('livewire.event.exhibitors.edit_details')
     @endif

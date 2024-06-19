@@ -16,16 +16,20 @@ enum MediaEntityTypes: string
     case ATTENDEE_PFP = 'attendee_pfp';
 
     // SPEAKERS
-    case SPEAKERS = 'speakers';
+    case SPEAKER_PFP = 'speaker_pfp';
+    case SPEAKER_COVER_PHOTO = 'speaker_cover_photo';
 
     // SPONSORS
-    case SPONSORS = 'sponsors';
+    case SPONSOR_LOGO = 'sponsor_logo';
+    case SPONSOR_BANNER = 'sponsor_banner';
 
     // EXHIBITORS
-    case EXHIBITORS = 'exhibitors';
+    case EXHIBITOR_LOGO = 'exhibitor_logo';
+    case EXHIBITOR_BANNER = 'exhibitor_banner';
 
     // MRPS
-    case MEETING_ROOM_PARTNERS = 'meetingRoomPartners';
+    case MEETING_ROOM_PARTNER_LOGO = 'meeting_room_partner_logo';
+    case MEETING_ROOM_PARTNER_BANNER = 'meeting_room_partner_banner';
 
     // MPS
     case MEDIA_PARTNER_LOGO = 'media_partner_logo';

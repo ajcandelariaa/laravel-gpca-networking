@@ -65,7 +65,7 @@
 
                     <button type="button"
                         class="bg-red-500 hover:bg-red-600 text-white rounded-md py-1 px-10"
-                        wire:click.prevent="cancelEditSponsorType">Cancel</button>
+                        wire:click.prevent="resetEditSponsorTypeFields">Cancel</button>
                 </div>
             @else
                 <div class="mt-5">
@@ -136,6 +136,6 @@
 
 
     @if ($editSponsorTypeDateTimeForm)
-        @include('livewire.event.sponsors.type.edit_datetime')
+        @include('livewire.common.edit_datetime_form')
     @endif
 </div>

@@ -7,7 +7,6 @@ use App\Models\Event;
 use App\Models\Media;
 use App\Models\MediaPartner;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 class MediaPartnerController extends Controller
 {
@@ -31,7 +30,7 @@ class MediaPartnerController extends Controller
                 "mediaPartnerId" => $mediaPartner->id,
 
                 "name" => $mediaPartner->name,
-                "profile" => $mediaPartner->profile,
+                "profile_html_text" => $mediaPartner->profile_html_text,
 
                 "logo" => [
                     'media_id' => $mediaPartner->logo_media_id,

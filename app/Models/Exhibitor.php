@@ -14,7 +14,7 @@ class Exhibitor extends Model
         
         'name',
         'stand_number',
-        'profile',
+        'profile_html_text',
         'logo_media_id',
         'banner_media_id',
 

@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MediaEntityTypes;
 use App\Models\Event;
 use App\Models\Exhibitor;
+use App\Models\Media;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ExhibitorController extends Controller
 {
     public function eventExhibitorsView($eventCategory, $eventId)
     {
-        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('name');
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
 
         return view('admin.event.exhibitors.exhibitors', [
             "pageTitle" => "Exhibitors",
@@ -28,50 +29,41 @@ class ExhibitorController extends Controller
         $exhibitor = Exhibitor::where('id', $exhibitorId)->first();
 
         if ($exhibitor) {
-            if ($exhibitor->logo) {
-                $exhibitorLogo = Storage::url($exhibitor->logo);
-                $exhibitorLogoDefault = false;
-            } else {
-                $exhibitorLogo = asset('assets/images/logo-placeholder.jpg');
-                $exhibitorLogoDefault = true;
-            }
-
-            if ($exhibitor->banner) {
-                $exhibitorBanner = Storage::url($exhibitor->banner);
-                $exhibitorBannerDefault = false;
-            } else {
-                $exhibitorBanner = asset('assets/images/banner-placeholder.jpg');
-                $exhibitorBannerDefault = true;
-            }
-
             $exhibitorData = [
                 "exhibitorId" => $exhibitor->id,
-                "exhibitorName" => $exhibitor->name,
-                "exhibitorStandNumber" => $exhibitor->stand_number,
-                "exhibitorProfile" => $exhibitor->profile,
 
-                "exhibitorLogo" => $exhibitorLogo,
-                "exhibitorLogoDefault" => $exhibitorLogoDefault,
-                "exhibitorBanner" => $exhibitorBanner,
-                "exhibitorBannerDefault" => $exhibitorBannerDefault,
+                "name" => $exhibitor->name,
+                "stand_number" => $exhibitor->stand_number,
+                "profile_html_text" => $exhibitor->profile_html_text,
 
-                "exhibitorCountry" => $exhibitor->country,
-                "exhibitorContactPersonName" => $exhibitor->contact_person_name,
-                "exhibitorEmailAddress" => $exhibitor->email_address,
-                "exhibitorMobileNumber" => $exhibitor->mobile_number,
-                "exhibitorWebsite" => $exhibitor->website,
-                "exhibitorFacebook" => $exhibitor->facebook,
-                "exhibitorLinkedin" => $exhibitor->linkedin,
-                "exhibitorTwitter" => $exhibitor->twitter,
-                "exhibitorInstagram" => $exhibitor->instagram,
+                "logo" => [
+                    'media_id' => $exhibitor->logo_media_id,
+                    'media_usage_id' => getMediaUsageId($exhibitor->logo_media_id, MediaEntityTypes::EXHIBITOR_LOGO->value, $exhibitor->id),
+                    'url' => Media::where('id', $exhibitor->logo_media_id)->value('file_url'),
+                ],
+                "banner" => [
+                    'media_id' => $exhibitor->banner_media_id,
+                    'media_usage_id' => getMediaUsageId($exhibitor->banner_media_id, MediaEntityTypes::EXHIBITOR_BANNER->value, $exhibitor->id),
+                    'url' => Media::where('id', $exhibitor->banner_media_id)->value('file_url'),
+                ],
 
-                "exhibitorStatus" => $exhibitor->active,
-                "exhibitorDateTimeAdded" => Carbon::parse($exhibitor->datetime_added)->format('M j, Y g:i A'),
+                "country" => $exhibitor->country,
+                "contact_person_name" => $exhibitor->contact_person_name,
+                "email_address" => $exhibitor->email_address,
+                "mobile_number" => $exhibitor->mobile_number,
+                "website" => $exhibitor->website,
+                "facebook" => $exhibitor->facebook,
+                "linkedin" => $exhibitor->linkedin,
+                "twitter" => $exhibitor->twitter,
+                "instagram" => $exhibitor->instagram,
+
+                "is_active" => $exhibitor->is_active,
+                "datetime_added" => Carbon::parse($exhibitor->datetime_added)->format('M j, Y g:i A'),
             ];
 
             return view('admin.event.exhibitors.exhibitor', [
                 "pageTitle" => "Exhibitor",
-                "eventName" => $event->name,
+                "eventName" => $event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "exhibitorData" => $exhibitorData,

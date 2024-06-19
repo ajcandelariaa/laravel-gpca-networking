@@ -4,18 +4,23 @@ namespace App\Http\Livewire;
 
 use App\Models\Event as Events;
 use App\Models\Exhibitor as Exhibitors;
+use App\Models\Media as Medias;
 use Carbon\Carbon;
 use Livewire\Component;
 
 class ExhibitorList extends Component
 {
     public $event;
-
     public $finalListOfExhibitors = array(), $finalListOfExhibitorsConst = array();
 
-    public $addExhibitorForm, $name, $website, $stand_number;
+    // EDIT DETAILS
+    public $name, $website, $stand_number;
+    public $addExhibitorForm;
 
-    public $exhibitorId, $exhibitorDateTime, $exhibitorArrayIndex, $editExhibitorDateTimeForm;
+    // EDIT DATE TIME
+    public $exhibitorId, $exhibitorDateTime, $exhibitorArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editExhibitorDateTimeForm;
 
     protected $listeners = ['addExhibitorConfirmed' => 'addExhibitor'];
 
@@ -32,13 +37,17 @@ class ExhibitorList extends Component
                     'name' => $exhibitor->name,
                     'stand_number' => $exhibitor->stand_number,
                     'website' => $exhibitor->website,
-                    'active' => $exhibitor->active,
-                    'logo' => $exhibitor->logo,
+                    'is_active' => $exhibitor->is_active,
+                    'logo' => Medias::where('id', $exhibitor->logo_media_id)->value('file_url'),
                     'datetime_added' => Carbon::parse($exhibitor->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
             $this->finalListOfExhibitorsConst = $this->finalListOfExhibitors;
         }
+
+        $this->inputNameVariableDateTime = "exhibitorDateTime";
+        $this->btnUpdateNameMethodDateTime = "editExhibitorDateTime";
+        $this->btnCancelNameMethodDateTime = "resetEditExhibitorDateTimeFields";
 
         $this->addExhibitorForm = false;
         $this->editExhibitorDateTimeForm = false;
@@ -58,8 +67,6 @@ class ExhibitorList extends Component
     {
         $this->validate([
             'name' => 'required',
-            'website' => 'required',
-            'stand_number' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -69,11 +76,6 @@ class ExhibitorList extends Component
             'buttonConfirmText' => "Yes, add it!",
             'livewireEmit' => "addExhibitorConfirmed",
         ]);
-    }
-
-    public function cancelAddExhibitor()
-    {
-        $this->resetAddExhibitorFields();
     }
 
     public function resetAddExhibitorFields()
@@ -98,7 +100,7 @@ class ExhibitorList extends Component
             'name' => $this->name,
             'stand_number' => $this->stand_number,
             'website' => $this->website,
-            'active' => true,
+            'is_active' => true,
             'logo' => null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);
@@ -117,19 +119,13 @@ class ExhibitorList extends Component
 
 
 
-    public function updateExhibitorStatus($arrayIndex, $exhibitorId, $status){
-        if($status){
-            $newStatus = false;
-        } else {
-            $newStatus = true;
-        }
-
-        Exhibitors::where('id', $exhibitorId)->update([
-            'active' => $newStatus,
+    public function updateExhibitorStatus($arrayIndex){
+        Exhibitors::where('id', $this->finalListOfExhibitors[$arrayIndex]['id'])->update([
+            'is_active' => !$this->finalListOfExhibitors[$arrayIndex]['is_active'],
         ]);
 
-        $this->finalListOfExhibitors[$arrayIndex]['active'] = $newStatus;
-        $this->finalListOfExhibitorsConst[$arrayIndex]['active'] = $newStatus;
+        $this->finalListOfExhibitors[$arrayIndex]['is_active'] = !$this->finalListOfExhibitors[$arrayIndex]['is_active'];
+        $this->finalListOfExhibitorsConst[$arrayIndex]['is_active'] = !$this->finalListOfExhibitorsConst[$arrayIndex]['is_active'];
     }
 
 
@@ -143,11 +139,6 @@ class ExhibitorList extends Component
         $this->exhibitorDateTime = $exhibitorDateTime;
         $this->exhibitorArrayIndex = $exhibitorArrayIndex;
         $this->editExhibitorDateTimeForm = true;
-    }
-
-    public function cancelEditExhibitorDateTime()
-    {
-        $this->resetEditExhibitorDateTimeFields();
     }
 
     public function resetEditExhibitorDateTimeFields()

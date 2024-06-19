@@ -19,7 +19,7 @@
                                 Category <span class="text-red-500">*</span>
                             </div>
                             <div class="mt-2">
-                                <select wire:model.lazy="category"
+                                <select wire:model.lazy="feature_id"
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                                     <option value=""></option>
                                     @foreach ($categoryChoices as $categoryChoice)
@@ -28,7 +28,7 @@
                                     @endforeach
                                 </select>
 
-                                @error('category')
+                                @error('feature_id')
                                     <div class="text-red-500 text-xs italic mt-1">
                                         {{ $message }}
                                     </div>
@@ -41,7 +41,7 @@
                                 Type <span class="text-red-500">*</span>
                             </div>
                             <div class="mt-2">
-                                <select wire:model.lazy="type"
+                                <select wire:model.lazy="speaker_type_id"
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                                     <option value=""></option>
                                     @foreach ($typeChoices as $typeChoice)
@@ -49,7 +49,7 @@
                                     @endforeach
                                 </select>
 
-                                @error('type')
+                                @error('speaker_type_id')
                                     <div class="text-red-500 text-xs italic mt-1">
                                         {{ $message }}
                                     </div>
@@ -252,8 +252,8 @@
                             Bio
                         </div>
                         <div class="mt-2">
-                            <textarea wire:model.lazy="biography" cols="30" rows="10"
-                                class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $biography }}</textarea>
+                            <textarea wire:model.lazy="biography_html_text" cols="30" rows="10"
+                                class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $biography_html_text }}</textarea>
                         </div>
                     </div>
                 </div>

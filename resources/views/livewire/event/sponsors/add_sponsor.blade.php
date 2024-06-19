@@ -18,14 +18,14 @@
                             Category <span class="text-red-500">*</span>
                         </div>
                         <div class="mt-2">
-                            <select wire:model.lazy="category" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                            <select wire:model.lazy="feature_id" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                                 <option value=""></option>
                                 @foreach ($categoryChoices as $categoryChoice)
                                     <option value="{{ $categoryChoice['id'] }}">{{ $categoryChoice['value'] }}</option>
                                 @endforeach
                             </select>
 
-                            @error('category')
+                            @error('feature_id')
                                 <div class="text-red-500 text-xs italic mt-1">
                                     {{ $message }}
                                 </div>
@@ -38,14 +38,14 @@
                             Type <span class="text-red-500">*</span>
                         </div>
                         <div class="mt-2">
-                            <select wire:model.lazy="type" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                            <select wire:model.lazy="sponsor_type_id" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                                 <option value=""></option>
                                 @foreach ($typeChoices as $typeChoice)
                                     <option value="{{ $typeChoice['id'] }}">{{ $typeChoice['value'] }}</option>
                                 @endforeach
                             </select>
 
-                            @error('type')
+                            @error('sponsor_type_id')
                                 <div class="text-red-500 text-xs italic mt-1">
                                     {{ $message }}
                                 </div>
@@ -72,17 +72,11 @@
 
                     <div class="mt-5">
                         <div class="text-primaryColor">
-                            Website <span class="text-red-500">*</span>
+                            Website 
                         </div>
                         <div class="mt-2">
                             <input placeholder="Website" type="text" wire:model.lazy="website"
                                 class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
-
-                            @error('website')
-                                <div class="text-red-500 text-xs italic mt-1">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
                     </div>
                 </div>
@@ -93,7 +87,7 @@
                         wire:click.prevent="addSponsorConfirmation">Add</button>
                     <button type="button"
                         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                        wire:click.prevent="cancelAddSponsor">Cancel</button>
+                        wire:click.prevent="resetAddSponsorFields">Cancel</button>
                 </div>
             </div>
         </div>
