@@ -32,6 +32,7 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                     Route::group(['middleware' => 'api.check.attendee.exists'], function () {
                         Route::prefix('attendee/{attendeeId}')->group(function () {
                             Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
+                            
                             Route::get('/homepage', [EventController::class, 'apiEventHomepage']);
 
                             Route::get('/speaker', [SpeakerController::class, 'apiSpeakersList']);

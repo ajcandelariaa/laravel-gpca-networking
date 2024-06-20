@@ -252,7 +252,7 @@ class EventController extends Controller
         }
     }
 
-    public function apiEventHomepage($eventCategory, $eventId, $attendeeId)
+    public function apiEventHomepage($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
 
@@ -270,7 +270,10 @@ class EventController extends Controller
                 'meeting_room_partner_count' => MeetingRoomPartner::where('event_id', $eventId)->where('is_active', true)->count(),
                 'attendee_details' => [
                     'pfp' => Media::where('id', $attendee->pfp_media_id)->value('file_url'),
-                    'name' => $attendee->salutation . ' ' . $attendee->first_name . ' ' . $attendee->middle_name . ' ' . $attendee->last_name,
+                    'salutation' => $attendee->salutation,
+                    'first_name' => $attendee->first_name,
+                    'middle_name' => $attendee->middle_name,
+                    'last_name' => $attendee->last_name,
                     'email_address' => $attendee->email_address,
                 ],
                 'notification_count' => 0,
