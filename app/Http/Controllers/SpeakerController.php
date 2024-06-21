@@ -8,10 +8,13 @@ use App\Models\Feature;
 use App\Models\Media;
 use App\Models\Speaker;
 use App\Models\SpeakerType;
+use App\Traits\HttpResponses;
 use Carbon\Carbon;
 
 class SpeakerController extends Controller
 {
+    use HttpResponses;
+
     public function eventSpeakersView($eventCategory, $eventId)
     {
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
@@ -122,50 +125,80 @@ class SpeakerController extends Controller
     }
 
 
-    
+
+
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
-    public function apiSpeakersList($eventId)
+    public function apiEventSpeakers($apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $speakers = Speaker::where('event_id', $eventId)->where('active', true)->get();
+        $speakers = Speaker::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+        $features = Feature::where('event_id', $eventId)->where('is_active', true)->get();
+        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
 
-        if ($speakers->isNotEmpty()) {
+        if ($speakers->isEmpty()) {
+            return $this->success(null, "There are no speaker yet", 200);
+        } else {
             $data = array();
+            $categorizedSpeakers = array();
 
-            foreach($speakers as $speaker){
+            foreach ($speakers as $speaker) {
+                if ($speaker->feature_id == 0) {
+                    $speakerTypeName = SpeakerType::where('id', $speaker->speaker_type_id)->where('event_id', $eventId)->value('name');
+                    array_push($categorizedSpeakers, [
+                        'id' => $speaker->id,
+                        'salutation' => $speaker->salutation,
+                        'first_name' => $speaker->first_name,
+                        'middle_name' => $speaker->middle_name,
+                        'last_name' => $speaker->last_name,
+                        'company_name' => $speaker->company_name,
+                        'job_title' => $speaker->job_title,
+                        'speaker_type_name' => $speakerTypeName,
+                        'logo' => Media::where('id', $speaker->logo_media_id)->value('file_url'),
+                    ]);
+                }
+            }
+
+            if (count($categorizedSpeakers) > 0) {
                 array_push($data, [
-                    'id' => $speaker->id,
-                    'feature_id' => $speaker->feature_id,
-                    'speaker_type_id' => $speaker->speaker_type_id,
-
-                    'salutation' => $speaker->salutation,
-                    'first_name' => $speaker->first_name,
-                    'middle_name' => $speaker->middle_name,
-                    'last_name' => $speaker->last_name,
-
-                    'company_name' => $speaker->company_name,
-                    'job_title' => $speaker->job_title,
-
-                    'biography' => $speaker->biography,
-                    'pfp' => $speaker->pfp,
-                    'cover_photo' => $speaker->cover_photo,
-
-                    'country' => $speaker->country,
-                    'email_address' => $speaker->email_address,
-                    'mobile_number' => $speaker->mobile_number,
-                    'website' => $speaker->website,
-                    'facebook' => $speaker->facebook,
-                    'linkedin' => $speaker->linkedin,
-                    'twitter' => $speaker->twitter,
-                    'instagram' => $speaker->instagram,
+                    'speakerCategoryName' => "Main Conference",
+                    'speakerCategoryTextColor' => $event->primary_text_color,
+                    'speakerCategoryBackgroundColor' => $event->primary_bg_color,
+                    'speakers' => $categorizedSpeakers,
                 ]);
             }
-        } else {
-            return response()->json([
-                'status' => 200,
-                'message' => "There's no speaker yet.",
-            ], 200);
+
+            if ($features->isNotEmpty()) {
+                foreach($features as $feature){
+                    $categorizedSpeakers = array();
+                    foreach ($speakers as $speaker) {
+                        if ($speaker->feature_id == $feature->id) {
+                            $speakerTypeName = SpeakerType::where('id', $speaker->speaker_type_id)->where('event_id', $eventId)->value('name');
+                            array_push($categorizedSpeakers, [
+                                'id' => $speaker->id,
+                                'salutation' => $speaker->salutation,
+                                'first_name' => $speaker->first_name,
+                                'middle_name' => $speaker->middle_name,
+                                'last_name' => $speaker->last_name,
+                                'company_name' => $speaker->company_name,
+                                'job_title' => $speaker->job_title,
+                                'speaker_type_name' => $speakerTypeName,
+                                'logo' => Media::where('id', $speaker->logo_media_id)->value('file_url'),
+                            ]);
+                        }
+                    }
+    
+                    if (count($categorizedSpeakers) > 0) {
+                        array_push($data, [
+                            'speakerCategoryName' => $feature->short_name,
+                            'speakerCategoryTextColor' => $feature->primary_text_color,
+                            'speakerCategoryBackgroundColor' => $feature->primary_bg_color,
+                            'speakers' => $categorizedSpeakers,
+                        ]);
+                    }
+                }
+            }
+            return $this->success($data, "Speakers list", 200);
         }
     }
 }

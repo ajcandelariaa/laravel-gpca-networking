@@ -31,6 +31,68 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-2 gap-5 items-start mt-3">
+                        <div class="col-span-1 mt-2">
+                            <div class="text-primaryColor">
+                                Primary Background Color <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <input wire:model.lazy="primary_bg_color" placeholder="#000000" type="text"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                @error('primary_bg_color')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                
+                        <div class="col-span-1 mt-2">
+                            <div class="text-primaryColor">
+                                Secondary Background Color <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <input wire:model.lazy="secondary_bg_color" placeholder="#000000" type="text"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                @error('secondary_bg_color')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                
+                        <div class="col-span-1">
+                            <div class="text-primaryColor">
+                                Primary Text Color <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <input wire:model.lazy="primary_text_color" placeholder="#000000" type="text"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                @error('primary_text_color')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                
+                        <div class="col-span-1">
+                            <div class="text-primaryColor">
+                                Secondary Text Color <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <input wire:model.lazy="secondary_text_color" placeholder="#000000" type="text"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                @error('secondary_text_color')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mt-5 grid grid-cols-2 gap-5">
                         <div>
                             <div class="text-primaryColor">
@@ -73,7 +135,7 @@
                         wire:click.prevent="addFeatureConfirmation">Add</button>
                     <button type="button"
                         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                        wire:click.prevent="cancelAddFeature">Cancel</button>
+                        wire:click.prevent="resetAddFeatureFields">Cancel</button>
                 </div>
             </div>
         </div>

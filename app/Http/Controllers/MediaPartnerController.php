@@ -6,10 +6,13 @@ use App\Enums\MediaEntityTypes;
 use App\Models\Event;
 use App\Models\Media;
 use App\Models\MediaPartner;
+use App\Traits\HttpResponses;
 use Carbon\Carbon;
 
 class MediaPartnerController extends Controller
 {
+    use HttpResponses;
+
     public function eventMediaPartnersView($eventCategory, $eventId){
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
 
@@ -69,7 +72,29 @@ class MediaPartnerController extends Controller
         }
     }
 
-    public function getListOfMediaPartners() {
-        return response()->json();
+
+
+
+    // =========================================================
+    //                       API FUNCTIONS
+    // =========================================================
+    public function apiEventMediaPartners($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $mediaPartners = MediaPartner::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+
+        if ($mediaPartners->isEmpty()) {
+            return $this->success(null, "There are no media partner yet", 200);
+        } else {
+            $data = array();
+            foreach ($mediaPartners as $mediaPartner) {
+                array_push($data, [
+                    'id' => $mediaPartner->id,
+                    'name' => $mediaPartner->name,
+                    'website' => $mediaPartner->website,
+                    'logo' => Media::where('id', $mediaPartner->logo_media_id)->value('file_url'),
+                ]);
+            }
+            return $this->success($data, "Media partner list", 200);
+        }
     }
 }

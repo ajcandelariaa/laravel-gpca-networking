@@ -26,6 +26,11 @@ class Feature extends Model
         'logo_media_id',
         'banner_media_id',
 
+        'primary_bg_color',
+        'secondary_bg_color',
+        'primary_text_color',
+        'secondary_text_color',
+
         'is_active',
         'datetime_added',
     ];

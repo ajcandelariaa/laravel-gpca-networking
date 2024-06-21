@@ -13,6 +13,7 @@ class FeatureList extends Component
     public $finalListOfFeatures = array(), $finalListOfFeaturesConst = array();
 
     public $full_name, $short_name, $location, $link, $start_date, $end_date;
+    public $primary_bg_color, $secondary_bg_color, $primary_text_color, $secondary_text_color;
     public $addFeatureForm;
 
     public $featureId, $featureDateTime, $featureArrayIndex;
@@ -63,6 +64,11 @@ class FeatureList extends Component
             'full_name' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
+
+            'primary_bg_color' => 'required',
+            'secondary_bg_color' => 'required',
+            'primary_text_color' => 'required',
+            'secondary_text_color' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -80,6 +86,10 @@ class FeatureList extends Component
         $this->full_name = null;
         $this->start_date = null;
         $this->end_date = null;
+        $this->primary_bg_color = null;
+        $this->secondary_bg_color = null;
+        $this->primary_text_color = null;
+        $this->secondary_text_color= null;
     }
 
     public function addFeature()
@@ -89,6 +99,11 @@ class FeatureList extends Component
             'full_name' => $this->full_name,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
+
+            'primary_bg_color' => $this->primary_bg_color,
+            'secondary_bg_color' => $this->secondary_bg_color,
+            'primary_text_color' => $this->primary_text_color,
+            'secondary_text_color' => $this->secondary_text_color,
             'datetime_added' => Carbon::now(),
         ]);
 

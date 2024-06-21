@@ -39,6 +39,10 @@ class FeatureController extends Controller
                 "featureStartDate" => $feature->start_date,
                 "featureEndDate" => $feature->end_date,
                 "featureFormattedDate" => $formattedDate,
+                "featurePrimaryBgColor" => $feature->primary_bg_color,
+                "featureSecondaryBgColor" => $feature->secondary_bg_color,
+                "featurePrimaryTextColor" => $feature->primary_text_color,
+                "featureSecondaryTextColor" => $feature->secondary_text_color,
                 "featureLogo" => [
                     'media_id' => $feature->logo_media_id,
                     'media_usage_id' => getMediaUsageId($feature->logo_media_id, MediaEntityTypes::FEATURE_LOGO->value, $eventId),

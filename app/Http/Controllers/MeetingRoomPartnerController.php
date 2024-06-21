@@ -6,11 +6,13 @@ use App\Enums\MediaEntityTypes;
 use App\Models\Event;
 use App\Models\Media;
 use App\Models\MeetingRoomPartner;
+use App\Traits\HttpResponses;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 class MeetingRoomPartnerController extends Controller
 {
+    use HttpResponses;
+
     public function eventMeetingRoomPartnersView($eventCategory, $eventId){
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
 
@@ -69,6 +71,32 @@ class MeetingRoomPartnerController extends Controller
             ]);
         } else {
             abort(404, 'Data not found'); 
+        }
+    }
+
+
+
+
+    // =========================================================
+    //                       API FUNCTIONS
+    // =========================================================
+    public function apiEventMeetingRoomPartners($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $meetingRoomPartners = MeetingRoomPartner::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+
+        if ($meetingRoomPartners->isEmpty()) {
+            return $this->success(null, "There are no meeting room partner yet", 200);
+        } else {
+            $data = array();
+            foreach ($meetingRoomPartners as $meetingRoomPartner) {
+                array_push($data, [
+                    'id' => $meetingRoomPartner->id,
+                    'name' => $meetingRoomPartner->name,
+                    'location' => $meetingRoomPartner->location,
+                    'logo' => Media::where('id', $meetingRoomPartner->logo_media_id)->value('file_url'),
+                ]);
+            }
+            return $this->success($data, "Meeting room partner list", 200);
         }
     }
 }

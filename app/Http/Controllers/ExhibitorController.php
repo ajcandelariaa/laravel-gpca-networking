@@ -6,11 +6,13 @@ use App\Enums\MediaEntityTypes;
 use App\Models\Event;
 use App\Models\Exhibitor;
 use App\Models\Media;
+use App\Traits\HttpResponses;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 class ExhibitorController extends Controller
 {
+    use HttpResponses;
+
     public function eventExhibitorsView($eventCategory, $eventId)
     {
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
@@ -70,6 +72,32 @@ class ExhibitorController extends Controller
             ]);
         } else {
             abort(404, 'Data not found');
+        }
+    }
+
+
+
+
+    // =========================================================
+    //                       API FUNCTIONS
+    // =========================================================
+    public function apiEventExhibitors($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $exhibitors = Exhibitor::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+
+        if ($exhibitors->isEmpty()) {
+            return $this->success(null, "There are no exhibitor yet", 200);
+        } else {
+            $data = array();
+            foreach ($exhibitors as $exhibitor) {
+                array_push($data, [
+                    'id' => $exhibitor->id,
+                    'name' => $exhibitor->name,
+                    'stand_number' => $exhibitor->stand_number,
+                    'logo' => Media::where('id', $exhibitor->logo_media_id)->value('file_url'),
+                ]);
+            }
+            return $this->success($data, "Exhibitor list", 200);
         }
     }
 }

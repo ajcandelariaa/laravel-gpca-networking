@@ -8,10 +8,13 @@ use App\Models\Feature;
 use App\Models\Media;
 use App\Models\Sponsor;
 use App\Models\SponsorType;
+use App\Traits\HttpResponses;
 use Carbon\Carbon;
 
 class SponsorController extends Controller
 {
+    use HttpResponses;
+
     public function eventSponsorsView($eventCategory, $eventId){
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
         
@@ -111,14 +114,42 @@ class SponsorController extends Controller
 
 
 
+    // =========================================================
+    //                       API FUNCTIONS
+    // =========================================================
+    public function apiEventSponsors($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $sponsors = Sponsor::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+        $sponsorTypes = SponsorType::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
 
+        if ($sponsors->isEmpty()) {
+            return $this->success(null, "There are no sponsor yet", 200);
+        } else {
+            $data = array();
 
-
-
-
-
-    public function getListOfSponsors() {
-        return response()->json();
+            foreach($sponsorTypes as $sponsorType){
+                $categorizedSponsors = array();
+                
+                foreach($sponsors as $sponsor){
+                    if($sponsorType->id == $sponsor->sponsor_type_id){
+                        array_push($categorizedSponsors, [
+                            'id' => $sponsor->id,
+                            'name' => $sponsor->name,
+                            'website' => $sponsor->website,
+                            'logo' => Media::where('id', $sponsor->logo_media_id)->value('file_url'),
+                        ]);
+                    }
+                }
+                if(count($categorizedSponsors) > 0){
+                    array_push($data, [
+                        'sponsorTypeName' => $sponsorType->name,
+                        'sponsorTypeTextColor' => $sponsorType->text_color,
+                        'sponsorTypeBackgroundColor' => $sponsorType->background_color,
+                        'sponsors' => $categorizedSponsors,
+                    ]);
+                }
+            }
+            return $this->success($data, "Sponsors list", 200);
+        }
     }
-    
 }

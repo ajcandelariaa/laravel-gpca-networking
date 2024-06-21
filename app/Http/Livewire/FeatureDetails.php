@@ -15,6 +15,7 @@ class FeatureDetails extends Component
     public $event, $featureData;
 
     public $full_name, $short_name, $edition, $location, $description_html_text, $link, $start_date, $end_date, $editFeatureDetailsForm;
+    public $primary_bg_color, $secondary_bg_color, $primary_text_color, $secondary_text_color;
 
     // EDIT ASSETS
     public $assetType, $editFeatureAssetForm, $image_media_id, $image_placeholder_text;
@@ -169,6 +170,9 @@ class FeatureDetails extends Component
     }
 
 
+
+    
+
     // EDIT FEATURE DETAILS
     public function showEditFeatureDetails()
     {
@@ -180,12 +184,11 @@ class FeatureDetails extends Component
         $this->link = $this->featureData['featureLink'];
         $this->start_date = $this->featureData['featureStartDate'];
         $this->end_date = $this->featureData['featureEndDate'];
+        $this->primary_bg_color = $this->featureData['featurePrimaryBgColor'];
+        $this->secondary_bg_color = $this->featureData['featureSecondaryBgColor'];
+        $this->primary_text_color = $this->featureData['featurePrimaryTextColor'];
+        $this->secondary_text_color = $this->featureData['featureSecondaryTextColor'];
         $this->editFeatureDetailsForm = true;
-    }
-
-    public function cancelEditFeatureDetails()
-    {
-        $this->resetEditFeatureDetailsFields();
     }
 
     public function resetEditFeatureDetailsFields()
@@ -199,6 +202,10 @@ class FeatureDetails extends Component
         $this->link = null;
         $this->start_date = null;
         $this->end_date = null;
+        $this->primary_bg_color = null;
+        $this->secondary_bg_color = null;
+        $this->primary_text_color = null;
+        $this->secondary_text_color= null;
     }
 
     public function editFeatureDetailsConfirmation()
@@ -207,6 +214,11 @@ class FeatureDetails extends Component
             'full_name' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
+
+            'primary_bg_color' => 'required',
+            'secondary_bg_color' => 'required',
+            'primary_text_color' => 'required',
+            'secondary_text_color' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -229,6 +241,11 @@ class FeatureDetails extends Component
             'link' => $this->link,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
+
+            'primary_bg_color' => $this->primary_bg_color,
+            'secondary_bg_color' => $this->secondary_bg_color,
+            'primary_text_color' => $this->primary_text_color,
+            'secondary_text_color' => $this->secondary_text_color,
         ]);
 
         $this->featureData['featureFullName'] = $this->full_name;
@@ -239,6 +256,12 @@ class FeatureDetails extends Component
         $this->featureData['featureLink'] = $this->link;
         $this->featureData['featureStartDate'] = $this->start_date;
         $this->featureData['featureEndDate'] = $this->end_date;
+
+        $this->featureData['featurePrimaryBgColor'] = $this->primary_bg_color;
+        $this->featureData['featureSecondaryBgColor'] = $this->secondary_bg_color;
+        $this->featureData['featurePrimaryTextColor'] = $this->primary_text_color;
+        $this->featureData['featureSecondaryTextColor'] = $this->secondary_text_color;
+
         $this->featureData['featureFormattedDate'] =  Carbon::parse($this->start_date)->format('d M Y') . ' - ' . Carbon::parse($this->end_date)->format('d M Y');
 
         $this->resetEditFeatureDetailsFields();

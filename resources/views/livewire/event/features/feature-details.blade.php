@@ -45,6 +45,17 @@
         </div>
 
         <div class="mt-5">
+            <p><span class="font-semibold">Primary BG Color:</span> {{ $featureData['featurePrimaryBgColor'] }}</p>
+            <p><span class="font-semibold">Secondary BG Color:</span> {{ $featureData['featureSecondaryBgColor'] }}</p>
+            <p><span class="font-semibold">Primary Text Color:</span> {{ $featureData['featurePrimaryTextColor'] }}</p>
+            <p><span class="font-semibold">Secondary Text Color:</span> {{ $featureData['featureSecondaryTextColor'] }}</p>
+        </div>
+
+        <div class="mt-5">
+            <hr>
+        </div>
+
+        <div class="mt-5">
             <p class="font-semibold">Description:</p>
             <p class="ml-4">
                 @if ($featureData['featureDescriptionHTMLText'] == '' || $featureData['featureDescriptionHTMLText'] == null)

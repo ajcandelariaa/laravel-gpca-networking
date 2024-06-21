@@ -104,6 +104,12 @@ class AttendeesController extends Controller
 
 
 
+
+
+    
+    // =========================================================
+    //                       API FUNCTIONS
+    // =========================================================
     public function apiAttendeeLogin(Request $request)
     {
         $request->validate([

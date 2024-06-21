@@ -255,32 +255,27 @@ class EventController extends Controller
     public function apiEventHomepage($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
+        $attendee = Attendee::where('id', $attendeeId)->where('event_id', $eventId)->where('is_active', true)->first();
 
-        if($event){
-            $attendee = Attendee::where('id', $attendeeId)->where('event_id', $eventId)->where('is_active', true)->first();
-
-            $data = [
-                'event_logo_inverted' => Media::where('id', $event->event_logo_inverted_media_id)->value('file_url'),
-                'event_banner' => Media::where('id', $event->event_banner_media_id)->value('file_url'),
-                'speaker_count' => Speaker::where('event_id', $eventId)->where('is_active', true)->count(),
-                'session_count' => Session::where('event_id', $eventId)->where('is_active', true)->count(),
-                'sponsor_count' => Sponsor::where('event_id', $eventId)->where('is_active', true)->count(),
-                'exhibitor_count' => Exhibitor::where('event_id', $eventId)->where('is_active', true)->count(),
-                'media_partner_count' => MediaPartner::where('event_id', $eventId)->where('is_active', true)->count(),
-                'meeting_room_partner_count' => MeetingRoomPartner::where('event_id', $eventId)->where('is_active', true)->count(),
-                'attendee_details' => [
-                    'pfp' => Media::where('id', $attendee->pfp_media_id)->value('file_url'),
-                    'salutation' => $attendee->salutation,
-                    'first_name' => $attendee->first_name,
-                    'middle_name' => $attendee->middle_name,
-                    'last_name' => $attendee->last_name,
-                    'email_address' => $attendee->email_address,
-                ],
-                'notification_count' => 0,
-            ];
-            return $this->success($data, "Event Homepage details", 200);
-        } else {
-            return $this->success(null, "Event doesn't exist.", 200);
-        }
+        $data = [
+            'event_logo_inverted' => Media::where('id', $event->event_logo_inverted_media_id)->value('file_url'),
+            'event_banner' => Media::where('id', $event->event_banner_media_id)->value('file_url'),
+            'speaker_count' => Speaker::where('event_id', $eventId)->where('is_active', true)->count(),
+            'session_count' => Session::where('event_id', $eventId)->where('is_active', true)->count(),
+            'sponsor_count' => Sponsor::where('event_id', $eventId)->where('is_active', true)->count(),
+            'exhibitor_count' => Exhibitor::where('event_id', $eventId)->where('is_active', true)->count(),
+            'media_partner_count' => MediaPartner::where('event_id', $eventId)->where('is_active', true)->count(),
+            'meeting_room_partner_count' => MeetingRoomPartner::where('event_id', $eventId)->where('is_active', true)->count(),
+            'attendee_details' => [
+                'pfp' => Media::where('id', $attendee->pfp_media_id)->value('file_url'),
+                'salutation' => $attendee->salutation,
+                'first_name' => $attendee->first_name,
+                'middle_name' => $attendee->middle_name,
+                'last_name' => $attendee->last_name,
+                'email_address' => $attendee->email_address,
+            ],
+            'notification_count' => 0,
+        ];
+        return $this->success($data, "Event Homepage details", 200);
     }
 }
