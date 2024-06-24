@@ -5,6 +5,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
 use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\MeetingRoomPartnerController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SpeakerController;
 use App\Http\Controllers\SponsorController;
 use Illuminate\Http\Request;
@@ -33,12 +34,21 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                     Route::group(['middleware' => 'api.check.attendee.exists'], function () {
                         Route::prefix('attendee/{attendeeId}')->group(function () {
                             Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
+
                             Route::get('/homepage', [EventController::class, 'apiEventHomepage']);
-                            Route::get('/exhibitor', [ExhibitorController::class, 'apiEventExhibitors']);
-                            Route::get('/media-partner', [MediaPartnerController::class, 'apiEventMediaPartners']);
-                            Route::get('/meeting-room-partner', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartners']);
-                            Route::get('/sponsor', [SponsorController::class, 'apiEventSponsors']);
+
                             Route::get('/speaker', [SpeakerController::class, 'apiEventSpeakers']);
+
+                            Route::get('/session', [SessionController::class, 'apiEventSessions']);
+
+                            Route::get('/sponsor', [SponsorController::class, 'apiEventSponsors']);
+
+                            Route::get('/exhibitor', [ExhibitorController::class, 'apiEventExhibitors']);
+
+                            Route::get('/meeting-room-partner', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartners']);
+
+                            Route::get('/media-partner', [MediaPartnerController::class, 'apiEventMediaPartners']);
+                            
                         });
                     });
                 });

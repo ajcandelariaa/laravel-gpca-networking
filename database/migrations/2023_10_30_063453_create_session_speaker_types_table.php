@@ -23,7 +23,6 @@ return new class extends Migration
 
             $table->string('text_color')->nullable();
             $table->string('background_color')->nullable();
-            
 
             $table->dateTime('datetime_added');
             $table->timestamps();
