@@ -158,7 +158,7 @@ class SpeakerController extends Controller
                         'company_name' => $speaker->company_name,
                         'job_title' => $speaker->job_title,
                         'speaker_type_name' => $speakerTypeName,
-                        'logo' => Media::where('id', $speaker->logo_media_id)->value('file_url'),
+                        'pfp' => Media::where('id', $speaker->pfp_media_id)->value('file_url'),
                     ]);
                 }
             }
@@ -187,7 +187,7 @@ class SpeakerController extends Controller
                                 'company_name' => $speaker->company_name,
                                 'job_title' => $speaker->job_title,
                                 'speaker_type_name' => $speakerTypeName,
-                                'logo' => Media::where('id', $speaker->logo_media_id)->value('file_url'),
+                                'pfp' => Media::where('id', $speaker->pfp_media_id)->value('file_url'),
                             ]);
                         }
                     }
