@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\MediaEntityTypes;
+use App\Models\AttendeeFavoriteSponsor;
 use App\Models\Event;
 use App\Models\Feature;
 use App\Models\Media;
@@ -10,6 +11,7 @@ use App\Models\Sponsor;
 use App\Models\SponsorType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class SponsorController extends Controller
 {
@@ -150,6 +152,96 @@ class SponsorController extends Controller
                 }
             }
             return $this->success($data, "Sponsors list", 200);
+        }
+    }
+
+    public function apiEventSponsorDetail($apiCode, $eventCategory, $eventId, $attendeeId, $sponsorId){
+        $sponsor = Sponsor::where('id', $sponsorId)->where('event_id', $eventId)->where('is_active', true)->first();
+
+        if($sponsor){
+
+            if($sponsor->feature_id == 0){
+                $categoryName = Event::where('id', $eventId)->where('category', $eventCategory)->value('short_name');
+            } else {
+                $categoryName = Feature::where('id', $sponsor->feature_id)->where('event_id', $eventId)->value('short_name');
+            }
+
+            if($sponsor->sponsor_type_id){
+                $sponsorTypeName = SponsorType::where('id', $sponsor->sponsor_type_id)->where('event_id', $eventId)->value('name');
+            } else {
+                $sponsorTypeName = null;
+            }
+
+            if (AttendeeFavoriteSponsor::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('sponsor_id', $sponsorId)->first()) {
+                $is_favorite = true;
+            } else {
+                $is_favorite = false;
+            }
+
+            $data = [
+                'sponsor_id' => $sponsor->id,
+                'logo' => Media::where('id', $sponsor->logo_media_id)->value('file_url'),
+                'name' => $sponsor->name,
+                'category' => $categoryName,
+                'type' => $sponsorTypeName,
+                'profile_html_text' => $sponsor->profile_html_text,
+                'country' => $sponsor->country,
+                'website' => $sponsor->website,
+                'facebook' => $sponsor->facebook,
+                'linkedin' => $sponsor->linkedin,
+                'twitter' => $sponsor->twitter,
+                'instagram' => $sponsor->instagram,
+                'is_favorite' => $is_favorite,
+                'favorite_count' => AttendeeFavoriteSponsor::where('event_id', $eventId)->where('sponsor_id', $sponsorId)->count(),
+            ];
+
+            return $this->success($data, "Sponsor details", 200);
+        } else {
+            return $this->success(null, "Sponsor doesn't exist", 404);
+        }
+    }
+
+
+    public function apiEventSponsorMarkAsFavorite(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $request->validate([
+            'sponsorId' => 'required', 
+            'isFavorite' => 'required|boolean',
+        ]);
+
+        if(Sponsor::find($request->sponsorId)){
+            try {
+                $favorite = AttendeeFavoriteSponsor::where('event_id', $eventId)
+                ->where('attendee_id', $attendeeId)
+                ->where('sponsor_id', $request->sponsorId)
+                ->first();
+
+                if ($request->isFavorite) {
+                    if (!$favorite) {
+                        AttendeeFavoriteSponsor::create([
+                            'event_id' => $eventId,
+                            'attendee_id' => $attendeeId,
+                            'sponsor_id' => $request->sponsorId,
+                        ]);
+                    }
+                } else {
+                    if ($favorite) {
+                        $favorite->delete();
+                    }
+                }
+        
+                $data = [
+                    'favorite_count' => AttendeeFavoriteSponsor::where('event_id', $eventId)
+                        ->where('sponsor_id', $request->sponsorId)
+                        ->count(),
+                ];
+        
+                return $this->success($data, "Sponsor favorite status updated successfully", 200);
+            } catch (\Exception $e) {
+                return $this->error(null, "An error occurred while updating the favorite status", 500);
+            }
+        } else {
+            return $this->error(null, "Sponsor doesn't exist", 404);
         }
     }
 }

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\MediaEntityTypes;
+use App\Models\AttendeeFavoriteExhibitor;
 use App\Models\Event;
 use App\Models\Exhibitor;
 use App\Models\Media;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class ExhibitorController extends Controller
 {
@@ -98,6 +100,82 @@ class ExhibitorController extends Controller
                 ]);
             }
             return $this->success($data, "Exhibitor list", 200);
+        }
+    }
+
+    public function apiEventExhibitorDetail($apiCode, $eventCategory, $eventId, $attendeeId, $exhibitorId){
+        $exhibitor = Exhibitor::where('id', $exhibitorId)->where('event_id', $eventId)->where('is_active', true)->first();
+
+        if($exhibitor){
+            if (AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('exhibitor_id', $exhibitorId)->first()) {
+                $is_favorite = true;
+            } else {
+                $is_favorite = false;
+            }
+
+            $data = [
+                'exhibitor_id' => $exhibitor->id,
+                'logo' => Media::where('id', $exhibitor->logo_media_id)->value('file_url'),
+                'name' => $exhibitor->name,
+                'stand_number' => $exhibitor->stand_number,
+                'profile_html_text' => $exhibitor->profile_html_text,
+                'country' => $exhibitor->country,
+                'website' => $exhibitor->website,
+                'facebook' => $exhibitor->facebook,
+                'linkedin' => $exhibitor->linkedin,
+                'twitter' => $exhibitor->twitter,
+                'instagram' => $exhibitor->instagram,
+                'is_favorite' => $is_favorite,
+                'favorite_count' => AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('exhibitor_id', $exhibitorId)->count(),
+            ];
+
+            return $this->success($data, "Exhibitor details", 200);
+        } else {
+            return $this->success(null, "Exhibitor doesn't exist", 404);
+        }
+    }
+
+
+    public function apiEventExhibitorMarkAsFavorite(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $request->validate([
+            'exhibitorId' => 'required', 
+            'isFavorite' => 'required|boolean',
+        ]);
+
+        if(Exhibitor::find($request->exhibitorId)){
+            try {
+                $favorite = AttendeeFavoriteExhibitor::where('event_id', $eventId)
+                ->where('attendee_id', $attendeeId)
+                ->where('exhibitor_id', $request->exhibitorId)
+                ->first();
+
+                if ($request->isFavorite) {
+                    if (!$favorite) {
+                        AttendeeFavoriteExhibitor::create([
+                            'event_id' => $eventId,
+                            'attendee_id' => $attendeeId,
+                            'exhibitor_id' => $request->exhibitorId,
+                        ]);
+                    }
+                } else {
+                    if ($favorite) {
+                        $favorite->delete();
+                    }
+                }
+        
+                $data = [
+                    'favorite_count' => AttendeeFavoriteExhibitor::where('event_id', $eventId)
+                        ->where('exhibitor_id', $request->exhibitorId)
+                        ->count(),
+                ];
+        
+                return $this->success($data, "Exhibitor favorite status updated successfully", 200);
+            } catch (\Exception $e) {
+                return $this->error(null, "An error occurred while updating the favorite status", 500);
+            }
+        } else {
+            return $this->error(null, "Exhibitor doesn't exist", 404);
         }
     }
 }

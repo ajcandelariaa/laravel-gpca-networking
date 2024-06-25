@@ -34,21 +34,43 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                     Route::group(['middleware' => 'api.check.attendee.exists'], function () {
                         Route::prefix('attendee/{attendeeId}')->group(function () {
                             Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
-
                             Route::get('/homepage', [EventController::class, 'apiEventHomepage']);
 
-                            Route::get('/speaker', [SpeakerController::class, 'apiEventSpeakers']);
+                            Route::prefix('speaker')->group(function () {
+                                Route::get('/', [SpeakerController::class, 'apiEventSpeakers']);
+                                Route::get('/{speakerId}', [SpeakerController::class, 'apiEventSpeakerDetail']);
+                                Route::post('/mark-as-favorite', [SpeakerController::class, 'apiEventSpeakerMarkAsFavorite']);
+                            });
 
-                            Route::get('/session', [SessionController::class, 'apiEventSessions']);
+                            Route::prefix('session')->group(function () {
+                                Route::get('/', [SessionController::class, 'apiEventSessions']);
+                                Route::get('/{sessionId}', [SessionController::class, 'apiEventSessionDetail']);
+                                Route::post('/mark-as-favorite', [SessionController::class, 'apiEventSessionMarkAsFavorite']);
+                            });
 
-                            Route::get('/sponsor', [SponsorController::class, 'apiEventSponsors']);
+                            Route::prefix('sponsor')->group(function () {
+                                Route::get('/', [SponsorController::class, 'apiEventSponsors']);
+                                Route::get('/{sponsorId}', [SponsorController::class, 'apiEventSponsorDetail']);
+                                Route::post('/mark-as-favorite', [SponsorController::class, 'apiEventSponsorMarkAsFavorite']);
+                            });
 
-                            Route::get('/exhibitor', [ExhibitorController::class, 'apiEventExhibitors']);
+                            Route::prefix('exhibitor')->group(function () {
+                                Route::get('/', [ExhibitorController::class, 'apiEventExhibitors']);
+                                Route::get('/{exhibitorId}', [ExhibitorController::class, 'apiEventExhibitorDetail']);
+                                Route::post('/mark-as-favorite', [ExhibitorController::class, 'apiEventExhibitorMarkAsFavorite']);
+                            });
 
-                            Route::get('/meeting-room-partner', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartners']);
+                            Route::prefix('meeting-room-partner')->group(function () {
+                                Route::get('/', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartners']);
+                                Route::get('/{meetingRoomPartnerId}', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartnerDetail']);
+                                Route::post('/mark-as-favorite', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartnerMarkAsFavorite']);
+                            });
 
-                            Route::get('/media-partner', [MediaPartnerController::class, 'apiEventMediaPartners']);
-                            
+                            Route::prefix('media-partner')->group(function () {
+                                Route::get('/media-partner', [MediaPartnerController::class, 'apiEventMediaPartners']);
+                                Route::get('/{mediaPartnerId}', [MediaPartnerController::class, 'apiEventMediaPartnerDetail']);
+                                Route::post('/mark-as-favorite', [MediaPartnerController::class, 'apiEventMediaPartnerMarkAsFavorite']);
+                            });
                         });
                     });
                 });
