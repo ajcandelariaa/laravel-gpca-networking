@@ -116,7 +116,7 @@ class SessionController extends Controller
                 $finalSessionSpeakerGroup = array();
             }
 
-            if($session->sponsor_id){
+            if ($session->sponsor_id) {
                 $sponsor = Sponsor::where('id', $session->sponsor_id)->where('event_id', $eventId)->where('is_active', true)->first();
                 $sponsorTypeName = SponsorType::where('id', $sponsor->sponsor_type_id)->value('name');
                 $sponsorName = $sponsor->name . ' - ' . $sponsorTypeName;
@@ -147,7 +147,7 @@ class SessionController extends Controller
                     'name' => $sponsorName,
                     'url' => $sessionSponsorLogo,
                 ],
-                
+
                 "finalSessionSpeakerGroup" => $finalSessionSpeakerGroup,
 
                 "sessionStatus" => $session->active,
@@ -233,12 +233,20 @@ class SessionController extends Controller
                                     $getSpeakersHeadshot[] = Media::where('id', $speakerPFPMediaId)->value('file_url');
                                 }
                             }
+
+                            $getSponsorLogoUrl = null;
+                            if ($session->sponsor_id) {
+                                $getSponsorLogoId = Sponsor::where('id', $session->sponsor_id)->value('logo_media_id');
+                                $getSponsorLogoUrl = Media::where('id', $getSponsorLogoId)->value('file_url');
+                            }
+
                             array_push($sessionsTemp, [
                                 'session_id' => $session->id,
                                 'start_time' => $session->start_time,
                                 'end_time' => $session->end_time,
                                 'title' => $session->title,
                                 'speakers_mini_headshot' => $getSpeakersHeadshot,
+                                'sponsor_mini_logo' => $getSponsorLogoUrl,
                             ]);
                         }
                     }
@@ -304,12 +312,20 @@ class SessionController extends Controller
                                             $getSpeakersHeadshot[] = Media::where('id', $speakerPFPMediaId)->value('file_url');
                                         }
                                     }
+
+                                    $getSponsorLogoUrl = null;
+                                    if ($session->sponsor_id) {
+                                        $getSponsorLogoId = Sponsor::where('id', $session->sponsor_id)->value('logo_media_id');
+                                        $getSponsorLogoUrl = Media::where('id', $getSponsorLogoId)->value('file_url');
+                                    }
+
                                     array_push($sessionsTemp, [
                                         'session_id' => $session->id,
                                         'start_time' => $session->start_time,
                                         'end_time' => $session->end_time,
                                         'title' => $session->title,
                                         'speakers_mini_headshot' => $getSpeakersHeadshot,
+                                        'sponsor_mini_logo' => $getSponsorLogoUrl,
                                     ]);
                                 }
                             }
@@ -332,7 +348,7 @@ class SessionController extends Controller
                         $formattedDate = $startDate->format('F d') . '-' . $endDate->format('F d Y');
                     }
 
-                    if(count($categorizedSessionsByDate) > 0){
+                    if (count($categorizedSessionsByDate) > 0) {
                         array_push($data, [
                             'program_name' => $feature->short_name,
                             'program_banner' => Media::where('id', $feature->banner_media_id)->value('file_url'),
@@ -347,22 +363,23 @@ class SessionController extends Controller
         }
     }
 
-    public function apiEventSessionDetail($apiCode, $eventCategory, $eventId, $attendeeId, $sessionId){
+    public function apiEventSessionDetail($apiCode, $eventCategory, $eventId, $attendeeId, $sessionId)
+    {
         $session = Session::where('id', $sessionId)->where('event_id', $eventId)->where('is_active', true)->first();
 
-        if($session){
+        if ($session) {
             $sessionSpeakerTypes = SessionSpeakerType::where('event_id', $eventId)->where('session_id', $sessionId)->orderBy('datetime_added', 'ASC')->get();
 
-            if($sessionSpeakerTypes->isNotEmpty()){
+            if ($sessionSpeakerTypes->isNotEmpty()) {
                 $sessionSpeakerCategorized = array();
-                foreach($sessionSpeakerTypes as $sessionSpeakerType){
+                foreach ($sessionSpeakerTypes as $sessionSpeakerType) {
                     $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('session_id', $sessionId)->where('session_speaker_type_id', $sessionSpeakerType->id)->get();
-                    if($sessionSpeakers->isNotEmpty()){
+                    if ($sessionSpeakers->isNotEmpty()) {
                         $categorizedSpeakers = array();
-                        foreach($sessionSpeakers as $sessionSpeaker){
+                        foreach ($sessionSpeakers as $sessionSpeaker) {
                             $speaker = Speaker::where('id', $sessionSpeaker->speaker_id)->where('event_id', $eventId)->where('is_active', true)->first();
 
-                            if($speaker){
+                            if ($speaker) {
                                 array_push($categorizedSpeakers, [
                                     'speaker_id' => $speaker->id,
                                     'salutation' => $speaker->salutation,
@@ -376,7 +393,7 @@ class SessionController extends Controller
                             }
                         }
 
-                        if(count($categorizedSpeakers) > 0){
+                        if (count($categorizedSpeakers) > 0) {
                             array_push($sessionSpeakerCategorized, [
                                 'speaker_type_name' => $sessionSpeakerType->name,
                                 'text_color' => $sessionSpeakerType->text_color,
@@ -394,6 +411,12 @@ class SessionController extends Controller
                 $is_favorite = false;
             }
 
+            $getSponsorLogoUrl = null;
+            if ($session->sponsor_id) {
+                $getSponsorLogoId = Sponsor::where('id', $session->sponsor_id)->value('logo_media_id');
+                $getSponsorLogoUrl = Media::where('id', $getSponsorLogoId)->value('file_url');
+            }
+
             $data = [
                 'session_id' => $session->id,
                 'title' => $session->title,
@@ -405,6 +428,7 @@ class SessionController extends Controller
                 'session_week_day' => Carbon::parse($session->session_date)->format('l'),
                 'session_day' => $session->session_day,
                 'session_type' => $session->session_type,
+                'sponsored_by' => $getSponsorLogoUrl,
                 'is_favorite' => $is_favorite,
                 'favorite_count' => AttendeeFavoriteSession::where('event_id', $eventId)->where('session_id', $sessionId)->count(),
                 'sessionSpeakerCategorized' => $sessionSpeakerCategorized,
@@ -420,16 +444,16 @@ class SessionController extends Controller
     public function apiEventSessionMarkAsFavorite(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
         $request->validate([
-            'sessionId' => 'required', 
+            'sessionId' => 'required',
             'isFavorite' => 'required|boolean',
         ]);
 
-        if(Session::find($request->sessionId)){
+        if (Session::find($request->sessionId)) {
             try {
                 $favorite = AttendeeFavoriteSession::where('event_id', $eventId)
-                ->where('attendee_id', $attendeeId)
-                ->where('session_id', $request->sessionId)
-                ->first();
+                    ->where('attendee_id', $attendeeId)
+                    ->where('session_id', $request->sessionId)
+                    ->first();
 
                 if ($request->isFavorite) {
                     if (!$favorite) {
@@ -444,13 +468,13 @@ class SessionController extends Controller
                         $favorite->delete();
                     }
                 }
-        
+
                 $data = [
                     'favorite_count' => AttendeeFavoriteSession::where('event_id', $eventId)
                         ->where('session_id', $request->sessionId)
                         ->count(),
                 ];
-        
+
                 return $this->success($data, "Session favorite status updated successfully", 200);
             } catch (\Exception $e) {
                 return $this->error(null, "An error occurred while updating the favorite status", 500);
