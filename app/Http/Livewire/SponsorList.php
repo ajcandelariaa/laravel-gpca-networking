@@ -98,14 +98,13 @@ class SponsorList extends Component
             }
         }
 
+        array_push($this->categoryChoices, [
+            'value' => $this->event->short_name,
+            'id' => 0,
+        ]);
+
         $features = Features::where('event_id', $this->event->id)->get();
         if ($features->isNotEmpty()) {
-
-            array_push($this->categoryChoices, [
-                'value' => $this->event->short_name,
-                'id' => 0,
-            ]);
-
             foreach ($features as $feature) {
                 array_push($this->categoryChoices, [
                     'value' => $feature->short_name,
