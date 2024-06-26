@@ -89,8 +89,8 @@ class SessionController extends Controller
                             $speaker = Speaker::where('event_id', $eventId)->where('id', $sessionSpeaker->speaker_id)->first();
                             $speakerName = $speaker->salutation . ' ' . $speaker->first_name . ' ' . $speaker->middle_name . ' ' . $speaker->last_name;
 
-                            if ($speaker->pfp) {
-                                $speakerPFP = Storage::url($speaker->pfp);
+                            if ($speaker->pfp_media_id) {
+                                $speakerPFP = Media::where('id', $speaker->pfp_media_id)->value('file_url');
                             } else {
                                 $speakerPFP = asset('assets/images/pfp-placeholder.jpg');
                             }
