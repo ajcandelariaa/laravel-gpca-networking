@@ -6,7 +6,7 @@ use Livewire\Component;
 use App\Models\Event as Events;
 use App\Models\Session as Sessions;
 use App\Models\Feature as Features;
-use App\Models\Media;
+use App\Models\Media as Medias;
 use App\Models\Speaker as Speakers;
 use App\Models\SessionSpeaker as SessionSpeakers;
 use App\Models\SessionSpeakerType as SessionSpeakerTypes;
@@ -230,8 +230,8 @@ class SessionDetails extends Component
             foreach ($speakers as $speaker) {
                 $speakerName = $speaker->salutation . ' ' . $speaker->first_name . ' ' . $speaker->middle_name . ' ' . $speaker->last_name;
 
-                if ($speaker->pfp) {
-                    $speakerPFP = Storage::url($speaker->pfp);
+                if ($speaker->pfp_media_id) {
+                    $speakerPFP = Medias::where('id', $speaker->pfp_media_id)->value('file_url');
                 } else {
                     $speakerPFP = asset('assets/images/pfp-placeholder.jpg');
                 }
