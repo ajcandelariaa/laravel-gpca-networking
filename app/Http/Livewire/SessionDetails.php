@@ -45,7 +45,7 @@ class SessionDetails extends Component
             'value' => $this->event->short_name,
             'id' => 0,
         ]);
-
+        
         $features = Features::where('event_id', $this->event->id)->get();
         if ($features->isNotEmpty()) {
             foreach ($features as $feature) {
@@ -154,7 +154,6 @@ class SessionDetails extends Component
             'sponsor_id' => $this->sponsor_id,
         ]);
 
-        $selectedCategory = null;
         foreach ($this->categoryChoices as $categoryChoice) {
             if ($categoryChoice['id'] == $this->category) {
                 $selectedCategory = $categoryChoice['value'];
