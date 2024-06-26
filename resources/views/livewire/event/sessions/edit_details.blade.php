@@ -127,8 +127,9 @@
                         <div>
                             <div class="flex justify-between items-center">
                                 <span class="text-primaryColor">End time <span class="text-red-500">*</span></span>
-                                @if ($end_time != "onwards")
-                                    <span class="text-red-500 hover:underline cursor-pointer text-sm font-semibold" wire:click.prevent="clearEndTime">Clear time</span>
+                                @if ($end_time != 'onwards')
+                                    <span class="text-red-500 hover:underline cursor-pointer text-sm font-semibold"
+                                        wire:click.prevent="clearEndTime">Clear time</span>
                                 @endif
                             </div>
                             <div class="mt-2">
@@ -144,14 +145,33 @@
                         </div>
                     </div>
 
-                    
+                    <div class="mt-5">
+                        <div>
+                            <div class="text-primaryColor">
+                                Sponsored by:
+                            </div>
+                            <div class="mt-2">
+                                <select wire:model.lazy="sponsor_id"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                    <option value=""></option>
+                                    @foreach ($sponsorsChoices as $sponsorsChoice)
+                                        <option value="{{ $sponsorsChoice['id'] }}">{{ $sponsorsChoice['option'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="mt-5">
                         <div>
                             <div class="text-primaryColor">
                                 Description
                             </div>
                             <div class="mt-2">
-                                <textarea wire:model.lazy="description" cols="30" rows="10" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $description }}</textarea>
+                                <textarea wire:model.lazy="description" cols="30" rows="10"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">{{ $description }}</textarea>
                             </div>
                         </div>
                     </div>

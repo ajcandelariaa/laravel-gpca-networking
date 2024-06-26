@@ -10,6 +10,8 @@ use App\Models\Session;
 use App\Models\SessionSpeaker;
 use App\Models\SessionSpeakerType;
 use App\Models\Speaker;
+use App\Models\Sponsor;
+use App\Models\SponsorType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -114,6 +116,16 @@ class SessionController extends Controller
                 $finalSessionSpeakerGroup = array();
             }
 
+            if($session->sponsor_id){
+                $sponsor = Sponsor::where('id', $session->sponsor_id)->where('event_id', $eventId)->where('is_active', true)->first();
+                $sponsorTypeName = SponsorType::where('id', $sponsor->sponsor_type_id)->value('name');
+                $sponsorName = $sponsor->name . ' - ' . $sponsorTypeName;
+                $sessionSponsorLogo = Media::where('id', $sponsor->logo_media_id)->value('file_url');
+            } else {
+                $sponsorName = null;
+                $sessionSponsorLogo = null;
+            }
+
             $sessionData = [
                 "sessionId" => $session->id,
                 "sessionCategoryName" => $category,
@@ -129,6 +141,13 @@ class SessionController extends Controller
                 "sessionStartTime" => $session->start_time,
                 "sessionEndTime" => $finalEndTime,
                 "sessionLocation" => $session->location,
+
+                "sessionSponsorLogo" => [
+                    'sponsor_id' => $session->sponsor_id,
+                    'name' => $sponsorName,
+                    'url' => $sessionSponsorLogo,
+                ],
+                
                 "finalSessionSpeakerGroup" => $finalSessionSpeakerGroup,
 
                 "sessionStatus" => $session->active,

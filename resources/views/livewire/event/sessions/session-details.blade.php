@@ -64,6 +64,15 @@
                 {{ $sessionData['sessionDescription'] }}
             @endif
         </p>
+
+        <p> Session sponsored:
+            @if ($sessionData['sessionSponsorLogo']['sponsor_id'] == null)
+                N/A
+            @else
+                {{ $sessionData['sessionSponsorLogo']['name'] }}
+                <img src="{{ $sessionData['sessionSponsorLogo']['url'] }}">
+            @endif
+        </p>
     </div>
 
 

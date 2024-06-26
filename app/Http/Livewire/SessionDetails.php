@@ -6,9 +6,12 @@ use Livewire\Component;
 use App\Models\Event as Events;
 use App\Models\Session as Sessions;
 use App\Models\Feature as Features;
+use App\Models\Media;
 use App\Models\Speaker as Speakers;
 use App\Models\SessionSpeaker as SessionSpeakers;
 use App\Models\SessionSpeakerType as SessionSpeakerTypes;
+use App\Models\Sponsor;
+use App\Models\SponsorType;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,6 +20,7 @@ class SessionDetails extends Component
     public $event, $sessionData;
 
     public $editSessionDetailsForm, $category, $session_date, $session_day, $session_type, $title, $description, $start_time, $end_time, $location, $categoryChoices = array();
+    public $sponsor_id, $sponsorsChoices = array();
 
     public $addSessionSpeakerForm, $session_speaker_type_id, $speaker_ids = [], $speakerTypeChoices = array(), $speakerChoices = array();
 
@@ -53,6 +57,17 @@ class SessionDetails extends Component
             }
         }
 
+        $sponsors = Sponsor::where('event_id', $this->event->id)->where('is_active', true)->get();
+        if ($sponsors->isNotEmpty()) {
+            foreach ($sponsors as $sponsor) {
+                $sponsorTypeName = SponsorType::where('id', $sponsor->sponsor_type_id)->value('name');
+                array_push($this->sponsorsChoices, [
+                    'id' => $sponsor->id,
+                    'option' => $sponsor->name . ' - ' . $sponsorTypeName,
+                ]);
+            }
+        }
+
         $this->category = $this->sessionData['sessionFeatureId'];
         $this->session_date = $this->sessionData['sessionDate'];
         $this->session_day = $this->sessionData['sessionDay'];
@@ -62,6 +77,7 @@ class SessionDetails extends Component
         $this->start_time = $this->sessionData['sessionStartTime'];
         $this->end_time = $this->sessionData['sessionEndTime'];
         $this->location = $this->sessionData['sessionLocation'];
+        $this->sponsor_id = $this->sessionData['sessionSponsorLogo']['sponsor_id'];
         $this->editSessionDetailsForm = true;
     }
 
@@ -82,6 +98,8 @@ class SessionDetails extends Component
         $this->start_time = null;
         $this->end_time = null;
         $this->location = null;
+        $this->sponsor_id = null;
+        $this->sponsorsChoices = array();
         $this->categoryChoices = array();
     }
 
@@ -120,16 +138,21 @@ class SessionDetails extends Component
             $finalSessionType = $this->session_type;
         }
 
+        if($this->sponsor_id == "" || $this->sponsor_id == null){
+            $this->sponsor_id = null;
+        }
+
         Sessions::where('id', $this->sessionData['sessionId'])->update([
             'feature_id' => $this->category,
             'session_date' => $this->session_date,
             'session_day' => $this->session_day,
             'session_type' => $finalSessionType,
             'title' => $this->title,
-            'description' => $this->description,
+            'description_html_text' => $this->description,
             'start_time' => $this->start_time,
             'end_time' => $finalEndTime,
             'location' => $this->location,
+            'sponsor_id' => $this->sponsor_id,
         ]);
 
         foreach ($this->categoryChoices as $categoryChoice) {
@@ -151,6 +174,31 @@ class SessionDetails extends Component
         $this->sessionData['sessionStartTime'] = $this->start_time;
         $this->sessionData['sessionEndTime'] = $forArrayEndTime;
         $this->sessionData['sessionLocation'] = $this->location;
+
+
+        if ($this->sponsor_id == "" || $this->sponsor_id == null) {
+            $this->sessionData['sessionSponsorLogo'] = [
+                'sponsor_id' => null,
+                'name' => null,
+                'url' => null,
+            ];
+        } else {
+            $sponsorLogoId = Sponsor::where('id', $this->sponsor_id)->where('event_id', $this->event->id)->where('is_active', true)->value('logo_media_id');
+            $sessionSponsorLogo = Media::where('id', $sponsorLogoId)->value('file_url');
+
+            $sponsorName = null;
+            foreach($this->sponsorsChoices as $sponsorChoice){
+                if($this->sponsor_id == $sponsorChoice['id']){
+                    $sponsorName = $sponsorChoice['option'];
+                }
+            }
+
+            $this->sessionData['sessionSponsorLogo'] = [
+                'sponsor_id' => $this->sponsor_id,
+                'name' => $sponsorName,
+                'url' => $sessionSponsorLogo,
+            ];
+        }
 
         $this->resetEditSessionDetailsFields();
 

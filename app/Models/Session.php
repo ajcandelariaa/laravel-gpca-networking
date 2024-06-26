@@ -23,6 +23,8 @@ class Session extends Model
         'end_time',
         'location',
 
+        'sponsor_id',
+
         'is_active',
         'datetime_added',
     ];
