@@ -163,6 +163,13 @@ class EventController extends Controller
                     'continue_as_guest_html_text' => $event->continue_as_guest_html_text,
                     'forgot_password_html_text' => $event->forgot_password_html_text,
                 ],
+                "eventWebViewLinks" => [
+                    'delegate_feedback_survey_link' => $event->delegate_feedback_survey_link,
+                    'app_feedback_survey_link' => $event->app_feedback_survey_link,
+                    'about_event_link' => $event->about_event_link,
+                    'venue_link' => $event->venue_link,
+                    'press_releases_link' => $event->press_releases_link,
+                ],
                 "eventAssets" => [
                     'event_logo' => [
                         'media_id' => $event->event_logo_media_id,
@@ -273,11 +280,18 @@ class EventController extends Controller
                 'email_address' => $attendee->email_address,
             ],
             'speakers' => $this->apiGetSpeakersList($eventCategory, $eventId),
-            'sessions' => $this->apiGetSessionsList($eventCategory, $eventId),
+            'programs' => $this->apiGetProgramsList($eventCategory, $eventId),
             'sponsors' => $this->apiGetSponsorsList($eventCategory, $eventId),
             'exhibitors' => $this->apiGetExhibitorsList($eventCategory, $eventId),
             'media_partners' => $this->apiGetMrpsList($eventCategory, $eventId),
             'meeting_room_partners' => $this->apiGetMpsList($eventCategory, $eventId),
+
+            'delegate_feedback_survey_link' => $event->delegate_feedback_survey_link,
+            'app_feedback_survey_link' => $event->app_feedback_survey_link,
+            'about_event_link' => $event->about_event_link,
+            'venue_link' => $event->venue_link,
+            'press_releases_link' => $event->press_releases_link,
+            
             'notifications' => null,
         ];
         return $this->success($data, "Event Homepage details", 200);
@@ -357,7 +371,7 @@ class EventController extends Controller
         }
     }
 
-    public function apiGetSessionsList($eventCategory, $eventId){
+    public function apiGetProgramsList($eventCategory, $eventId){
         $sessions = Session::where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->get();
         $features = Feature::where('event_id', $eventId)->where('is_active', true)->get();
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();

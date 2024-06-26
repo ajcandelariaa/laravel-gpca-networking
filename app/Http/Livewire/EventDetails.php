@@ -5,7 +5,6 @@ namespace App\Http\Livewire;
 use App\Enums\MediaEntityTypes;
 use App\Enums\MediaUsageUpdateTypes;
 use App\Models\Event as Events;
-use App\Models\Media as Medias;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -25,11 +24,15 @@ class EventDetails extends Component
     public $description_html_text, $login_html_text, $continue_as_guest_html_text, $forgot_password_html_text;
     public $editEventHTMLTextsForm;
 
+    // EDIT HTML Texts
+    public $delegate_feedback_survey_link, $app_feedback_survey_link, $about_event_link, $venue_link, $press_releases_link;
+    public $editEventWebViewLinksForm;
+
     // EDIT ASSETS
     public $assetType, $editEventAssetForm, $image_media_id, $image_placeholder_text;
     public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    protected $listeners = ['editEventDetailsConfirmed' => 'editEventDetails', 'editEventColorsConfirmed' => 'editEventColors', 'editEventHTMLTextsConfirmed' => 'editEventHTMLTexts', 'editEventAssetConfirmed' => 'editEventAsset'];
+    protected $listeners = ['editEventDetailsConfirmed' => 'editEventDetails', 'editEventColorsConfirmed' => 'editEventColors', 'editEventHTMLTextsConfirmed' => 'editEventHTMLTexts', 'editEventWebViewLinksConfirmed' => 'editEventWebViewLinks', 'editEventAssetConfirmed' => 'editEventAsset'];
 
     public function mount($eventData)
     {
@@ -288,6 +291,65 @@ class EventDetails extends Component
         ]);
 
         $this->resetEditEventHTMLTextsFields();
+    }
+
+
+
+    // EDIT WebView Links
+    public function showEditEventWebViewLinks()
+    {
+        $this->delegate_feedback_survey_link = $this->eventData['eventWebViewLinks']['delegate_feedback_survey_link'];
+        $this->app_feedback_survey_link = $this->eventData['eventWebViewLinks']['app_feedback_survey_link'];
+        $this->about_event_link = $this->eventData['eventWebViewLinks']['about_event_link'];
+        $this->venue_link = $this->eventData['eventWebViewLinks']['venue_link'];
+        $this->press_releases_link = $this->eventData['eventWebViewLinks']['press_releases_link'];
+        $this->editEventWebViewLinksForm = true;
+    }
+
+    public function resetEditEventWebViewLinksFields()
+    {
+        $this->editEventWebViewLinksForm = false;
+        $this->delegate_feedback_survey_link = null;
+        $this->app_feedback_survey_link = null;
+        $this->about_event_link = null;
+        $this->venue_link = null;
+        $this->press_releases_link = null;
+    }
+
+    public function editEventWebViewLinksConfirmation()
+    {
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, update it!",
+            'livewireEmit' => "editEventWebViewLinksConfirmed",
+        ]);
+    }
+
+    public function editEventWebViewLinks()
+    {
+        Events::where('id', $this->eventData['eventId'])->update([
+            'delegate_feedback_survey_link' => $this->delegate_feedback_survey_link,
+            'app_feedback_survey_link' => $this->app_feedback_survey_link,
+            'about_event_link' => $this->about_event_link,
+            'venue_link' => $this->venue_link,
+            'press_releases_link' => $this->press_releases_link,
+        ]);
+
+        $this->eventData['eventWebViewLinks']['delegate_feedback_survey_link'] = $this->delegate_feedback_survey_link;
+        $this->eventData['eventWebViewLinks']['app_feedback_survey_link'] = $this->app_feedback_survey_link;
+        $this->eventData['eventWebViewLinks']['about_event_link'] = $this->about_event_link;
+        $this->eventData['eventWebViewLinks']['venue_link'] = $this->venue_link;
+        $this->eventData['eventWebViewLinks']['press_releases_link'] = $this->press_releases_link;
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Event webview links updated succesfully!',
+            'text' => "",
+        ]);
+
+        $this->resetEditEventWebViewLinksFields();
     }
 
 

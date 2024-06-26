@@ -94,6 +94,45 @@
         </div>
     </div>
 
+    {{-- EVENT WEBVIEW LINKS --}}
+    <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-5">
+        <div class="flex items-center justify-between">
+            <h1 class="text-headingTextColor text-3xl font-bold">Event WebView Links</h1>
+            <div>
+                <button wire:click="showEditEventWebViewLinks"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
+                    <span class="mr-2"><i class="fa-solid fa-file-pen"></i></span>
+                    <span>Edit</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Delegate feedback survey link: </p>
+            <p>{{ $eventData['eventWebViewLinks']['delegate_feedback_survey_link'] ?? 'N/A' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">App feedback survey link: </p>
+            <p>{{ $eventData['eventWebViewLinks']['app_feedback_survey_link'] ?? 'N/A' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">About event link: </p>
+            <p>{{ $eventData['eventWebViewLinks']['about_event_link'] ?? 'N/A' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Venue link: </p>
+            <p>{{ $eventData['eventWebViewLinks']['venue_link'] ?? 'N/A' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Press releases link: </p>
+            <p>{{ $eventData['eventWebViewLinks']['press_releases_link'] ?? 'N/A' }}</p>
+        </div>
+    </div>
+
     {{-- EVENT HTML TEXTS --}}
     <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-5">
         <div class="flex items-center justify-between">
@@ -109,22 +148,22 @@
 
         <div class="flex gap-3 items-center mt-3">
             <p class="font-bold text-primaryColor">Description HTML Text: </p>
-            <p>{{ $eventData['eventHTMLTexts']['description_html_text'] }}</p>
+            <p>{{ $eventData['eventHTMLTexts']['description_html_text'] ?? 'N/A'}}</p>
         </div>
 
         <div class="flex gap-3 items-center mt-3">
             <p class="font-bold text-primaryColor">Login HTML Text: </p>
-            <p>{{ $eventData['eventHTMLTexts']['login_html_text'] }}</p>
+            <p>{{ $eventData['eventHTMLTexts']['login_html_text'] ?? 'N/A'}}</p>
         </div>
 
         <div class="flex gap-3 items-center mt-3">
             <p class="font-bold text-primaryColor">Continue as guest HTML Text: </p>
-            <p>{{ $eventData['eventHTMLTexts']['continue_as_guest_html_text'] }}</p>
+            <p>{{ $eventData['eventHTMLTexts']['continue_as_guest_html_text'] ?? 'N/A'}}</p>
         </div>
 
         <div class="flex gap-3 items-center mt-3">
             <p class="font-bold text-primaryColor">Forgot password HTML Text: </p>
-            <p>{{ $eventData['eventHTMLTexts']['forgot_password_html_text'] }}</p>
+            <p>{{ $eventData['eventHTMLTexts']['forgot_password_html_text'] ?? 'N/A'}}</p>
         </div>
     </div>
 
@@ -214,6 +253,10 @@
 
     @if ($editEventDetailsForm)
         @include('livewire.event.details.edit_details')
+    @endif
+
+    @if ($editEventWebViewLinksForm)
+        @include('livewire.event.details.edit_webview_links')
     @endif
 
     @if ($editEventColorsForm)

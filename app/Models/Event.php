@@ -38,6 +38,12 @@ class Event extends Model
         'primary_text_color',
         'secondary_text_color',
 
+        'delegate_feedback_survey_link',
+        'app_feedback_survey_link',
+        'about_event_link',
+        'venue_link',
+        'press_releases_link',
+
         'year',
 
         'is_visible_in_the_app',
