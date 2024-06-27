@@ -290,14 +290,18 @@ class EventController extends Controller
             'media_partners' => $this->apiGetMrpsList($eventCategory, $eventId),
             'meeting_room_partners' => $this->apiGetMpsList($eventCategory, $eventId),
 
-            'delegate_feedback_survey_link' => $event->delegate_feedback_survey_link,
-            'app_feedback_survey_link' => $event->app_feedback_survey_link,
-            'about_event_link' => $event->about_event_link,
-            'venue_link' => $event->venue_link,
-            'press_releases_link' => $event->press_releases_link,
+            'webview' => [
+                'delegate_feedback_survey_link' => $event->delegate_feedback_survey_link,
+                'app_feedback_survey_link' => $event->app_feedback_survey_link,
+                'about_event_link' => $event->about_event_link,
+                'venue_link' => $event->venue_link,
+                'press_releases_link' => $event->press_releases_link,
+            ],
 
-            'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
-            'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
+            'floor_plan' => [
+                'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
+                'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
+            ],
 
             'notifications' => null,
         ];
