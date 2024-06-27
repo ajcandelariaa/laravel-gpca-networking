@@ -35,6 +35,15 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                             Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
                             Route::get('/homepage', [EventController::class, 'apiEventHomepage']);
 
+                            Route::prefix('profile')->group(function () {
+                                Route::get('/', [AttendeesController::class, 'apiAttendeeProfile']);
+                                Route::post('/edit-profile-details', [AttendeesController::class, 'apiAttendeeEditProfileDetails']);
+                            });
+
+                            
+                            Route::get('/favorites', [AttendeesController::class, 'apiAttendeeFavorites']);
+
+
                             Route::prefix('speaker')->group(function () {
                                 // Route::get('/', [SpeakerController::class, 'apiEventSpeakers']);
                                 Route::get('/{speakerId}', [SpeakerController::class, 'apiEventSpeakerDetail']);

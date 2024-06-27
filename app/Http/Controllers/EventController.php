@@ -170,6 +170,10 @@ class EventController extends Controller
                     'venue_link' => $event->venue_link,
                     'press_releases_link' => $event->press_releases_link,
                 ],
+                "eventFloorPlanLinks" => [
+                    'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
+                    'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
+                ],
                 "eventAssets" => [
                     'event_logo' => [
                         'media_id' => $event->event_logo_media_id,
@@ -291,7 +295,10 @@ class EventController extends Controller
             'about_event_link' => $event->about_event_link,
             'venue_link' => $event->venue_link,
             'press_releases_link' => $event->press_releases_link,
-            
+
+            'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
+            'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
+
             'notifications' => null,
         ];
         return $this->success($data, "Event Homepage details", 200);

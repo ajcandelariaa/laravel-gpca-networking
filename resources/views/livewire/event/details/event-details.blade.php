@@ -133,6 +133,30 @@
         </div>
     </div>
 
+    {{-- EVENT WEBVIEW LINKS --}}
+    <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-5">
+        <div class="flex items-center justify-between">
+            <h1 class="text-headingTextColor text-3xl font-bold">Event Floor Plan Links</h1>
+            <div>
+                <button wire:click="showEditEventFloorPlanLinks"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
+                    <span class="mr-2"><i class="fa-solid fa-file-pen"></i></span>
+                    <span>Edit</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Delegate feedback survey link: </p>
+            <p>{{ $eventData['eventFloorPlanLinks']['floor_plan_3d_image_link'] ?? 'N/A' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">App feedback survey link: </p>
+            <p>{{ $eventData['eventFloorPlanLinks']['floor_plan_exhibition_image_link'] ?? 'N/A' }}</p>
+        </div>
+    </div>
+
     {{-- EVENT HTML TEXTS --}}
     <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-5">
         <div class="flex items-center justify-between">
@@ -257,6 +281,10 @@
 
     @if ($editEventWebViewLinksForm)
         @include('livewire.event.details.edit_webview_links')
+    @endif
+
+    @if ($editEventFloorPlanLinksForm)
+        @include('livewire.event.details.edit_floor_plan_links')
     @endif
 
     @if ($editEventColorsForm)

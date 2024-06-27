@@ -24,15 +24,19 @@ class EventDetails extends Component
     public $description_html_text, $login_html_text, $continue_as_guest_html_text, $forgot_password_html_text;
     public $editEventHTMLTextsForm;
 
-    // EDIT HTML Texts
+    // EDIT WebView Links
     public $delegate_feedback_survey_link, $app_feedback_survey_link, $about_event_link, $venue_link, $press_releases_link;
     public $editEventWebViewLinksForm;
+
+    // EDIT Floor Plan image Links
+    public $floor_plan_3d_image_link, $floor_plan_exhibition_image_link;
+    public $editEventFloorPlanLinksForm;
 
     // EDIT ASSETS
     public $assetType, $editEventAssetForm, $image_media_id, $image_placeholder_text;
     public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    protected $listeners = ['editEventDetailsConfirmed' => 'editEventDetails', 'editEventColorsConfirmed' => 'editEventColors', 'editEventHTMLTextsConfirmed' => 'editEventHTMLTexts', 'editEventWebViewLinksConfirmed' => 'editEventWebViewLinks', 'editEventAssetConfirmed' => 'editEventAsset'];
+    protected $listeners = ['editEventDetailsConfirmed' => 'editEventDetails', 'editEventColorsConfirmed' => 'editEventColors', 'editEventHTMLTextsConfirmed' => 'editEventHTMLTexts', 'editEventWebViewLinksConfirmed' => 'editEventWebViewLinks', 'editEventFloorPlanLinksConfirmed' => 'editEventFloorPlanLinks', 'editEventAssetConfirmed' => 'editEventAsset'];
 
     public function mount($eventData)
     {
@@ -350,6 +354,53 @@ class EventDetails extends Component
         ]);
 
         $this->resetEditEventWebViewLinksFields();
+    }
+
+
+
+    // EDIT Floor Plan Links
+    public function showEditEventFloorPlanLinks()
+    {
+        $this->floor_plan_3d_image_link = $this->eventData['eventFloorPlanLinks']['floor_plan_3d_image_link'];
+        $this->floor_plan_exhibition_image_link = $this->eventData['eventFloorPlanLinks']['floor_plan_exhibition_image_link'];
+        $this->editEventFloorPlanLinksForm = true;
+    }
+
+    public function resetEditEventFloorPlanLinksFields()
+    {
+        $this->editEventFloorPlanLinksForm = false;
+        $this->floor_plan_3d_image_link = null;
+        $this->floor_plan_exhibition_image_link = null;
+    }
+
+    public function editEventFloorPlanLinksConfirmation()
+    {
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, update it!",
+            'livewireEmit' => "editEventFloorPlanLinksConfirmed",
+        ]);
+    }
+
+    public function editEventFloorPlanLinks()
+    {
+        Events::where('id', $this->eventData['eventId'])->update([
+            'floor_plan_3d_image_link' => $this->floor_plan_3d_image_link,
+            'floor_plan_exhibition_image_link' => $this->floor_plan_exhibition_image_link,
+        ]);
+
+        $this->eventData['eventFloorPlanLinks']['floor_plan_3d_image_link'] = $this->floor_plan_3d_image_link;
+        $this->eventData['eventFloorPlanLinks']['floor_plan_exhibition_image_link'] = $this->floor_plan_exhibition_image_link;
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Event floor plan links updated succesfully!',
+            'text' => "",
+        ]);
+
+        $this->resetEditEventFloorPlanLinksFields();
     }
 
 

@@ -12,7 +12,6 @@ use App\Http\Controllers\MeetingRoomPartnerController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SpeakerController;
 use App\Http\Controllers\SponsorController;
-use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -76,9 +75,6 @@ Route::prefix('admin')->group(function () {
                     Route::get('/', [MediaPartnerController::class, 'eventMediaPartnersView'])->name('admin.event.media-partners.view');
                     Route::get('/{mediaPartnerId}', [MediaPartnerController::class, 'eventMediaPartnerView'])->name('admin.event.media-partner.view');
                 });
-
-                Route::get('/venue', [VenueController::class, 'eventVenueView'])->name('admin.event.venue.view');
-                Route::get('/floor-plan', [FloorPlanController::class, 'eventFloorPlanView'])->name('admin.event.floor-plan.view');
 
                 Route::prefix('/feature')->group(function () {
                     Route::get('/', [FeatureController::class, 'eventFeaturesView'])->name('admin.event.features.view');

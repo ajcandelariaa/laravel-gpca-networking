@@ -6,6 +6,7 @@ use App\Models\Attendee;
 use App\Traits\HttpResponses;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class APICheckAttendeeExists
 {
@@ -27,6 +28,12 @@ class APICheckAttendeeExists
         if ($attendee == null) {
             return $this->error(null, "Attendee doesn't exist", 404);
         } else{
+            $authenticatedUser = Auth::user();
+
+            if ($authenticatedUser->id !== (int) $attendeeId) {
+                return $this->error(null, "Unauthorized access", 403);
+            }
+
             return $next($request);
         }
     }

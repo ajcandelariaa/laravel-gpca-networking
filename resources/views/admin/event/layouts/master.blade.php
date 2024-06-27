@@ -69,14 +69,6 @@
                     <i class="fa-solid fa-photo-film w-5 text-center"></i>
                     <p>Media partners</p>
                 </a>
-                <a href="{{ route('admin.event.venue.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/venue*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
-                    <i class="fa-solid fa-location-dot w-5 text-center"></i>
-                    <p>Venue</p>
-                </a>
-                <a href="{{ route('admin.event.floor-plan.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/floor-plan*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
-                    <i class="fa-solid fa-map-location-dot w-5 text-center"></i>
-                    <p>Floor plan</p>
-                </a>
                 <a href="{{ route('admin.event.features.view', ['eventCategory' => $eventCategory, 'eventId' => $eventId]) }}" class="{{ request()->is('admin/event/*/*/feature*') ? 'bg-sideBarBGColorHover' : 'hover:bg-sideBarBGColorHover' }} flex items-center gap-5 p-2 rounded-md duration-500">
                     <i class="fa-solid fa-list-check w-5 text-center"></i>
                     <p>Features</p>
