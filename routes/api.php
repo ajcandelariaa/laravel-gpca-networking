@@ -37,7 +37,7 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
 
                             Route::prefix('profile')->group(function () {
                                 Route::get('/', [AttendeesController::class, 'apiAttendeeProfile']);
-                                Route::post('/edit-profile-details', [AttendeesController::class, 'apiAttendeeEditProfileDetails']);
+                                Route::post('/edit-details', [AttendeesController::class, 'apiAttendeeEditProfileDetails']);
                             });
 
                             
