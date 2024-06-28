@@ -265,6 +265,68 @@ class AttendeesController extends Controller
         }
     }
 
+    public function apiAttendeeEditProfileUsernameEmail(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId){
+        $request->validate([
+            'attendee_id' => 'required',
+            'email_address' => 'required',
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+
+        $attendeePassword = Attendee::where('id', $request->attendee_id)->value('password');
+        if (Hash::check($request->password, $attendeePassword)) {
+            if (checkAttendeeEmailIfExistsInDatabase($request->attendee_id, $eventId, $request->email_address)) {
+                return $this->success(null, "Email is already registered, please use another email!", 200);
+            }
+
+            if (checkAttendeeUsernameIfExistsInDatabase($request->attendee_id, $eventId, $request->username)) {
+                return $this->success(null, "Username is already registered, please use another username!", 200);
+            }
+
+            Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
+                'username' => $request->username,
+                'email_address' => $request->email_address,
+            ]);
+
+            return $this->success(['attendee_id' => $request->attendee_id], "Attendee Username/Email address updated successfully", 200);
+        } else {
+            return $this->success(null, "Incorrect attendee password", 403);
+        }
+    }
+
+    public function apiAttendeeEditProfilePassword(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId){
+        $request->validate([
+            'attendee_id' => 'required',
+            'old_password' => 'required',
+            'password' => 'required|min:8',
+            'confirm_password' => 'required',
+        ]);
+
+        if($request->password == $request->old_password){
+            return $this->success(null, "Password is just the same, please enter a different one", 200);
+        }
+
+        if(!Hash::check($request->old_password, Attendee::where('id',  $request->attendee_id)->where('event_id', $eventId)->value('password'))){
+            return $this->success(null, "Old password doesn't match", 403);
+        }
+
+        if($request->password != $request->confirm_password){
+            return $this->success(null, "Password & Confirm password does not match", 200);
+        }
+
+        Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
+            'password' => Hash::make($request->password),
+        ]);
+        
+        AttendeePasswordReset::create([
+            'event_id' => $eventId,
+            'attendee_id' => $request->attendee_id,
+            'password_changed_date_time' => Carbon::now(),
+        ]);
+
+        return $this->success(null, "Password updated successfuly", 200);
+    }
+
 
     public function apiAttendeeFavorites($apiCode, $eventCategory, $eventId, $attendeeId)
     {

@@ -311,16 +311,16 @@ class AttendeeDetails extends Component
             'password_changed_date_time' => Carbon::now(),
         ]);
 
-        $details = [
-            'name' => $this->attendeeData['salutation'] . ' ' . $this->attendeeData['first_name'] . ' ' . $this->attendeeData['middle_name'] . ' ' . $this->attendeeData['last_name'],
-            'eventName' => $this->event->name,
-            'username' => $this->attendeeData['username'],
-            'newPassword' => $this->newPassword,
-        ];
+        // $details = [
+        //     'name' => $this->attendeeData['salutation'] . ' ' . $this->attendeeData['first_name'] . ' ' . $this->attendeeData['middle_name'] . ' ' . $this->attendeeData['last_name'],
+        //     'eventName' => $this->event->name,
+        //     'username' => $this->attendeeData['username'],
+        //     'newPassword' => $this->newPassword,
+        // ];
 
-        Mail::to($this->attendeeData['attendeeEmail'])->cc(config('app.ccEmailNotif.test'))->send(new AttendeeResetPasswordByAdmin($details));
+        //Mail::to($this->attendeeData['email_address'])->cc(config('app.ccEmailNotif.test'))->send(new AttendeeResetPasswordByAdmin($details));
 
-        array_push($this->attendeeData['attendeePasswordResetDetais'], Carbon::parse(Carbon::now())->format('M j, Y g:i A'));
+        array_push($this->attendeeData['attendeePasswordResetDetails'], Carbon::parse(Carbon::now())->format('M j, Y g:i A'));
 
         $this->resetResetPasswordAttendeeFields();
         $this->dispatchBrowserEvent('swal:success', [

@@ -38,8 +38,11 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                             Route::prefix('profile')->group(function () {
                                 Route::get('/', [AttendeesController::class, 'apiAttendeeProfile']);
                                 Route::post('/edit-details', [AttendeesController::class, 'apiAttendeeEditProfileDetails']);
+                                Route::post('/edit-username-email', [AttendeesController::class, 'apiAttendeeEditProfileUsernameEmail']);
+                                Route::post('/edit-password', [AttendeesController::class, 'apiAttendeeEditProfilePassword']);
                             });
 
+                            Route::get('/attendees', [AttendeesController::class, 'apiAttendeesList']);
                             
                             Route::get('/favorites', [AttendeesController::class, 'apiAttendeeFavorites']);
 
