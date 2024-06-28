@@ -324,7 +324,7 @@ class AttendeesController extends Controller
             'password_changed_date_time' => Carbon::now(),
         ]);
 
-        return $this->success(null, "Password updated successfuly", 200);
+        return $this->success(['attendee_id' => $request->attendee_id], "Password updated successfuly", 200);
     }
 
 
