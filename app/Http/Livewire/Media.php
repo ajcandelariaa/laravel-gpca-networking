@@ -9,11 +9,8 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
 use App\Models\Media as Medias;
 
-
-
 class Media extends Component
 {
-
     use WithFileUploads;
 
     public $mediaFile;
@@ -94,7 +91,7 @@ class Media extends Component
         finfo_close($finfo);
 
         if ($fileType === 'application/octet-stream') {
-            $fileType = $this->getMimeTypeByExtension($extension);
+            $fileType = getMimeTypeByExtension($extension);
         }
 
         if (str_starts_with($fileType, 'image/')) {
@@ -125,24 +122,6 @@ class Media extends Component
             'message' => 'File added successfully!',
             'text' => ''
         ]);
-    }
-
-    private function getMimeTypeByExtension($extension)
-    {
-        $mimeTypes = [
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'gif' => 'image/gif',
-            'bmp' => 'image/bmp',
-            'svg' => 'image/svg+xml',
-            'webp' => 'image/webp',
-            'pdf' => 'application/pdf',
-            'doc' => 'application/msword',
-            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        ];
-
-        return $mimeTypes[strtolower($extension)] ?? 'application/octet-stream';
     }
 
 

@@ -12,14 +12,16 @@ use App\Models\SponsorType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SponsorController extends Controller
 {
     use HttpResponses;
 
-    public function eventSponsorsView($eventCategory, $eventId){
+    public function eventSponsorsView($eventCategory, $eventId)
+    {
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
-        
+
         return view('admin.event.sponsors.sponsors', [
             "pageTitle" => "Sponsors",
             "eventName" => $eventName,
@@ -28,9 +30,10 @@ class SponsorController extends Controller
         ]);
     }
 
-    public function eventSponsorTypesView($eventCategory, $eventId){
+    public function eventSponsorTypesView($eventCategory, $eventId)
+    {
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
-        
+
         return view('admin.event.sponsors.sponsor_types', [
             "pageTitle" => "Sponsors Type",
             "eventName" => $eventName,
@@ -47,11 +50,11 @@ class SponsorController extends Controller
         $sponsor = Sponsor::where('id', $sponsorId)->first();
 
         if ($sponsor) {
-            if($sponsor->feature_id == 0){
+            if ($sponsor->feature_id == 0) {
                 $categoryName = $event->short_name;
             } else {
                 $feature = Feature::where('event_id', $event->id)->where('id', $sponsor->feature_id)->first();
-                if($feature){
+                if ($feature) {
                     $categoryName = $feature->short_name;
                 } else {
                     $categoryName = "Others";
@@ -59,7 +62,7 @@ class SponsorController extends Controller
             }
 
             $sponsorType = SponsorType::where('event_id', $event->id)->where('id', $sponsor->sponsor_type_id)->first();
-            if($sponsorType){
+            if ($sponsorType) {
                 $typeName = $sponsorType->name;
             } else {
                 $typeName = "N/A";
@@ -119,129 +122,79 @@ class SponsorController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
-    public function apiEventSponsors($apiCode, $eventCategory, $eventId, $attendeeId)
+    public function apiEventSponsorDetail($apiCode, $eventCategory, $eventId, $attendeeId, $sponsorId)
     {
-        $sponsors = Sponsor::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
-        $sponsorTypes = SponsorType::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
+        try {
+            $sponsor = Sponsor::with(['event', 'logo', 'feature', 'sponsorType'])->where('id', $sponsorId)->where('event_id', $eventId)->where('is_active', true)->first();
 
-        if ($sponsors->isEmpty()) {
-            return $this->success(null, "There are no sponsor yet", 200);
-        } else {
-            $data = array();
-
-            foreach($sponsorTypes as $sponsorType){
-                $categorizedSponsors = array();
-                
-                foreach($sponsors as $sponsor){
-                    if($sponsorType->id == $sponsor->sponsor_type_id){
-                        array_push($categorizedSponsors, [
-                            'id' => $sponsor->id,
-                            'name' => $sponsor->name,
-                            'website' => $sponsor->website,
-                            'logo' => Media::where('id', $sponsor->logo_media_id)->value('file_url'),
-                        ]);
-                    }
-                }
-                if(count($categorizedSponsors) > 0){
-                    array_push($data, [
-                        'sponsorTypeName' => $sponsorType->name,
-                        'sponsorTypeTextColor' => $sponsorType->text_color,
-                        'sponsorTypeBackgroundColor' => $sponsorType->background_color,
-                        'sponsors' => $categorizedSponsors,
-                    ]);
-                }
-            }
-            return $this->success($data, "Sponsors list", 200);
-        }
-    }
-
-    public function apiEventSponsorDetail($apiCode, $eventCategory, $eventId, $attendeeId, $sponsorId){
-        $sponsor = Sponsor::where('id', $sponsorId)->where('event_id', $eventId)->where('is_active', true)->first();
-
-        if($sponsor){
-
-            if($sponsor->feature_id == 0){
-                $categoryName = Event::where('id', $eventId)->where('category', $eventCategory)->value('short_name');
-            } else {
-                $categoryName = Feature::where('id', $sponsor->feature_id)->where('event_id', $eventId)->value('short_name');
+            if (!$sponsor) {
+                return $this->error(null, "Sponsor doesn't exist", 404);
             }
 
-            if($sponsor->sponsor_type_id){
-                $sponsorTypeName = SponsorType::where('id', $sponsor->sponsor_type_id)->where('event_id', $eventId)->value('name');
+            if ($sponsor->feature_id == 0) {
+                $categoryName = $sponsor->event->short_name ?? null;
             } else {
-                $sponsorTypeName = null;
-            }
-
-            if (AttendeeFavoriteSponsor::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('sponsor_id', $sponsorId)->first()) {
-                $is_favorite = true;
-            } else {
-                $is_favorite = false;
+                $categoryName = $sponsor->feature->short_name ?? null;
             }
 
             $data = [
                 'sponsor_id' => $sponsor->id,
-                'logo' => Media::where('id', $sponsor->logo_media_id)->value('file_url'),
+                'logo' => $sponsor->logo->file_url ?? null,
                 'name' => $sponsor->name,
                 'category' => $categoryName,
-                'type' => $sponsorTypeName,
+                'type' => $sponsor->sponsorType->name ?? null,
                 'profile_html_text' => $sponsor->profile_html_text,
                 'country' => $sponsor->country,
+                'contact_person_name' => $sponsor->contact_person_name,
+                'email_address' => $sponsor->email_address,
+                'mobile_number' => $sponsor->mobile_number,
                 'website' => $sponsor->website,
                 'facebook' => $sponsor->facebook,
                 'linkedin' => $sponsor->linkedin,
                 'twitter' => $sponsor->twitter,
                 'instagram' => $sponsor->instagram,
-                'is_favorite' => $is_favorite,
+                'is_favorite' => AttendeeFavoriteSponsor::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('sponsor_id', $sponsorId)->exists(),
                 'favorite_count' => AttendeeFavoriteSponsor::where('event_id', $eventId)->where('sponsor_id', $sponsorId)->count(),
             ];
-
             return $this->success($data, "Sponsor details", 200);
-        } else {
-            return $this->success(null, "Sponsor doesn't exist", 404);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the sponsor details", 500);
         }
     }
 
 
     public function apiEventSponsorMarkAsFavorite(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $request->validate([
-            'sponsorId' => 'required', 
+        $validator = Validator::make($request->all(), [
+            'attendeeId' => 'required|exists:attendees,id',
+            'sponsorId' => 'required|exists:sponsors,id',
             'isFavorite' => 'required|boolean',
         ]);
 
-        if(Sponsor::find($request->sponsorId)){
-            try {
-                $favorite = AttendeeFavoriteSponsor::where('event_id', $eventId)
-                ->where('attendee_id', $attendeeId)
-                ->where('sponsor_id', $request->sponsorId)
-                ->first();
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
 
-                if ($request->isFavorite) {
-                    if (!$favorite) {
-                        AttendeeFavoriteSponsor::create([
-                            'event_id' => $eventId,
-                            'attendee_id' => $attendeeId,
-                            'sponsor_id' => $request->sponsorId,
-                        ]);
-                    }
-                } else {
-                    if ($favorite) {
-                        $favorite->delete();
-                    }
+        try {
+            $favorite = AttendeeFavoriteSponsor::where('event_id', $eventId)->where('attendee_id', $request->attendeeId)->where('sponsor_id', $request->sponsorId)->first();
+
+            if ($request->isFavorite) {
+                if (!$favorite) {
+                    AttendeeFavoriteSponsor::create([
+                        'event_id' => $eventId,
+                        'attendee_id' => $request->attendeeId,
+                        'sponsor_id' => $request->sponsorId,
+                    ]);
                 }
-        
-                $data = [
-                    'favorite_count' => AttendeeFavoriteSponsor::where('event_id', $eventId)
-                        ->where('sponsor_id', $request->sponsorId)
-                        ->count(),
-                ];
-        
-                return $this->success($data, "Sponsor favorite status updated successfully", 200);
-            } catch (\Exception $e) {
-                return $this->error(null, "An error occurred while updating the favorite status", 500);
+            } else {
+                if ($favorite) {
+                    $favorite->delete();
+                }
             }
-        } else {
-            return $this->error(null, "Sponsor doesn't exist", 404);
+
+            return $this->success(null, "Sponsor favorite status updated successfully", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while updating the favorite status", 500);
         }
     }
 }

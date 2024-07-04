@@ -14,4 +14,9 @@ class AttendeeFavoriteExhibitor extends Model
         'attendee_id',
         'exhibitor_id',
     ];
+
+    public function exhibitor()
+    {
+        return $this->belongsTo(Exhibitor::class, 'exhibitor_id');
+    }
 }

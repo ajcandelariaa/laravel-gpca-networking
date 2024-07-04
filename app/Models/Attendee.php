@@ -58,4 +58,14 @@ class Attendee extends Model
     protected $hidden = [
         'password',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function pfp()
+    {
+        return $this->belongsTo(Media::class, 'pfp_media_id');
+    }
 }

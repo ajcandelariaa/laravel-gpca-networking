@@ -28,4 +28,19 @@ class Session extends Model
         'is_active',
         'datetime_added',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function feature()
+    {
+        return $this->belongsTo(Feature::class, 'feature_id');
+    }
+
+    public function sponsor()
+    {
+        return $this->belongsTo(Sponsor::class, 'sponsor_id');
+    }
 }

@@ -14,4 +14,9 @@ class AttendeeFavoriteSpeaker extends Model
         'attendee_id',
         'speaker_id',
     ];
+
+    public function speaker()
+    {
+        return $this->belongsTo(Speaker::class, 'speaker_id');
+    }
 }

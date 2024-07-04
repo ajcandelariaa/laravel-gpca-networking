@@ -23,7 +23,7 @@ class Sponsor extends Model
         'contact_person_name',
         'email_address',
         'mobile_number',
-        
+
         'website',
         'facebook',
         'linkedin',
@@ -33,4 +33,29 @@ class Sponsor extends Model
         'is_active',
         'datetime_added',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Media::class, 'event_id');
+    }
+
+    public function feature()
+    {
+        return $this->belongsTo(Feature::class, 'feature_id');
+    }
+
+    public function sponsorType()
+    {
+        return $this->belongsTo(SponsorType::class, 'sponsor_type_id');
+    }
+
+    public function logo()
+    {
+        return $this->belongsTo(Media::class, 'logo_media_id');
+    }
+
+    public function banner()
+    {
+        return $this->belongsTo(Media::class, 'banner_media_id');
+    }
 }

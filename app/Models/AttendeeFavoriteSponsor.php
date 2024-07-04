@@ -14,4 +14,9 @@ class AttendeeFavoriteSponsor extends Model
         'attendee_id',
         'sponsor_id',
     ];
+
+    public function sponsor()
+    {
+        return $this->belongsTo(Sponsor::class, 'sponsor_id');
+    }
 }

@@ -14,4 +14,9 @@ class AttendeeFavoriteSession extends Model
         'attendee_id',
         'session_id',
     ];
+
+    public function session()
+    {
+        return $this->belongsTo(Session::class, 'session_id');
+    }
 }

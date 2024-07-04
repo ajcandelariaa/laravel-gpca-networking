@@ -14,4 +14,9 @@ class AttendeeFavoriteMp extends Model
         'attendee_id',
         'media_partner_id',
     ];
+
+    public function mediaPartner()
+    {
+        return $this->belongsTo(MediaPartner::class, 'media_partner_id');
+    }
 }

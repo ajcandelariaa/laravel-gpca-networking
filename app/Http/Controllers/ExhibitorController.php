@@ -10,6 +10,7 @@ use App\Models\Media;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ExhibitorController extends Controller
 {
@@ -83,99 +84,71 @@ class ExhibitorController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
-    public function apiEventExhibitors($apiCode, $eventCategory, $eventId, $attendeeId)
+    public function apiEventExhibitorDetail($apiCode, $eventCategory, $eventId, $attendeeId, $exhibitorId)
     {
-        $exhibitors = Exhibitor::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+        try {
+            $exhibitor = Exhibitor::with('logo')->where('id', $exhibitorId)->where('event_id', $eventId)->where('is_active', true)->first();
 
-        if ($exhibitors->isEmpty()) {
-            return $this->success(null, "There are no exhibitor yet", 200);
-        } else {
-            $data = array();
-            foreach ($exhibitors as $exhibitor) {
-                array_push($data, [
-                    'id' => $exhibitor->id,
-                    'name' => $exhibitor->name,
-                    'stand_number' => $exhibitor->stand_number,
-                    'logo' => Media::where('id', $exhibitor->logo_media_id)->value('file_url'),
-                ]);
-            }
-            return $this->success($data, "Exhibitor list", 200);
-        }
-    }
-
-    public function apiEventExhibitorDetail($apiCode, $eventCategory, $eventId, $attendeeId, $exhibitorId){
-        $exhibitor = Exhibitor::where('id', $exhibitorId)->where('event_id', $eventId)->where('is_active', true)->first();
-
-        if($exhibitor){
-            if (AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('exhibitor_id', $exhibitorId)->first()) {
-                $is_favorite = true;
-            } else {
-                $is_favorite = false;
+            if (!$exhibitor) {
+                return $this->error(null, "Exhibitor doesn't exist", 404);
             }
 
             $data = [
                 'exhibitor_id' => $exhibitor->id,
-                'logo' => Media::where('id', $exhibitor->logo_media_id)->value('file_url'),
+                'logo' => $exhibitor->logo->file_url ?? null,
                 'name' => $exhibitor->name,
                 'stand_number' => $exhibitor->stand_number,
                 'profile_html_text' => $exhibitor->profile_html_text,
                 'country' => $exhibitor->country,
+                'contact_person_name' => $exhibitor->contact_person_name,
+                'email_address' => $exhibitor->email_address,
+                'mobile_number' => $exhibitor->mobile_number,
                 'website' => $exhibitor->website,
                 'facebook' => $exhibitor->facebook,
                 'linkedin' => $exhibitor->linkedin,
                 'twitter' => $exhibitor->twitter,
                 'instagram' => $exhibitor->instagram,
-                'is_favorite' => $is_favorite,
+                'is_favorite' => AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('exhibitor_id', $exhibitorId)->exists(),
                 'favorite_count' => AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('exhibitor_id', $exhibitorId)->count(),
             ];
-
             return $this->success($data, "Exhibitor details", 200);
-        } else {
-            return $this->success(null, "Exhibitor doesn't exist", 404);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the exhibitor details", 500);
         }
     }
 
 
     public function apiEventExhibitorMarkAsFavorite(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $request->validate([
-            'exhibitorId' => 'required', 
+        $validator = Validator::make($request->all(), [
+            'attendeeId' => 'required|exists:attendees,id',
+            'exhibitorId' => 'required|exists:exhibitors,id',
             'isFavorite' => 'required|boolean',
         ]);
 
-        if(Exhibitor::find($request->exhibitorId)){
-            try {
-                $favorite = AttendeeFavoriteExhibitor::where('event_id', $eventId)
-                ->where('attendee_id', $attendeeId)
-                ->where('exhibitor_id', $request->exhibitorId)
-                ->first();
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
 
-                if ($request->isFavorite) {
-                    if (!$favorite) {
-                        AttendeeFavoriteExhibitor::create([
-                            'event_id' => $eventId,
-                            'attendee_id' => $attendeeId,
-                            'exhibitor_id' => $request->exhibitorId,
-                        ]);
-                    }
-                } else {
-                    if ($favorite) {
-                        $favorite->delete();
-                    }
+        try {
+            $favorite = AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('attendee_id', $request->attendeeId)->where('exhibitor_id', $request->exhibitorId)->first();
+
+            if ($request->isFavorite) {
+                if (!$favorite) {
+                    AttendeeFavoriteExhibitor::create([
+                        'event_id' => $eventId,
+                        'attendee_id' => $request->attendeeId,
+                        'exhibitor_id' => $request->exhibitorId,
+                    ]);
                 }
-        
-                $data = [
-                    'favorite_count' => AttendeeFavoriteExhibitor::where('event_id', $eventId)
-                        ->where('exhibitor_id', $request->exhibitorId)
-                        ->count(),
-                ];
-        
-                return $this->success($data, "Exhibitor favorite status updated successfully", 200);
-            } catch (\Exception $e) {
-                return $this->error(null, "An error occurred while updating the favorite status", 500);
+            } else {
+                if ($favorite) {
+                    $favorite->delete();
+                }
             }
-        } else {
-            return $this->error(null, "Exhibitor doesn't exist", 404);
+            return $this->success(null, "Exhibitor favorite status updated successfully", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while updating the favorite status", 500);
         }
     }
 }

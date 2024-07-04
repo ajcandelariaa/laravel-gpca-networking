@@ -30,7 +30,7 @@ class Speaker extends Model
         'country',
         'email_address',
         'mobile_number',
-        
+
         'website',
         'facebook',
         'linkedin',
@@ -38,7 +38,32 @@ class Speaker extends Model
         'instagram',
 
         'is_active',
-        
+
         'datetime_added',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function feature()
+    {
+        return $this->belongsTo(Feature::class, 'feature_id');
+    }
+
+    public function speakerType()
+    {
+        return $this->belongsTo(SpeakerType::class, 'speaker_type_id');
+    }
+
+    public function pfp()
+    {
+        return $this->belongsTo(Media::class, 'pfp_media_id');
+    }
+
+    public function coverPhoto()
+    {
+        return $this->belongsTo(Media::class, 'cover_photo_media_id');
+    }
 }

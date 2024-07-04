@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FileUploadDirectory;
 use App\Enums\MediaEntityTypes;
 use App\Enums\PassTypes;
 use App\Models\Attendee;
@@ -13,18 +14,14 @@ use App\Models\AttendeeFavoriteSpeaker;
 use App\Models\AttendeeFavoriteSponsor;
 use App\Models\AttendeePasswordReset;
 use App\Models\Event;
-use App\Models\Exhibitor;
 use App\Models\Media;
-use App\Models\MediaPartner;
-use App\Models\MeetingRoomPartner;
-use App\Models\Session;
-use App\Models\Speaker;
-use App\Models\Sponsor;
-use App\Models\SponsorType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AttendeesController extends Controller
 {
@@ -47,7 +44,7 @@ class AttendeesController extends Controller
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
         $attendee = Attendee::where('id', $attendeeId)->first();
 
-        $passwordResetDetails = array();
+        $passwordResetDetails = [];
         $attendeeResets = AttendeePasswordReset::where('attendee_id', $attendee->id)->get();
 
         if ($attendeeResets->isNotEmpty()) {
@@ -126,87 +123,102 @@ class AttendeesController extends Controller
     // =========================================================
     public function apiAttendeeLogin(Request $request, $apiCode, $eventCategory, $eventId)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'username' => 'required',
             'password' => 'required',
         ]);
 
-        $attendee = Attendee::where('email_address', $request->username)->orWhere('username', $request->username)->first();
-
-        if ($attendee == null) {
-            return $this->error(null, "User not found", 404);
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
         }
 
-        if (!Hash::check($request->password, $attendee->password)) {
-            return $this->error(null, "Invalid credentials", 401);
+        try {
+            $attendee = Attendee::where('email_address', $request->username)->orWhere('username', $request->username)->where('is_active', true)->first();
+
+            if (!$attendee) {
+                return $this->error(null, "User not found", 404);
+            }
+
+            if (!Hash::check($request->password, $attendee->password)) {
+                return $this->error(null, "Invalid credentials", 401);
+            }
+
+            $tokenResult = $attendee->createToken('api token of ' . $attendee->id);
+
+            $token = $tokenResult->accessToken;
+            $expiresAt = now()->addDay();
+            $token->expires_at = $expiresAt;
+            $token->save();
+
+            return $this->success(['token' => $tokenResult->plainTextToken, 'expires_at' => $expiresAt, 'attendeeId' => $attendee->id], "Logged in successfully", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while logging in", 500);
         }
-
-        // Create token
-        $tokenResult = $attendee->createToken('api token of ' . $attendee->id);
-
-        $token = $tokenResult->accessToken;
-        $expiresAt = now()->addDay();
-        $token->expires_at = $expiresAt;
-        $token->save();
-
-        return $this->success(['token' => $tokenResult->plainTextToken, 'expires_at' => $expiresAt, 'attendeeId' => $attendee->id], "Logged in successfully", 200);
     }
 
     public function apiAttendeeLogout(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $request->user()->currentAccessToken()->delete();
-        return $this->success(null, "Logged out successfully", 200);
+        try {
+            $request->user()->currentAccessToken()->delete();
+            return $this->success(null, "Logged out successfully", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while logging out", 500);
+        }
     }
 
     public function apiAttendeeProfile($apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $attendee = Attendee::where('id', $attendeeId)->where('event_id', $eventId)->first();
+        try {
+            $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
 
-        if ($attendee->pass_type == PassTypes::FULL_MEMBER->value) {
-            $passTypeName = "Full Member";
-        } else if ($attendee->pass_type == PassTypes::MEMBER->value) {
-            $passTypeName = "Member";
-        } else {
-            $passTypeName = "Non-Member";
+            if ($attendee->pass_type == PassTypes::FULL_MEMBER->value) {
+                $passTypeName = "Full Member";
+            } else if ($attendee->pass_type == PassTypes::MEMBER->value) {
+                $passTypeName = "Member";
+            } else {
+                $passTypeName = "Non-Member";
+            }
+
+            return $this->success([
+                'attendee_id' => $attendee->id,
+                'badge_number' => $attendee->badge_number,
+                'registration_type' => $attendee->registration_type,
+                'pass_type' => $passTypeName,
+                'company_name' => $attendee->company_name,
+                'company_country' => $attendee->company_country,
+                'company_phone_number' => $attendee->company_phone_number,
+                'username' => $attendee->username,
+                'salutation' => $attendee->salutation,
+                'first_name' => $attendee->first_name,
+                'middle_name' => $attendee->middle_name,
+                'last_name' => $attendee->last_name,
+                'job_title' => $attendee->job_title,
+                'email_address' => $attendee->email_address,
+                'mobile_number' => $attendee->mobile_number,
+                'pfp' => $attendee->pfp->file_url,
+                'biography' => $attendee->biography,
+                'gender' => $attendee->gender,
+                'birthdate' => Carbon::parse($attendee->birthdate)->format('F d, Y'),
+                'country' => $attendee->country,
+                'city' => $attendee->city,
+                'address' => $attendee->address,
+                'nationality' => $attendee->nationality,
+                'website' => $attendee->website,
+                'facebook' => $attendee->facebook,
+                'linkedin' => $attendee->linkedin,
+                'twitter' => $attendee->twitter,
+                'instagram' => $attendee->instagram,
+                'joined_date_time' => Carbon::parse($attendee->joined_date_time)->format('F d, Y'),
+            ], "Attendee details", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the attendee details", 500);
         }
-
-        return $this->success([
-            'attendee_id' => $attendee->id,
-            'badge_number' => $attendee->badge_number,
-            'registration_type' => $attendee->registration_type,
-            'pass_type' => $passTypeName,
-            'company_name' => $attendee->company_name,
-            'company_country' => $attendee->company_country,
-            'company_phone_number' => $attendee->company_phone_number,
-            'username' => $attendee->username,
-            'salutation' => $attendee->salutation,
-            'first_name' => $attendee->first_name,
-            'middle_name' => $attendee->middle_name,
-            'last_name' => $attendee->last_name,
-            'job_title' => $attendee->job_title,
-            'email_address' => $attendee->email_address,
-            'mobile_number' => $attendee->mobile_number,
-            'pfp' => Media::where('id', $attendee->pfp_media_id)->value('file_url'),
-            'biography' => $attendee->biography,
-            'gender' => $attendee->gender,
-            'birthdate' => Carbon::parse($attendee->birthdate)->format('F d, Y'),
-            'country' => $attendee->country,
-            'city' => $attendee->city,
-            'address' => $attendee->address,
-            'nationality' => $attendee->nationality,
-            'website' => $attendee->website,
-            'facebook' => $attendee->facebook,
-            'linkedin' => $attendee->linkedin,
-            'twitter' => $attendee->twitter,
-            'instagram' => $attendee->instagram,
-            'joined_date_time' => Carbon::parse($attendee->joined_date_time)->format('F d, Y'),
-        ], "Attendee details", 200);
     }
 
 
     public function apiAttendeeEditProfileDetails(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'attendee_id' => 'required',
 
             'salutation' => 'nullable',
@@ -232,6 +244,10 @@ class AttendeesController extends Controller
             'twitter' => 'nullable',
             'instagram' => 'nullable',
         ]);
+
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
 
         try {
             Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
@@ -259,199 +275,301 @@ class AttendeesController extends Controller
                 'twitter' => $request->twitter,
                 'instagram' => $request->instagram,
             ]);
-            return $this->success(['attendee_id' => $request->attendee_id], "Attendee details updated successfully", 200);
+            return $this->success(null, "Attendee details updated successfully", 200);
         } catch (\Exception $e) {
-            return $this->error(null, "An error occurred while updating attendee details", 500);
+            return $this->error($e, "An error occurred while updating attendee details", 500);
         }
     }
 
-    public function apiAttendeeEditProfileUsernameEmail(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId){
-        $request->validate([
+    public function apiAttendeeEditProfileUsernameEmail(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $validator = Validator::make($request->all(), [
             'attendee_id' => 'required',
-            'email_address' => 'required',
+            'email_address' => 'required|email',
             'username' => 'required',
             'password' => 'required',
         ]);
 
-        $attendeePassword = Attendee::where('id', $request->attendee_id)->value('password');
-        if (Hash::check($request->password, $attendeePassword)) {
-            if (checkAttendeeEmailIfExistsInDatabase($request->attendee_id, $eventId, $request->email_address)) {
-                return $this->success(null, "Email is already registered, please use another email!", 200);
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        try {
+            $attendeePassword = Attendee::where('id', $request->attendee_id)->value('password');
+            if (Hash::check($request->password, $attendeePassword)) {
+                if (checkAttendeeEmailIfExistsInDatabase($request->attendee_id, $eventId, $request->email_address)) {
+                    return $this->error(null, "Email is already registered, please use another email!", 409);
+                }
+
+                if (checkAttendeeUsernameIfExistsInDatabase($request->attendee_id, $eventId, $request->username)) {
+                    return $this->error(null, "Username is already registered, please use another username!", 409);
+                }
+
+                Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
+                    'username' => $request->username,
+                    'email_address' => $request->email_address,
+                ]);
+
+                return $this->success(null, "Attendee Username/Email address updated successfully", 200);
+            } else {
+                return $this->error(null, "Incorrect attendee password", 401);
             }
-
-            if (checkAttendeeUsernameIfExistsInDatabase($request->attendee_id, $eventId, $request->username)) {
-                return $this->success(null, "Username is already registered, please use another username!", 200);
-            }
-
-            Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
-                'username' => $request->username,
-                'email_address' => $request->email_address,
-            ]);
-
-            return $this->success(['attendee_id' => $request->attendee_id], "Attendee Username/Email address updated successfully", 200);
-        } else {
-            return $this->success(null, "Incorrect attendee password", 403);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while updating attendee email/username", 500);
         }
     }
 
-    public function apiAttendeeEditProfilePassword(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId){
-        $request->validate([
+    public function apiAttendeeEditProfilePassword(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $validator = Validator::make($request->all(), [
             'attendee_id' => 'required',
             'old_password' => 'required',
             'password' => 'required|min:8',
             'confirm_password' => 'required',
         ]);
 
-        if($request->password == $request->old_password){
-            return $this->success(null, "Password is just the same, please enter a different one", 200);
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
         }
 
-        if(!Hash::check($request->old_password, Attendee::where('id',  $request->attendee_id)->where('event_id', $eventId)->value('password'))){
-            return $this->success(null, "Old password doesn't match", 403);
-        }
+        try {
+            if ($request->password == $request->old_password) {
+                return $this->error(null, "Password must be different from the old password", 409);
+            }
 
-        if($request->password != $request->confirm_password){
-            return $this->success(null, "Password & Confirm password does not match", 200);
-        }
+            if (!Hash::check($request->old_password, Attendee::where('id',  $request->attendee_id)->where('event_id', $eventId)->value('password'))) {
+                return $this->error(null, "Old password is incorrect", 401);
+            }
 
-        Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
-            'password' => Hash::make($request->password),
+            if ($request->password != $request->confirm_password) {
+                return $this->error(null, "Password and Confirm password do not match", 409);
+            }
+
+            Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            AttendeePasswordReset::create([
+                'event_id' => $eventId,
+                'attendee_id' => $request->attendee_id,
+                'password_changed_date_time' => Carbon::now(),
+            ]);
+
+            return $this->success(null, "Attendee password updated successfully", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while updating attendee password", 500);
+        }
+    }
+
+
+    public function apiAttendeeEditPfp(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $validator = Validator::make($request->all(), [
+            'attendee_id' => 'required',
+            'pfp' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-        
-        AttendeePasswordReset::create([
-            'event_id' => $eventId,
-            'attendee_id' => $request->attendee_id,
-            'password_changed_date_time' => Carbon::now(),
-        ]);
 
-        return $this->success(['attendee_id' => $request->attendee_id], "Password updated successfuly", 200);
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        try {
+            if (!$request->hasFile('pfp') || !$request->file('pfp')->isValid()) {
+                return $this->error(null, "Invalid file upload", 400);
+            }
+
+            $filename = pathinfo($request->pfp->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $request->pfp->getClientOriginalExtension();
+            $uniqueFilename = $filename . '_' . time() . '_' . Str::random(10) . '.' . $extension;
+            $fileDirectory = FileUploadDirectory::ATTENDEES->value;
+            $path = $request->pfp->storeAs($fileDirectory, $uniqueFilename, 's3');
+            $fileUrl = Storage::disk('s3')->url($path);
+            $fileSize = $request->pfp->getSize();
+            $dateUploaded = now();
+
+            $width = null;
+            $height = null;
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $fileType = finfo_file($finfo, $request->pfp->getRealPath());
+            finfo_close($finfo);
+
+            if ($fileType === 'application/octet-stream') {
+                $fileType = getMimeTypeByExtension($extension);
+            }
+
+            if (str_starts_with($fileType, 'image/')) {
+                $imageSize = getimagesize($request->pfp->getRealPath());
+                if ($imageSize) {
+                    $width = $imageSize[0];
+                    $height = $imageSize[1];
+                }
+            }
+
+            $media = Media::create([
+                'file_url' => $fileUrl,
+                'file_directory' => $fileDirectory,
+                'file_name' => $uniqueFilename,
+                'file_type' => $fileType,
+                'file_size' => $fileSize,
+                'width' => $width,
+                'height' => $height,
+                'date_uploaded' => $dateUploaded,
+            ]);
+
+            Attendee::where('id', $request->attendee_id)->update([
+                'pfp_media_id' => $media->id,
+            ]);
+
+            return $this->success(null, "Attendee PFP updated successfully", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while updating attendee profile", 500);
+        }
     }
 
 
     public function apiAttendeeFavorites($apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $favoriteSessions = array();
-        $favoriteSpeakers = array();
-        $favoriteSponsors = array();
-        $favoriteExhibitors = array();
-        $favoriteMrps = array();
-        $favoriteMps = array();
+        try {
+            $favoriteSessions = [];
+            $favoriteSpeakers = [];
+            $favoriteSponsors = [];
+            $favoriteExhibitors = [];
+            $favoriteMrps = [];
+            $favoriteMps = [];
 
-        $attendeeFavoriteSessions = AttendeeFavoriteSession::where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
-        $attendeeFavoriteSpeakers = AttendeeFavoriteSpeaker::where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
-        $attendeeFavoriteSponsors = AttendeeFavoriteSponsor::where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
-        $attendeeFavoriteExhibitors = AttendeeFavoriteExhibitor::where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
-        $attendeeFavoriteMrps = AttendeeFavoriteMrp::where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
-        $attendeeFavoriteMps = AttendeeFavoriteMp::where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
+            $attendeeFavoriteSessions = AttendeeFavoriteSession::with('session')->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
+            $attendeeFavoriteSpeakers = AttendeeFavoriteSpeaker::with('speaker.pfp')->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
+            $attendeeFavoriteSponsors = AttendeeFavoriteSponsor::with(['sponsor.logo', 'sponsor.sponsorType'])->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
+            $attendeeFavoriteExhibitors = AttendeeFavoriteExhibitor::with('exhibitor.logo')->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
+            $attendeeFavoriteMrps = AttendeeFavoriteMrp::with('meetingRoomPartner.logo')->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
+            $attendeeFavoriteMps = AttendeeFavoriteMp::with('mediaPartner.logo')->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
 
-        if ($attendeeFavoriteSessions->isNotEmpty()) {
-            foreach ($attendeeFavoriteSessions as $attendeeFavoriteSession) {
-                $session = Session::where('id', $attendeeFavoriteSession->session_id)->where('event_id', $eventId)->where('is_active', true)->first();
-
-                if ($session) {
-                    array_push($favoriteSessions, [
-                        'session_id' => $session->id,
-                        'title' => $session->title,
-                        'start_time' => $session->start_time,
-                        'end_time' => $session->end_time,
-                        'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
-                        'session_week_day' => Carbon::parse($session->session_date)->format('l'),
-                        'session_day' => $session->session_day,
-                    ]);
-                }
+            if ($attendeeFavoriteSessions->isNotEmpty()) {
+                $favoriteSessions = $attendeeFavoriteSessions->map(function ($favorite) {
+                    if ($favorite->session->is_active) {
+                        return [
+                            'session_id' => $favorite->session->id,
+                            'title' => $favorite->session->title,
+                            'start_time' => $favorite->session->start_time,
+                            'end_time' => $favorite->session->end_time,
+                            'session_date' => Carbon::parse($favorite->session->session_date)->format('F d, Y'),
+                            'session_week_day' => Carbon::parse($favorite->session->session_date)->format('l'),
+                            'session_day' => $favorite->session->session_day,
+                        ];
+                    }
+                });
             }
-        }
 
-
-        if ($attendeeFavoriteSpeakers->isNotEmpty()) {
-            foreach ($attendeeFavoriteSpeakers as $attendeeFavoriteSpeaker) {
-                $speaker = Speaker::where('id', $attendeeFavoriteSpeaker->speaker_id)->where('event_id', $eventId)->where('is_active', true)->first();
-
-                if ($speaker) {
-                    array_push($favoriteSpeakers, [
-                        'speaker_id' => $speaker->id,
-                        'salutation' => $speaker->salutation,
-                        'first_name' => $speaker->first_name,
-                        'middle_name' => $speaker->middle_name,
-                        'last_name' => $speaker->last_name,
-                        'company_name' => $speaker->company_name,
-                        'job_title' => $speaker->job_title,
-                        'pfp' => Media::where('id', $speaker->pfp_media_id)->value('file_url'),
-                    ]);
-                }
+            if ($attendeeFavoriteSpeakers->isNotEmpty()) {
+                $favoriteSpeakers = $attendeeFavoriteSpeakers->map(function ($favorite) {
+                    if ($favorite->speaker->is_active) {
+                        return [
+                            'speaker_id' => $favorite->speaker->id,
+                            'salutation' => $favorite->speaker->salutation,
+                            'first_name' => $favorite->speaker->first_name,
+                            'middle_name' => $favorite->speaker->middle_name,
+                            'last_name' => $favorite->speaker->last_name,
+                            'company_name' => $favorite->speaker->company_name,
+                            'job_title' => $favorite->speaker->job_title,
+                            'pfp' => $favorite->speaker->pfp->file_url ?? null,
+                        ];
+                    }
+                });
             }
-        }
 
-        if ($attendeeFavoriteSponsors->isNotEmpty()) {
-            foreach ($attendeeFavoriteSponsors as $attendeeFavoriteSponsor) {
-                $sponsor = Sponsor::where('id', $attendeeFavoriteSponsor->sponsor_id)->where('event_id', $eventId)->where('is_active', true)->first();
-
-                if ($sponsor) {
-                    array_push($favoriteSponsors, [
-                        'sponsor_id' => $sponsor->id,
-                        'name' => $sponsor->name,
-                        'type' => SponsorType::where('id', $sponsor->sponsor_type_id)->where('event_id', $eventId)->value('name'),
-                        'logo' => Media::where('id', $sponsor->logo_media_id)->value('file_url'),
-                    ]);
-                }
+            if ($attendeeFavoriteSponsors->isNotEmpty()) {
+                $favoriteSponsors = $attendeeFavoriteSponsors->map(function ($favorite) {
+                    if ($favorite->sponsor->is_active) {
+                        return [
+                            'sponsor_id' => $favorite->sponsor->id,
+                            'name' => $favorite->sponsor->name,
+                            'type' => $favorite->sponsor->sponsorType->name ?? null,
+                            'logo' => $favorite->sponsor->logo->file_url ?? null,
+                        ];
+                    }
+                });
             }
-        }
 
-        if ($attendeeFavoriteExhibitors->isNotEmpty()) {
-            foreach ($attendeeFavoriteExhibitors as $attendeeFavoriteExhibitor) {
-                $exhibitor = Exhibitor::where('id', $attendeeFavoriteExhibitor->exhibitor_id)->where('event_id', $eventId)->where('is_active', true)->first();
-
-                if ($exhibitor) {
-                    array_push($favoriteExhibitors, [
-                        'exhibitor_id' => $exhibitor->id,
-                        'name' => $exhibitor->name,
-                        'stand_number' => $exhibitor->stand_number,
-                        'logo' => Media::where('id', $exhibitor->logo_media_id)->value('file_url'),
-                    ]);
-                }
+            if ($attendeeFavoriteExhibitors->isNotEmpty()) {
+                $favoriteExhibitors = $attendeeFavoriteExhibitors->map(function ($favorite) {
+                    if ($favorite->exhibitor->is_active) {
+                        return [
+                            'exhibitor_id' => $favorite->exhibitor->id,
+                            'name' => $favorite->exhibitor->name,
+                            'stand_number' => $favorite->exhibitor->stand_number,
+                            'logo' => $favorite->exhibitor->logo->file_url ?? null,
+                        ];
+                    }
+                });
             }
-        }
 
-        if ($attendeeFavoriteMrps->isNotEmpty()) {
-            foreach ($attendeeFavoriteMrps as $attendeeFavoriteMrp) {
-                $meetingRoomPartner = MeetingRoomPartner::where('id', $attendeeFavoriteMrp->meeting_room_partner_id)->where('event_id', $eventId)->where('is_active', true)->first();
-
-                if ($meetingRoomPartner) {
-                    array_push($favoriteMrps, [
-                        'meetingRoomPartner_id' => $meetingRoomPartner->id,
-                        'name' => $meetingRoomPartner->name,
-                        'location' => $meetingRoomPartner->location,
-                        'logo' => Media::where('id', $meetingRoomPartner->logo_media_id)->value('file_url'),
-                    ]);
-                }
+            if ($attendeeFavoriteMrps->isNotEmpty()) {
+                $favoriteMrps = $attendeeFavoriteMrps->map(function ($favorite) {
+                    if ($favorite->meetingRoomPartner->is_active) {
+                        return [
+                            'meetingRoomPartner_id' => $favorite->meetingRoomPartner->id,
+                            'name' => $favorite->meetingRoomPartner->name,
+                            'location' => $favorite->meetingRoomPartner->location,
+                            'logo' => $favorite->meetingRoomPartner->logo->file_url ?? null,
+                        ];
+                    }
+                });
             }
-        }
 
-        if ($attendeeFavoriteMps->isNotEmpty()) {
-            foreach ($attendeeFavoriteMps as $attendeeFavoriteMp) {
-                $mediaPartner = MediaPartner::where('id', $attendeeFavoriteMp->media_partner_id)->where('event_id', $eventId)->where('is_active', true)->first();
-
-                if ($mediaPartner) {
-                    array_push($favoriteMps, [
-                        'mediaPartner_id' => $mediaPartner->id,
-                        'name' => $mediaPartner->name,
-                        'website' => $mediaPartner->website,
-                        'logo' => Media::where('id', $mediaPartner->logo_media_id)->value('file_url'),
-                    ]);
-                }
+            if ($attendeeFavoriteMps->isNotEmpty()) {
+                $favoriteMps = $attendeeFavoriteMps->map(function ($favorite) {
+                    if ($favorite->mediaPartner->is_active) {
+                        return [
+                            'mediaPartner_id' => $favorite->mediaPartner->id,
+                            'name' => $favorite->mediaPartner->name,
+                            'website' => $favorite->mediaPartner->website,
+                            'logo' => $favorite->mediaPartner->logo->file_url ?? null,
+                        ];
+                    }
+                });
             }
+
+            $data = [
+                'sessions' => $favoriteSessions,
+                'speakers' => $favoriteSpeakers,
+                'sponsors' => $favoriteSponsors,
+                'exhibitors' => $favoriteExhibitors,
+                'meeting_room_partners' => $favoriteMrps,
+                'media_partners' => $favoriteMps,
+            ];
+            return $this->success($data, "Favorite details", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the favorite details", 500);
         }
+    }
 
-        $data = [
-            'sessions' => $favoriteSessions,
-            'speakers' => $favoriteSpeakers,
-            'sponsors' => $favoriteSponsors,
-            'exhibitors' => $favoriteExhibitors,
-            'meeting_room_partners' => $favoriteMrps,
-            'media_partners' => $favoriteMps,
-        ];
+    public function apiAttendeesList($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $attendees = Attendee::with('pfp')->where('event_id', $eventId)->where('is_active', true)->get();
 
+            if ($attendees->isEmpty()) {
+                return $this->error(null, "There are no attendees yet", 404);
+            }
 
-        return $this->success($data, "Favorite details", 200);
+            $data = $attendees->map(function ($attendee) {
+                return [
+                    'attendee_id' => $attendee->id,
+                    'salutation' => $attendee->salutation,
+                    'first_name' => $attendee->first_name,
+                    'middle_name' => $attendee->middle_name,
+                    'last_name' => $attendee->last_name,
+                    'job_title' => $attendee->job_title,
+                    'company_name' => $attendee->company_name,
+                    'registration_type' => $attendee->registration_type,
+                    'pfp' => $attendee->pfp->file_url ?? null,
+                ];
+            });
+
+            return $this->success($data, "Attendees list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the attendees list", 500);
+        }
     }
 }

@@ -14,4 +14,9 @@ class AttendeeFavoriteMrp extends Model
         'attendee_id',
         'meeting_room_partner_id',
     ];
+
+    public function meetingRoomPartner()
+    {
+        return $this->belongsTo(MeetingRoomPartner::class, 'meeting_room_partner_id');
+    }
 }

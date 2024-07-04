@@ -11,7 +11,7 @@ class Exhibitor extends Model
 
     protected $fillable = [
         'event_id',
-        
+
         'name',
         'stand_number',
         'profile_html_text',
@@ -32,4 +32,19 @@ class Exhibitor extends Model
         'is_active',
         'datetime_added',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function logo()
+    {
+        return $this->belongsTo(Media::class, 'logo_media_id');
+    }
+
+    public function banner()
+    {
+        return $this->belongsTo(Media::class, 'banner_media_id');
+    }
 }

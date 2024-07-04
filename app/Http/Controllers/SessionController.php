@@ -15,7 +15,7 @@ use App\Models\SponsorType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class SessionController extends Controller
 {
@@ -58,8 +58,8 @@ class SessionController extends Controller
 
 
             // FORE SESSION SPEAKERS
-            $sessionSpeakerGroup = array();
-            $finalSessionSpeakerGroup = array();
+            $sessionSpeakerGroup = [];
+            $finalSessionSpeakerGroup = [];
 
             $sessionSpeakerTypes = SessionSpeakerType::where('event_id', $eventId)->where('session_id', $sessionId)->orderBy('datetime_added')->get();
 
@@ -113,7 +113,7 @@ class SessionController extends Controller
                     }
                 }
             } else {
-                $finalSessionSpeakerGroup = array();
+                $finalSessionSpeakerGroup = [];
             }
 
             if ($session->sponsor_id) {
@@ -190,232 +190,47 @@ class SessionController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
-    public function apiEventSessions($apiCode, $eventCategory, $eventId, $attendeeId)
-    {
-        $sessions = Session::where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->get();
-        $features = Feature::where('event_id', $eventId)->where('is_active', true)->get();
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-
-        if ($sessions->isEmpty()) {
-            return $this->success(null, "There are no session yet", 200);
-        } else {
-            $data = array();
-
-            $categorizedSessionsByDate = array();
-            $storeDatesCategoryTemp = [];
-
-
-            // GET THE DATES FIRST
-            $storeDatesCategoryTemp = [];
-            foreach ($sessions as $session) {
-                if ($session->feature_id == 0) {
-                    $date = $session->session_date;
-                    if (!isset($storeDatesCategoryTemp[$date])) {
-                        $storeDatesCategoryTemp[$date] = true;
-                    }
-                }
-            }
-            $uniqueDates = array_keys($storeDatesCategoryTemp);
-
-
-            foreach ($uniqueDates as $uniqueDate) {
-                $sessionsTemp = array();
-                foreach ($sessions as $session) {
-                    if ($session->feature_id == 0) {
-                        if ($session->session_date == $uniqueDate) {
-                            $getSpeakersHeadshot = [];
-
-                            $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
-
-                            if ($sessionSpeakersTemp->isNotEmpty()) {
-                                foreach ($sessionSpeakersTemp as $sessionSpeakerTemp) {
-                                    $speakerPFPMediaId = Speaker::where('event_id', $eventId)->where('id', $sessionSpeakerTemp->speaker_id)->value('pfp_media_id');
-                                    $getSpeakersHeadshot[] = Media::where('id', $speakerPFPMediaId)->value('file_url');
-                                }
-                            }
-
-                            $getSponsorLogoUrl = null;
-                            if ($session->sponsor_id) {
-                                $getSponsorLogoId = Sponsor::where('id', $session->sponsor_id)->value('logo_media_id');
-                                $getSponsorLogoUrl = Media::where('id', $getSponsorLogoId)->value('file_url');
-                            }
-
-                            array_push($sessionsTemp, [
-                                'session_id' => $session->id,
-                                'start_time' => $session->start_time,
-                                'end_time' => $session->end_time,
-                                'title' => $session->title,
-                                'speakers_mini_headshot' => $getSpeakersHeadshot,
-                                'sponsor_mini_logo' => $getSponsorLogoUrl,
-                            ]);
-                        }
-                    }
-                }
-
-                $dateTemp = Carbon::parse($uniqueDate);
-                $formattedDate = $dateTemp->format('D d M');
-                array_push($categorizedSessionsByDate, [
-                    'sessions_date' => $formattedDate,
-                    'sessions' => $sessionsTemp,
-                ]);
-            }
-
-            $startDate = Carbon::parse($event->event_start_date);
-            $endDate = Carbon::parse($event->event_end_date);
-
-            if ($startDate->format('F') === $endDate->format('F')) {
-                $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
-            } else {
-                $formattedDate = $startDate->format('F d') . '-' . $endDate->format('F d Y');
-            }
-
-            array_push($data, [
-                'program_name' => $event->short_name,
-                'program_banner' => Media::where('id', $event->event_banner_media_id)->value('file_url'),
-                'program_date' => $formattedDate,
-                'session_dates' => $categorizedSessionsByDate,
-            ]);
-
-
-
-            if ($features->isNotEmpty()) {
-                foreach ($features as $feature) {
-                    $categorizedSessionsByDate = array();
-                    $storeDatesCategoryTemp = [];
-
-
-                    // GET THE DATES FIRST
-                    $storeDatesCategoryTemp = [];
-                    foreach ($sessions as $session) {
-                        if ($session->feature_id == $feature->id) {
-                            $date = $session->session_date;
-                            if (!isset($storeDatesCategoryTemp[$date])) {
-                                $storeDatesCategoryTemp[$date] = true;
-                            }
-                        }
-                    }
-                    $uniqueDates = array_keys($storeDatesCategoryTemp);
-
-
-                    foreach ($uniqueDates as $uniqueDate) {
-                        $sessionsTemp = array();
-                        foreach ($sessions as $session) {
-                            if ($session->feature_id == $feature->id) {
-                                if ($session->session_date == $uniqueDate) {
-                                    $getSpeakersHeadshot = [];
-
-                                    $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
-
-                                    if ($sessionSpeakersTemp->isNotEmpty()) {
-                                        foreach ($sessionSpeakersTemp as $sessionSpeakerTemp) {
-                                            $speakerPFPMediaId = Speaker::where('event_id', $eventId)->where('id', $sessionSpeakerTemp->speaker_id)->value('pfp_media_id');
-                                            $getSpeakersHeadshot[] = Media::where('id', $speakerPFPMediaId)->value('file_url');
-                                        }
-                                    }
-
-                                    $getSponsorLogoUrl = null;
-                                    if ($session->sponsor_id) {
-                                        $getSponsorLogoId = Sponsor::where('id', $session->sponsor_id)->value('logo_media_id');
-                                        $getSponsorLogoUrl = Media::where('id', $getSponsorLogoId)->value('file_url');
-                                    }
-
-                                    array_push($sessionsTemp, [
-                                        'session_id' => $session->id,
-                                        'start_time' => $session->start_time,
-                                        'end_time' => $session->end_time,
-                                        'title' => $session->title,
-                                        'speakers_mini_headshot' => $getSpeakersHeadshot,
-                                        'sponsor_mini_logo' => $getSponsorLogoUrl,
-                                    ]);
-                                }
-                            }
-                        }
-
-                        $dateTemp = Carbon::parse($uniqueDate);
-                        $formattedDate = $dateTemp->format('D d M');
-                        array_push($categorizedSessionsByDate, [
-                            'sessions_date' => $formattedDate,
-                            'sessions' => $sessionsTemp,
-                        ]);
-                    }
-
-                    $startDate = Carbon::parse($event->event_start_date);
-                    $endDate = Carbon::parse($event->event_end_date);
-
-                    if ($startDate->format('F') === $endDate->format('F')) {
-                        $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
-                    } else {
-                        $formattedDate = $startDate->format('F d') . '-' . $endDate->format('F d Y');
-                    }
-
-                    if (count($categorizedSessionsByDate) > 0) {
-                        array_push($data, [
-                            'program_name' => $feature->short_name,
-                            'program_banner' => Media::where('id', $feature->banner_media_id)->value('file_url'),
-                            'program_date' => $formattedDate,
-                            'session_dates' => $categorizedSessionsByDate,
-                        ]);
-                    }
-                }
-            }
-
-            return $this->success($data, "Sessions list", 200);
-        }
-    }
-
     public function apiEventSessionDetail($apiCode, $eventCategory, $eventId, $attendeeId, $sessionId)
     {
-        $session = Session::where('id', $sessionId)->where('event_id', $eventId)->where('is_active', true)->first();
+        try {
+            $session = Session::with(['feature', 'sponsor.logo'])->where('id', $sessionId)->where('event_id', $eventId)->where('is_active', true)->first();
 
-        if ($session) {
+            if (!$session) {
+                return $this->error(null, "Session doesn't exist", 404);
+            }
+
             $sessionSpeakerTypes = SessionSpeakerType::where('event_id', $eventId)->where('session_id', $sessionId)->orderBy('datetime_added', 'ASC')->get();
 
-            if ($sessionSpeakerTypes->isNotEmpty()) {
-                $sessionSpeakerCategorized = array();
-                foreach ($sessionSpeakerTypes as $sessionSpeakerType) {
-                    $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('session_id', $sessionId)->where('session_speaker_type_id', $sessionSpeakerType->id)->get();
-                    if ($sessionSpeakers->isNotEmpty()) {
-                        $categorizedSpeakers = array();
-                        foreach ($sessionSpeakers as $sessionSpeaker) {
-                            $speaker = Speaker::where('id', $sessionSpeaker->speaker_id)->where('event_id', $eventId)->where('is_active', true)->first();
+            $sessionSpeakerCategorized = $sessionSpeakerTypes->map(function ($sessionSpeakerType) use ($eventId, $sessionId) {
+                $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('session_id', $sessionId)->where('session_speaker_type_id', $sessionSpeakerType->id)->get();
 
-                            if ($speaker) {
-                                array_push($categorizedSpeakers, [
-                                    'speaker_id' => $speaker->id,
-                                    'salutation' => $speaker->salutation,
-                                    'first_name' => $speaker->first_name,
-                                    'middle_name' => $speaker->middle_name,
-                                    'last_name' => $speaker->last_name,
-                                    'company_name' => $speaker->company_name,
-                                    'job_title' => $speaker->job_title,
-                                    'pfp' => Media::where('id', $speaker->pfp_media_id)->value('file_url'),
-                                ]);
-                            }
-                        }
-
-                        if (count($categorizedSpeakers) > 0) {
-                            array_push($sessionSpeakerCategorized, [
-                                'speaker_type_name' => $sessionSpeakerType->name,
-                                'text_color' => $sessionSpeakerType->text_color,
-                                'background_color' => $sessionSpeakerType->background_color,
-                                'speakers' => $categorizedSpeakers,
-                            ]);
-                        }
+                $categorizedSpeakers = $sessionSpeakers->map(function ($sessionSpeaker) use ($eventId) {
+                    $speaker = Speaker::with('pfp')->where('id', $sessionSpeaker->speaker_id)->where('event_id', $eventId)->where('is_active', true)->first();
+                    if ($speaker) {
+                        return [
+                            'speaker_id' => $speaker->id,
+                            'salutation' => $speaker->salutation,
+                            'first_name' => $speaker->first_name,
+                            'middle_name' => $speaker->middle_name,
+                            'last_name' => $speaker->last_name,
+                            'company_name' => $speaker->company_name,
+                            'job_title' => $speaker->job_title,
+                            'pfp' => $speaker->pfp->file_url ?? null,
+                        ];
                     }
+                    return null;
+                })->filter()->values();
+
+                if ($categorizedSpeakers->isNotEmpty()) {
+                    return [
+                        'speaker_type_name' => $sessionSpeakerType->name,
+                        'text_color' => $sessionSpeakerType->text_color,
+                        'background_color' => $sessionSpeakerType->background_color,
+                        'speakers' => $categorizedSpeakers,
+                    ];
                 }
-            }
-
-            if (AttendeeFavoriteSession::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('session_id', $sessionId)->first()) {
-                $is_favorite = true;
-            } else {
-                $is_favorite = false;
-            }
-
-            $getSponsorLogoUrl = null;
-            if ($session->sponsor_id) {
-                $getSponsorLogoId = Sponsor::where('id', $session->sponsor_id)->value('logo_media_id');
-                $getSponsorLogoUrl = Media::where('id', $getSponsorLogoId)->value('file_url');
-            }
+                return null;
+            })->filter()->values();
 
             $data = [
                 'session_id' => $session->id,
@@ -428,59 +243,50 @@ class SessionController extends Controller
                 'session_week_day' => Carbon::parse($session->session_date)->format('l'),
                 'session_day' => $session->session_day,
                 'session_type' => $session->session_type,
-                'sponsored_by' => $getSponsorLogoUrl,
-                'is_favorite' => $is_favorite,
+                'sponsored_by' => $session->sponsor->logo->file_url ?? null,
+                'is_favorite' => AttendeeFavoriteSession::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('session_id', $sessionId)->exists(),
                 'favorite_count' => AttendeeFavoriteSession::where('event_id', $eventId)->where('session_id', $sessionId)->count(),
                 'sessionSpeakerCategorized' => $sessionSpeakerCategorized,
             ];
 
             return $this->success($data, "Session details", 200);
-        } else {
-            return $this->error(null, "Session doesn't exist", 404);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the session details", 500);
         }
     }
 
 
     public function apiEventSessionMarkAsFavorite(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $request->validate([
-            'sessionId' => 'required',
+        $validator = Validator::make($request->all(), [
+            'attendeeId' => 'required|exists:attendees,id',
+            'sessionId' => 'required|exists:sessions,id',
             'isFavorite' => 'required|boolean',
         ]);
 
-        if (Session::find($request->sessionId)) {
-            try {
-                $favorite = AttendeeFavoriteSession::where('event_id', $eventId)
-                    ->where('attendee_id', $attendeeId)
-                    ->where('session_id', $request->sessionId)
-                    ->first();
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
 
-                if ($request->isFavorite) {
-                    if (!$favorite) {
-                        AttendeeFavoriteSession::create([
-                            'event_id' => $eventId,
-                            'attendee_id' => $attendeeId,
-                            'session_id' => $request->sessionId,
-                        ]);
-                    }
-                } else {
-                    if ($favorite) {
-                        $favorite->delete();
-                    }
+        try {
+            $favorite = AttendeeFavoriteSession::where('event_id', $eventId)->where('attendee_id', $request->attendeeId)->where('session_id', $request->sessionId)->first();
+
+            if ($request->isFavorite) {
+                if (!$favorite) {
+                    AttendeeFavoriteSession::create([
+                        'event_id' => $eventId,
+                        'attendee_id' => $request->attendeeId,
+                        'session_id' => $request->sessionId,
+                    ]);
                 }
-
-                $data = [
-                    'favorite_count' => AttendeeFavoriteSession::where('event_id', $eventId)
-                        ->where('session_id', $request->sessionId)
-                        ->count(),
-                ];
-
-                return $this->success($data, "Session favorite status updated successfully", 200);
-            } catch (\Exception $e) {
-                return $this->error(null, "An error occurred while updating the favorite status", 500);
+            } else {
+                if ($favorite) {
+                    $favorite->delete();
+                }
             }
-        } else {
-            return $this->error(null, "Session doesn't exist", 404);
+            return $this->success(null, "Session favorite status updated successfully", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while updating the favorite status", 500);
         }
     }
 }

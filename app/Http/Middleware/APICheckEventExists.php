@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Traits\HttpResponses;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class APICheckEventExists
 {
@@ -19,15 +20,15 @@ class APICheckEventExists
      */
     public function handle(Request $request, Closure $next)
     {
-        $eventId = $request->route('eventId'); 
+        $eventId = (int) $request->route('eventId');
         $eventCategory = $request->route('eventCategory');
 
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
+        $event = Event::where('id', $eventId)->where('category', $eventCategory)->where('is_visible_in_the_app', true)->exists();
 
-        if ($event == null) {
+        if (!$event) {
+            Log::warning("Event not found with ID $eventId and category $eventCategory");
             return $this->error(null, "Event doesn't exist", 404);
-        } else{
-            return $next($request);
         }
+        return $next($request);
     }
 }

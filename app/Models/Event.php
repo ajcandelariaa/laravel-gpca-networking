@@ -24,7 +24,7 @@ class Event extends Model
         'event_logo_media_id',
         'event_logo_inverted_media_id',
         'app_sponsor_logo_media_id',
-        
+
         'event_splash_screen_media_id',
         'event_banner_media_id',
         'app_sponsor_banner_media_id',
@@ -52,4 +52,34 @@ class Event extends Model
         'is_visible_in_the_app',
         'is_accessible_in_the_app',
     ];
+
+    public function eventLogo()
+    {
+        return $this->belongsTo(Media::class, 'event_logo_media_id');
+    }
+
+    public function eventLogoInverted()
+    {
+        return $this->belongsTo(Media::class, 'event_logo_inverted_media_id');
+    }
+
+    public function appSponsorLogo()
+    {
+        return $this->belongsTo(Media::class, 'app_sponsor_logo_media_id');
+    }
+
+    public function eventSplashScreen()
+    {
+        return $this->belongsTo(Media::class, 'event_splash_screen_media_id');
+    }
+
+    public function eventBanner()
+    {
+        return $this->belongsTo(Media::class, 'event_banner_media_id');
+    }
+
+    public function appSponsorBanner()
+    {
+        return $this->belongsTo(Media::class, 'app_sponsor_banner_media_id');
+    }
 }

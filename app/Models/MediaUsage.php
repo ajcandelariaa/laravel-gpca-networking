@@ -10,7 +10,6 @@ class MediaUsage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id',
         'media_id',
         'entity_type',
         'entity_id',

@@ -10,12 +10,14 @@ use App\Models\MeetingRoomPartner;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class MeetingRoomPartnerController extends Controller
 {
     use HttpResponses;
 
-    public function eventMeetingRoomPartnersView($eventCategory, $eventId){
+    public function eventMeetingRoomPartnersView($eventCategory, $eventId)
+    {
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
 
         return view('admin.event.meeting-room-partners.meeting_room_partners', [
@@ -26,11 +28,12 @@ class MeetingRoomPartnerController extends Controller
         ]);
     }
 
-    public function eventMeetingRoomPartnerView($eventCategory, $eventId, $meetingRoomPartnerId){
+    public function eventMeetingRoomPartnerView($eventCategory, $eventId, $meetingRoomPartnerId)
+    {
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
         $meetingRoomPartner = MeetingRoomPartner::where('id', $meetingRoomPartnerId)->first();
 
-        if($meetingRoomPartner){
+        if ($meetingRoomPartner) {
             $meetingRoomPartnerData = [
                 "meetingRoomPartnerId" => $meetingRoomPartner->id,
 
@@ -63,7 +66,7 @@ class MeetingRoomPartnerController extends Controller
                 "is_active" => $meetingRoomPartner->is_active,
                 "datetime_added" => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
             ];
-            
+
             return view('admin.event.meeting-room-partners.meeting_room_partner', [
                 "pageTitle" => "Meeting Room Partner",
                 "eventName" => $event->full_name,
@@ -72,7 +75,7 @@ class MeetingRoomPartnerController extends Controller
                 "meetingRoomPartnerData" => $meetingRoomPartnerData,
             ]);
         } else {
-            abort(404, 'Data not found'); 
+            abort(404, 'Data not found');
         }
     }
 
@@ -82,99 +85,71 @@ class MeetingRoomPartnerController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
-    public function apiEventMeetingRoomPartners($apiCode, $eventCategory, $eventId, $attendeeId)
+    public function apiEventMeetingRoomPartnerDetail($apiCode, $eventCategory, $eventId, $attendeeId, $meetingRoomPartnerId)
     {
-        $meetingRoomPartners = MeetingRoomPartner::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+        try {
+            $meetingRoomPartner = MeetingRoomPartner::with('logo')->where('id', $meetingRoomPartnerId)->where('event_id', $eventId)->where('is_active', true)->first();
 
-        if ($meetingRoomPartners->isEmpty()) {
-            return $this->success(null, "There are no meeting room partner yet", 200);
-        } else {
-            $data = array();
-            foreach ($meetingRoomPartners as $meetingRoomPartner) {
-                array_push($data, [
-                    'id' => $meetingRoomPartner->id,
-                    'name' => $meetingRoomPartner->name,
-                    'location' => $meetingRoomPartner->location,
-                    'logo' => Media::where('id', $meetingRoomPartner->logo_media_id)->value('file_url'),
-                ]);
-            }
-            return $this->success($data, "Meeting room partner list", 200);
-        }
-    }
-
-    public function apiEventMeetingRoomPartnerDetail($apiCode, $eventCategory, $eventId, $attendeeId, $meetingRoomPartnerId){
-        $meetingRoomPartner = MeetingRoomPartner::where('id', $meetingRoomPartnerId)->where('event_id', $eventId)->where('is_active', true)->first();
-
-        if($meetingRoomPartner){
-            if (AttendeeFavoriteMrp::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('meeting_room_partner_id', $meetingRoomPartnerId)->first()) {
-                $is_favorite = true;
-            } else {
-                $is_favorite = false;
+            if (!$meetingRoomPartner) {
+                return $this->error(null, "Meeting room partner doesn't exist", 404);
             }
 
             $data = [
                 'meeting_room_partner_id' => $meetingRoomPartner->id,
-                'logo' => Media::where('id', $meetingRoomPartner->logo_media_id)->value('file_url'),
+                'logo' => $meetingRoomPartner->logo->file_url ?? null,
                 'name' => $meetingRoomPartner->name,
                 'location' => $meetingRoomPartner->location,
                 'profile_html_text' => $meetingRoomPartner->profile_html_text,
                 'country' => $meetingRoomPartner->country,
+                'contact_person_name' => $meetingRoomPartner->contact_person_name,
+                'email_address' => $meetingRoomPartner->email_address,
+                'mobile_number' => $meetingRoomPartner->mobile_number,
                 'website' => $meetingRoomPartner->website,
                 'facebook' => $meetingRoomPartner->facebook,
                 'linkedin' => $meetingRoomPartner->linkedin,
                 'twitter' => $meetingRoomPartner->twitter,
                 'instagram' => $meetingRoomPartner->instagram,
-                'is_favorite' => $is_favorite,
+                'is_favorite' => AttendeeFavoriteMrp::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('meeting_room_partner_id', $meetingRoomPartnerId)->exists(),
                 'favorite_count' => AttendeeFavoriteMrp::where('event_id', $eventId)->where('meeting_room_partner_id', $meetingRoomPartnerId)->count(),
             ];
-
             return $this->success($data, "Meeting room partner details", 200);
-        } else {
-            return $this->success(null, "Meeting room partner doesn't exist", 404);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the meeting room partner details", 500);
         }
     }
 
 
     public function apiEventMeetingRoomPartnerMarkAsFavorite(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
-        $request->validate([
-            'meetingRoomPartnerId' => 'required', 
+        $validator = Validator::make($request->all(), [
+            'attendeeId' => 'required|exists:attendees,id',
+            'meetingRoomPartnerId' => 'required|exists:meeting_room_partners,id',
             'isFavorite' => 'required|boolean',
         ]);
 
-        if(MeetingRoomPartner::find($request->meetingRoomPartnerId)){
-            try {
-                $favorite = AttendeeFavoriteMrp::where('event_id', $eventId)
-                ->where('attendee_id', $attendeeId)
-                ->where('meeting_room_partner_id', $request->meetingRoomPartnerId)
-                ->first();
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
 
-                if ($request->isFavorite) {
-                    if (!$favorite) {
-                        AttendeeFavoriteMrp::create([
-                            'event_id' => $eventId,
-                            'attendee_id' => $attendeeId,
-                            'meeting_room_partner_id' => $request->meetingRoomPartnerId,
-                        ]);
-                    }
-                } else {
-                    if ($favorite) {
-                        $favorite->delete();
-                    }
+        try {
+            $favorite = AttendeeFavoriteMrp::where('event_id', $eventId)->where('attendee_id', $request->attendeeId)->where('meeting_room_partner_id', $request->meetingRoomPartnerId)->first();
+
+            if ($request->isFavorite) {
+                if (!$favorite) {
+                    AttendeeFavoriteMrp::create([
+                        'event_id' => $eventId,
+                        'attendee_id' => $request->attendeeId,
+                        'meeting_room_partner_id' => $request->meetingRoomPartnerId,
+                    ]);
                 }
-        
-                $data = [
-                    'favorite_count' => AttendeeFavoriteMrp::where('event_id', $eventId)
-                        ->where('meeting_room_partner_id', $request->meetingRoomPartnerId)
-                        ->count(),
-                ];
-        
-                return $this->success($data, "Meeting Room Partner favorite status updated successfully", 200);
-            } catch (\Exception $e) {
-                return $this->error(null, "An error occurred while updating the favorite status", 500);
+            } else {
+                if ($favorite) {
+                    $favorite->delete();
+                }
             }
-        } else {
-            return $this->error(null, "Meeting Room Partner doesn't exist", 404);
+            return $this->success(null, "Meeting Room Partner favorite status updated successfully", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while updating the favorite status", 500);
         }
     }
 }
