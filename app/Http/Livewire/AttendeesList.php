@@ -202,7 +202,7 @@ class AttendeesList extends Component
             'password' => $randomPassword,
         ];
 
-        Mail::to($this->email_address)->cc(config('app.ccEmailNotif.test'))->send(new NewAttendee($details));
+        Mail::to($this->email_address)->cc(config('app.ccEmailNotif.test'))->queue(new NewAttendee($details));
 
         array_push($this->finalListOfAttendees, [
             'id' => $newAttendee->id,
