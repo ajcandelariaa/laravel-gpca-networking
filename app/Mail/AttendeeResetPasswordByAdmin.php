@@ -34,7 +34,7 @@ class AttendeeResetPasswordByAdmin extends Mailable implements ShouldQueue
     public function envelope()
     {
         return new Envelope(
-            from: new Address('forumregistration@gpca.org.ae', 'GPCA Networking App'),
+            from: new Address('networking@gpca.org.ae', 'GPCA Networking'),
             subject: $this->details['subject'],
         );
     }

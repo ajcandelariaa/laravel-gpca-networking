@@ -36,7 +36,7 @@ class NewAttendee extends Mailable implements ShouldQueue
         $subject = $this->details['subject'];
 
         return new Envelope(
-            from: new Address('forumregistration@gpca.org.ae', 'GPCA Networking App'),
+            from: new Address('networking@gpca.org.ae', 'GPCA Networking'),
             subject: $subject,
         );
     }
