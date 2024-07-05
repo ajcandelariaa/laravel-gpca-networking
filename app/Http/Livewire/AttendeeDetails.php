@@ -322,7 +322,7 @@ class AttendeeDetails extends Component
             'newPassword' => $this->newPassword,
         ];
 
-        Mail::to($this->attendeeData['email_address'])->cc(config('app.ccEmailNotif.test'))->queue(new AttendeeResetPasswordByAdmin($details));
+        Mail::to($this->attendeeData['email_address'])->cc(config('app.ccEmailNotif.test'))->send(new AttendeeResetPasswordByAdmin($details));
 
         array_push($this->attendeeData['attendeePasswordResetDetails'], Carbon::parse(Carbon::now())->format('M j, Y g:i A'));
 
