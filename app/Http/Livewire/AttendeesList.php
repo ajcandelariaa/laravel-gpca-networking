@@ -190,16 +190,19 @@ class AttendeesList extends Component
         $eventFormattedDate = Carbon::parse($this->event->event_start_date)->format('d') . '-' . Carbon::parse($this->event->event_end_date)->format('d M Y');
         
         $details = [
-            'subject' => 'Welcome to ' . $this->event->name . ' - Your Access Details for GPCA Networking',
+            'subject' => 'Welcome to ' . $this->event->full_name . ' - Your Access Details for GPCA Networking',
+            'eventCategory' => $this->event->category,
+            'eventYear' => $this->event->year,
+
             'name' => $this->first_name . ' ' . $this->last_name,
-            'eventName' => $this->event->name,
+            'eventName' => $this->event->full_name,
             'eventDate' => $eventFormattedDate,
             'eventLocation' => $this->event->location,
             'username' => $this->username,
             'password' => $randomPassword,
         ];
 
-        //Mail::to($this->email_address)->cc(config('app.ccEmailNotif.test'))->send(new NewAttendee($details));
+        Mail::to($this->email_address)->cc(config('app.ccEmailNotif.test'))->queue(new NewAttendee($details));
 
         array_push($this->finalListOfAttendees, [
             'id' => $newAttendee->id,

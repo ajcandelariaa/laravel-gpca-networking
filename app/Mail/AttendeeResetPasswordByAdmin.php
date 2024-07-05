@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Address;
 
-class AttendeeResetPasswordByAdmin extends Mailable
+class AttendeeResetPasswordByAdmin extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -33,11 +33,9 @@ class AttendeeResetPasswordByAdmin extends Mailable
      */
     public function envelope()
     {
-        $subject = 'Password reset for ' . $this->details['eventName'];
-
         return new Envelope(
             from: new Address('forumregistration@gpca.org.ae', 'GPCA Networking App'),
-            subject: $subject,
+            subject: $this->details['subject'],
         );
     }
 

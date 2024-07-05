@@ -66,8 +66,13 @@ p {
     text-align: left;
 }
 
-p.sub {
-    font-size: 12px;
+p.normal{
+    font-size: 14px;
+    color: #000000;
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 16px;
+    text-align: left;
 }
 
 img {
@@ -301,4 +306,18 @@ img {
 
 .break-all {
     word-break: break-all;
+}
+
+.list {
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+.list li{
+    color: #000000;
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 16px;
+    text-align: left;
 }
