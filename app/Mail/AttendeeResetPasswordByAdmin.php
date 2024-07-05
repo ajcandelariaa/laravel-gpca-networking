@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Address;
 
-class AttendeeResetPasswordByAdmin extends Mailable implements ShouldQueue
+class AttendeeResetPasswordByAdmin extends Mailable
 {
     use Queueable, SerializesModels;
 
