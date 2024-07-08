@@ -8,7 +8,6 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Mail\Mailables\Address;
 
 class AttendeeResetPasswordByAdmin extends Mailable
 {
@@ -34,7 +33,6 @@ class AttendeeResetPasswordByAdmin extends Mailable
     public function envelope()
     {
         return new Envelope(
-            from: new Address('networking@gpca.org.ae', 'GPCA Networking'),
             subject: $this->details['subject'],
         );
     }

@@ -28,6 +28,9 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
         Route::group(['middleware' => 'api.check.event.exists'], function () {
             Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
                 Route::post('/login', [AttendeesController::class, 'apiAttendeeLogin']);
+                Route::post('/forgot-password/send-otp', [AttendeesController::class, 'apiForgotPasswordSendOtp']);
+                Route::post('/forgot-password/verify-otp', [AttendeesController::class, 'apiForgotPasswordVerifyOtp']);
+                Route::post('/forgot-password/reset', [AttendeesController::class, 'apiForgotPasswordReset']);
 
                 Route::middleware("auth:sanctum")->group(function () {
                     Route::group(['middleware' => 'api.check.attendee.exists'], function () {

@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Enums\FileUploadDirectory;
 use App\Enums\MediaEntityTypes;
 use App\Enums\PassTypes;
+use App\Enums\PasswordChangedBy;
+use App\Mail\AttendeeResetPassword;
+use App\Mail\EmailChanged;
+use App\Mail\ForgotPasswordOtp;
+use App\Mail\UsernameChanged;
 use App\Models\Attendee;
 use App\Models\AttendeeFavoriteExhibitor;
 use App\Models\AttendeeFavoriteMp;
@@ -14,11 +19,14 @@ use App\Models\AttendeeFavoriteSpeaker;
 use App\Models\AttendeeFavoriteSponsor;
 use App\Models\AttendeePasswordReset;
 use App\Models\Event;
+use App\Models\ForgotPasswordReset;
 use App\Models\Media;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -47,9 +55,13 @@ class AttendeesController extends Controller
         $passwordResetDetails = [];
         $attendeeResets = AttendeePasswordReset::where('attendee_id', $attendee->id)->get();
 
+
         if ($attendeeResets->isNotEmpty()) {
             foreach ($attendeeResets as $attendeeReset) {
-                array_push($passwordResetDetails, Carbon::parse($attendeeReset->password_changed_date_time)->format('M j, Y g:i A'));
+                array_push($passwordResetDetails, [
+                    'changed_by' => $attendeeReset->password_changed_by,
+                    'datetime' => Carbon::parse($attendeeReset->password_changed_date_time)->format('M j, Y g:i A'),
+                ]);
             }
         }
 
@@ -153,6 +165,133 @@ class AttendeesController extends Controller
             return $this->success(['token' => $tokenResult->plainTextToken, 'expires_at' => $expiresAt, 'attendeeId' => $attendee->id], "Logged in successfully", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while logging in", 500);
+        }
+    }
+
+    public function apiForgotPasswordSendOtp(Request $request, $apiCode, $eventCategory, $eventId)
+    {
+        $validator = Validator::make($request->all(), [
+            'email_address' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        try {
+            $attendee = Attendee::with('event')->where('email_address', $request->email_address)->first();
+            
+            if(!$attendee){
+                return $this->error(null, "Email address doesn't exist", 404);
+            }
+
+            $otp = generateOTP();
+
+            ForgotPasswordReset::create([
+                'attendee_id' => $attendee->id,
+                'email_address' => $request->email_address,
+                'otp' => Hash::make($otp),
+                'expires_at' => Carbon::now()->addMinutes(10),
+            ]);
+
+            $details = [
+                'subject' => 'Your password reset OTP for ' . $attendee->event->full_name,
+                'eventCategory' => $attendee->event->category,
+                'eventYear' => $attendee->event->year,
+
+                'name' => $attendee->first_name . ' ' . $attendee->last_name,
+                'eventName' => $attendee->event->full_name,
+                'otp' => $otp,
+            ];
+
+            Mail::to($request->email_address)->send(new ForgotPasswordOtp($details));
+
+            return $this->success(null, "OTP sent successfully", 200);
+        } catch (\Exception $e){
+            return $this->error($e, "An error occurred while sending the OTP", 500);
+        }
+    }
+
+    public function apiForgotPasswordVerifyOtp(Request $request, $apiCode, $eventCategory, $eventId)
+    {
+        $validator = Validator::make($request->all(), [
+            'email_address' => 'required|email',
+            'otp' => 'required|digits:6',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        try {
+            $checkOtp = ForgotPasswordReset::where('email_address', $request->email_address)->where('is_used', false)->where('expires_at', '>', Carbon::now())->first();
+            
+            if(!$checkOtp || !Hash::check($request->otp, $checkOtp->otp)){
+                return $this->error(null, "Invalid or expired OTP", 400);
+            }
+
+            $checkOtp->update(['is_used' => true]);
+
+            return $this->success(['attendee_id' => $checkOtp->attendee_id, 'otp_id' => $checkOtp->id], "OTP verified", 200);
+        } catch (\Exception $e){
+            return $this->error($e, "An error occurred while verifying the otp", 500);
+        }
+    }
+
+    public function apiForgotPasswordReset(Request $request, $apiCode, $eventCategory, $eventId){
+        $validator = Validator::make($request->all(), [
+            'attendee_id' => 'required|exists:attendees,id',
+            'otp_id' => 'required|exists:forgot_password_resets,id',
+            'password' => 'required|min:8',
+            'confirm_password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        try {
+            if ($request->password != $request->confirm_password) {
+                return $this->error(null, "Password and Confirm password do not match", 409);
+            }
+
+            $resetRecord = ForgotPasswordReset::where('id', $request->otp_id)->where('attendee_id', $request->attendee_id)->where('is_password_changed', false)->first();
+            
+            if (!$resetRecord) {
+                return $this->error(null, "Invalid OTP or password already changed", 400);
+            }
+
+            Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            AttendeePasswordReset::create([
+                'event_id' => $eventId,
+                'attendee_id' => $request->attendee_id,
+                'password_changed_by' => PasswordChangedBy::ATTENDEE->value,
+                'password_changed_date_time' => Carbon::now(),
+            ]);
+
+            ForgotPasswordReset::where('id', $request->otp_id)->update([
+                'is_password_changed' => true,
+            ]);
+
+            $attendee = Attendee::with('event')->where('id', $request->attendee_id)->first();
+
+            $details = [
+                'subject' => 'Password reset for ' . $attendee->event->full_name,
+                'eventCategory' => $attendee->event->category,
+                'eventYear' => $attendee->event->year,
+
+                'name' => $attendee->first_name . ' ' . $attendee->last_name,
+                'eventName' => $attendee->event->full_name,
+            ];
+
+            Mail::to($attendee->email_address)->send(new AttendeeResetPassword($details));
+
+            return $this->success(null, "Password reset successfully", 200);
+        } catch (\Exception $e){
+            return $this->error($e, "An error occurred while resetting password", 500);
         }
     }
 
@@ -295,20 +434,51 @@ class AttendeesController extends Controller
         }
 
         try {
-            $attendeePassword = Attendee::where('id', $request->attendee_id)->value('password');
-            if (Hash::check($request->password, $attendeePassword)) {
-                if (checkAttendeeEmailIfExistsInDatabase($request->attendee_id, $eventId, $request->email_address)) {
-                    return $this->error(null, "Email is already registered, please use another email!", 409);
+            $attendee = Attendee::with('event')->where('id', $request->attendee_id)->first();
+            if (Hash::check($request->password, $attendee->password)) {
+                if ($attendee->email_address != $request->email_address) {
+                    if (checkAttendeeEmailIfExistsInDatabase($request->attendee_id, $eventId, $request->email_address)) {
+                        return $this->error(null, "Email is already registered, please use another email!", 409);
+                    }
+
+                    Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
+                        'email_address' => $request->email_address,
+                    ]);
+
+                    $details = [
+                        'subject' => 'Your email address has been successfully changed for ' . $attendee->event->full_name,
+                        'eventCategory' => $attendee->event->category,
+                        'eventYear' => $attendee->event->year,
+
+                        'name' => $attendee->first_name . ' ' . $attendee->last_name,
+                        'eventName' => $attendee->event->full_name,
+                        'new_email_address' => $request->email_address,
+                    ];
+
+                    Mail::to($request->email_address)->send(new EmailChanged($details));
                 }
 
-                if (checkAttendeeUsernameIfExistsInDatabase($request->attendee_id, $eventId, $request->username)) {
-                    return $this->error(null, "Username is already registered, please use another username!", 409);
-                }
+                if ($attendee->username != $request->username) {
+                    if (checkAttendeeUsernameIfExistsInDatabase($request->attendee_id, $eventId, $request->username)) {
+                        return $this->error(null, "Username is already registered, please use another username!", 409);
+                    }
 
-                Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
-                    'username' => $request->username,
-                    'email_address' => $request->email_address,
-                ]);
+                    Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->update([
+                        'username' => $request->username,
+                    ]);
+
+                    $details = [
+                        'subject' => 'Your username has been successfully changed for ' . $attendee->event->full_name,
+                        'eventCategory' => $attendee->event->category,
+                        'eventYear' => $attendee->event->year,
+
+                        'name' => $attendee->first_name . ' ' . $attendee->last_name,
+                        'eventName' => $attendee->event->full_name,
+                        'new_username' => $request->username,
+                    ];
+
+                    Mail::to($request->email_address)->send(new UsernameChanged($details));
+                }
 
                 return $this->success(null, "Attendee Username/Email address updated successfully", 200);
             } else {
@@ -352,8 +522,22 @@ class AttendeesController extends Controller
             AttendeePasswordReset::create([
                 'event_id' => $eventId,
                 'attendee_id' => $request->attendee_id,
+                'password_changed_by' => PasswordChangedBy::ATTENDEE->value,
                 'password_changed_date_time' => Carbon::now(),
             ]);
+
+            $attendee = Attendee::with('event')->where('id', $request->attendee_id)->first();
+
+            $details = [
+                'subject' => 'Password reset for ' . $attendee->event->full_name,
+                'eventCategory' => $attendee->event->category,
+                'eventYear' => $attendee->event->year,
+
+                'name' => $attendee->first_name . ' ' . $attendee->last_name,
+                'eventName' => $attendee->event->full_name,
+            ];
+
+            Mail::to($attendee->email_address)->send(new AttendeeResetPassword($details));
 
             return $this->success(null, "Attendee password updated successfully", 200);
         } catch (\Exception $e) {

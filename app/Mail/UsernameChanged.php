@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class NewAttendee extends Mailable
+class UsernameChanged extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -45,7 +45,7 @@ class NewAttendee extends Mailable
     public function content()
     {
         return new Content(
-            markdown: 'emails.new-attendee-mail',
+            markdown: 'emails.username-changed-mail',
         );
     }
 

@@ -142,3 +142,13 @@ if (!function_exists('getMimeTypeByExtension')) {
         return $mimeTypes[strtolower($extension)] ?? 'application/octet-stream';
     }
 }
+
+
+
+if (!function_exists('generateOTP')) {
+    function generateOTP()
+    {
+        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        return $otp;
+    }
+}

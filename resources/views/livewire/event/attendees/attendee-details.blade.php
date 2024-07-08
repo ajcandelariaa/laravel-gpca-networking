@@ -186,8 +186,9 @@
                 <p class="text-xl font-semibold text-primaryColor">Password resets</p>
                 <div class="shadow-lg my-5 bg-white rounded-md w-1/2">
                     <div
-                        class="grid grid-cols-2 pt-2 pb-2 mt-3 text-center items-center gap-10 text-sm text-white bg-primaryColor rounded-tl-md rounded-tr-md">
+                        class="grid grid-cols-3 pt-2 pb-2 mt-3 text-center items-center gap-10 text-sm text-white bg-primaryColor rounded-tl-md rounded-tr-md">
                         <div class="col-span-1">No.</div>
+                        <div class="col-span-1">Changed by</div>
                         <div class="col-span-1">Date</div>
                     </div>
 
@@ -198,9 +199,10 @@
                     @else
                         @foreach ($attendeeData['attendeePasswordResetDetails'] as $index => $passwordResetDetail)
                             <div
-                                class="grid grid-cols-2 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
+                                class="grid grid-cols-3 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
                                 <div class="col-span-1">{{ $index + 1 }}</div>
-                                <div class="col-span-1">{{ $passwordResetDetail }}</div>
+                                <div class="col-span-1">{{ $passwordResetDetail['changed_by'] }}</div>
+                                <div class="col-span-1">{{ $passwordResetDetail['datetime'] }}</div>
                             </div>
                         @endforeach
                     @endif

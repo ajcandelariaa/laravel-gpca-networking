@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Enums\MediaEntityTypes;
 use App\Enums\MediaUsageUpdateTypes;
+use App\Enums\PasswordChangedBy;
 use App\Mail\AttendeeResetPasswordByAdmin;
 use Livewire\Component;
 use App\Models\Event as Events;
@@ -322,9 +323,12 @@ class AttendeeDetails extends Component
             'newPassword' => $this->newPassword,
         ];
 
-        Mail::to($this->attendeeData['email_address'])->cc(config('app.ccEmailNotif.test'))->send(new AttendeeResetPasswordByAdmin($details));
+        Mail::to($this->attendeeData['email_address'])->send(new AttendeeResetPasswordByAdmin($details));
 
-        array_push($this->attendeeData['attendeePasswordResetDetails'], Carbon::parse(Carbon::now())->format('M j, Y g:i A'));
+        array_push($this->attendeeData['attendeePasswordResetDetails'], [
+            'changed_by' => PasswordChangedBy::ADMIN->value,
+            'datetime' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
+        ]);
 
         $this->resetResetPasswordAttendeeFields();
 

@@ -12,6 +12,7 @@ class AttendeePasswordReset extends Model
     protected $fillable = [
         'event_id',
         'attendee_id',
+        'password_changed_by',
         'password_changed_date_time',
     ];
 }
