@@ -7,18 +7,18 @@
                     There are no files yet.
                 </div>
             @else
-                <div class="grid grid-cols-5 gap-4">
+                <div class="grid grid-cols-8 gap-4">
                     @foreach ($mediaFileList as $mediaFileIndex => $mediaFile)
                         @if (str_starts_with($mediaFile['file_type'], 'image/'))
                             @if ($activeSelectedImage == $mediaFile)
                                 <div class="col-span-1 flex items-center justify-center border border-primaryColor bg-gray-100 cursor-pointer hover:border-1"
                                     wire:click.prevent="unshowMediaFileDetails">
-                                    <img src="{{ $mediaFile['file_url'] }}" class="w-full h-auto object-cover p-2">
+                                    <img src="{{ $mediaFile['file_url'] }}" class="w-20 h-auto object-cover p-2">
                                 </div>
                             @else
                                 <div class="col-span-1 flex items-center justify-center border border-gray-300 bg-gray-100 cursor-pointer hover:border-1 hover:border-primaryColor"
                                     wire:click.prevent="showMediaFileDetails({{ $mediaFileIndex }})">
-                                    <img src="{{ $mediaFile['file_url'] }}" class="w-full h-auto object-cover p-2">
+                                    <img src="{{ $mediaFile['file_url'] }}" class="w-20 h-auto object-cover p-2">
                                 </div>
                             @endif
                         @endif
