@@ -1,7 +1,7 @@
 <div class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center px-5 z-50">
-    <div class="bg-white rounded-lg shadow-lg w-full flex">
+    <div class="bg-white rounded-lg shadow-lg w-full grid grid-cols-12">
 
-        <div class="w-3/4 p-4 overflow-auto">
+        <div class="col-span-9 p-4 overflow-scroll">
             @if (count($mediaFileList) == 0)
                 <div class="bg-red-400 text-white text-center py-3 mt-5 rounded-md">
                     There are no files yet.
@@ -27,7 +27,7 @@
             @endif
         </div>
 
-        <div class="w-1/4 p-4 border-l border-gray-200 flex flex-col justify-between">
+        <div class="col-span-3 p-4 border-l border-gray-200 flex flex-col justify-between">
             <div>
                 <h2 class="text-lg font-bold mb-4">Image Details</h2>
                 @if ($activeSelectedImage != null)
