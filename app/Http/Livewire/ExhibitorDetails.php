@@ -8,7 +8,6 @@ use Livewire\Component;
 use App\Models\Event as Events;
 use App\Models\Exhibitor as Exhibitors;
 use App\Models\Media as Medias;
-use Illuminate\Support\Str;
 
 class ExhibitorDetails extends Component
 {
@@ -263,5 +262,49 @@ class ExhibitorDetails extends Component
             'message' => 'Exhibitor details updated succesfully!',
             'text' => "",
         ]);
+    }
+
+
+
+    // DELETE ASSET
+    public function deleteExhibitorAsset($deleteAssetType)
+    {
+        if ($deleteAssetType == "Exhibitor logo") {
+            Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
+                'logo_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->exhibitorData['logo']['media_id'],
+                MediaEntityTypes::EXHIBITOR_LOGO->value,
+                $this->exhibitorData['exhibitorId'],
+                $this->exhibitorData['logo']['media_usage_id']
+            );
+
+            $this->exhibitorData['logo'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        } else {
+            Exhibitors::where('id', $this->exhibitorData['exhibitorId'])->update([
+                'banner_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->exhibitorData['banner']['media_id'],
+                MediaEntityTypes::EXHIBITOR_BANNER->value,
+                $this->exhibitorData['exhibitorId'],
+                $this->exhibitorData['banner']['media_usage_id']
+            );
+
+            $this->exhibitorData['banner'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        }
     }
 }

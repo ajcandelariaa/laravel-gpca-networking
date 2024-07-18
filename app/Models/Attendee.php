@@ -58,7 +58,7 @@ class Attendee extends Model
     protected $hidden = [
         'password',
     ];
-
+    
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');
@@ -67,5 +67,9 @@ class Attendee extends Model
     public function pfp()
     {
         return $this->belongsTo(Media::class, 'pfp_media_id');
+    }
+
+    public function passwordResets(){
+        return $this->hasMany(AttendeePasswordReset::class, 'attendee_id');
     }
 }

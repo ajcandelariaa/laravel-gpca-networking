@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\MediaEntityTypes;
 use App\Models\Event;
 use App\Models\Feature;
-use App\Models\Media as Medias;
 use Carbon\Carbon;
 
 class FeatureController extends Controller
@@ -23,8 +22,7 @@ class FeatureController extends Controller
 
     public function eventFeatureView($eventCategory, $eventId, $featureId)
     {
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        $feature = Feature::where('id', $featureId)->first();
+        $feature = Feature::with(['event', 'logo', 'banner'])->where('id', $featureId)->first();
 
         if ($feature) {
             $formattedDate =  Carbon::parse($feature->start_date)->format('d M Y') . ' - ' . Carbon::parse($feature->end_date)->format('d M Y');
@@ -45,13 +43,13 @@ class FeatureController extends Controller
                 "featureSecondaryTextColor" => $feature->secondary_text_color,
                 "featureLogo" => [
                     'media_id' => $feature->logo_media_id,
-                    'media_usage_id' => getMediaUsageId($feature->logo_media_id, MediaEntityTypes::FEATURE_LOGO->value, $eventId),
-                    'url' => Medias::where('id', $feature->logo_media_id)->value('file_url'),
+                    'media_usage_id' => getMediaUsageId($feature->logo_media_id, MediaEntityTypes::FEATURE_LOGO->value, $feature->id),
+                    'url' => $feature->logo->file_url ?? null,
                 ],
                 "featureBanner" => [
                     'media_id' => $feature->banner_media_id,
-                    'media_usage_id' => getMediaUsageId($feature->banner_media_id, MediaEntityTypes::FEATURE_BANNER->value, $eventId),
-                    'url' => Medias::where('id', $feature->banner_media_id)->value('file_url'),
+                    'media_usage_id' => getMediaUsageId($feature->banner_media_id, MediaEntityTypes::FEATURE_BANNER->value, $feature->id),
+                    'url' => $feature->banner->file_url ?? null,
                 ],
                 "featureStatus" => $feature->is_active,
                 "featureDateTimeAdded" => Carbon::parse($feature->datetime_added)->format('M j, Y g:i A'),
@@ -59,7 +57,7 @@ class FeatureController extends Controller
 
             return view('admin.event.features.feature', [
                 "pageTitle" => "Feature",
-                "eventName" => $event->full_name,
+                "eventName" => $feature->event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "featureData" => $featureData,

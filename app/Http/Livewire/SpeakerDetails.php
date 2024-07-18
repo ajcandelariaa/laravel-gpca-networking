@@ -9,9 +9,7 @@ use App\Models\Speaker as Speakers;
 use App\Models\SpeakerType as SpeakerTypes;
 use App\Models\Feature as Features;
 use App\Models\Media as Medias;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
-use Illuminate\Support\Str;
 
 class SpeakerDetails extends Component
 {
@@ -337,5 +335,51 @@ class SpeakerDetails extends Component
         $this->image_placeholder_text = null;
         $this->activeSelectedImage = null;
         $this->chooseImageModal = false;
+    }
+
+    
+
+
+
+    // DELETE ASSET
+    public function deleteSpeakerAsset($deleteAssetType)
+    {
+        if ($deleteAssetType == "Speaker PFP") {
+            Speakers::where('id', $this->speakerData['id'])->update([
+                'pfp_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->speakerData['pfp']['media_id'],
+                MediaEntityTypes::SPEAKER_PFP->value,
+                $this->speakerData['id'],
+                $this->speakerData['pfp']['media_usage_id']
+            );
+
+            $this->speakerData['pfp'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        } else {
+            Speakers::where('id', $this->speakerData['id'])->update([
+                'cover_photo_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->speakerData['cover_photo']['media_id'],
+                MediaEntityTypes::SPEAKER_COVER_PHOTO->value,
+                $this->speakerData['id'],
+                $this->speakerData['cover_photo']['media_usage_id']
+            );
+
+            $this->speakerData['cover_photo'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        }
     }
 }

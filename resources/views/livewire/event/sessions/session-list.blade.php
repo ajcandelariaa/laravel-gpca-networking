@@ -1,10 +1,19 @@
 <div>
     <h1 class="text-headingTextColor text-3xl font-bold">Session</h1>
 
-    <div class="flex justify-between mt-5">
+    <div class="flex gap-5 mt-5">
         <button type="button" wire:click.prevent="showAddSession" wire:key="showAddSession"
             class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
             session</button>
+        <button type="button" wire:click.prevent="showAddSessionDate" wire:key="showAddSessionDate"
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
+            session date</button>
+        <button type="button" wire:click.prevent="showAddSessionDay" wire:key="showAddSessionDay"
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
+            session day</button>
+        <button type="button" wire:click.prevent="showAddSessionType" wire:key="showAddSessionType"
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
+            session type</button>
     </div>
 
     @if (count($finalListOfSessions) == 0)
@@ -35,27 +44,41 @@
                     <div class="col-span-2">{{ $finalListOfSession['timings'] }}</div>
                     <div class="col-span-1">
                         @if ($finalListOfSession['is_active'])
-                            <button
-                                wire:click="updateSessionStatus({{ $index }})"
+                            <button wire:click="updateSessionStatus({{ $index }})"
                                 class="text-gray-700 bg-green-300 hover:bg-green-500 hover:text-white py-1 px-2 text-sm rounded-md">Active</button>
                         @else
-                            <button
-                                wire:click="updateSessionStatus({{ $index }})"
+                            <button wire:click="updateSessionStatus({{ $index }})"
                                 class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
                         @endif
                     </div>
-                    <div class="col-span-1">
-                        <a href="{{ route('admin.event.session.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'sessionId' => $finalListOfSession['id']]) }}" class="cursor-pointer hover:text-gray-600 text-gray-500">
-                            <i class="fa-solid fa-eye"></i> View
+                    <div class="col-span-1 flex gap-3 items-center justify-center">
+                        <a href="{{ route('admin.event.session.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'sessionId' => $finalListOfSession['id']]) }}"
+                            class="cursor-pointer hover:text-gray-600 text-gray-500">
+                            <i class="fa-solid fa-eye"></i> 
                         </a>
+                        <button wire:click="deleteSessionConfirmation({{ $index }})"
+                            class="cursor-pointer hover:text-red-600 text-red-500 text-sm ">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             @endforeach
         </div>
     @endif
 
-    
     @if ($addSessionForm)
         @include('livewire.event.sessions.add_session')
+    @endif
+
+    @if ($addSessionDateForm)
+        @include('livewire.event.sessions.add_session_date')
+    @endif
+
+    @if ($addSessionDayForm)
+        @include('livewire.event.sessions.add_session_day')
+    @endif
+
+    @if ($addSessionTypeForm)
+        @include('livewire.event.sessions.add_session_type')
     @endif
 </div>

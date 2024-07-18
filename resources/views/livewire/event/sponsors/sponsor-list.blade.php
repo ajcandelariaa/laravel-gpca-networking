@@ -62,19 +62,25 @@
                                 class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
                         @endif
                     </div>
-                    <div class="col-span-1">
+                    <div class="col-span-1 flex gap-3 items-center justify-center">
                         <a href="{{ route('admin.event.sponsor.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'sponsorId' => $finalListOfSponsor['id']]) }}"
                             class="cursor-pointer hover:text-gray-600 text-gray-500">
-                            <i class="fa-solid fa-eye"></i> View
+                            <i class="fa-solid fa-eye"></i>
                         </a>
+                        <button wire:click="deleteSponsorConfirmation({{ $index }})"
+                            class="cursor-pointer hover:text-red-600 text-red-500 text-sm ">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             @endforeach
         </div>
     @endif
 
-
-
+    @if ($chooseImageModal)
+        @include('livewire.common.choose_image_modal')
+    @endif
+    
     @if ($editSponsorDateTimeForm)
         @include('livewire.common.edit_datetime_form')
     @endif

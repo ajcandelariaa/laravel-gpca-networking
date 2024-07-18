@@ -65,6 +65,10 @@ return [
             'model' => App\Models\User::class,
         ],
 
+        'attendees' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Attendee::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

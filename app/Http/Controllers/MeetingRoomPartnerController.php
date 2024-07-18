@@ -30,8 +30,7 @@ class MeetingRoomPartnerController extends Controller
 
     public function eventMeetingRoomPartnerView($eventCategory, $eventId, $meetingRoomPartnerId)
     {
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        $meetingRoomPartner = MeetingRoomPartner::where('id', $meetingRoomPartnerId)->first();
+        $meetingRoomPartner = MeetingRoomPartner::with(['event', 'logo', 'banner'])->where('id', $meetingRoomPartnerId)->first();
 
         if ($meetingRoomPartner) {
             $meetingRoomPartnerData = [
@@ -44,12 +43,12 @@ class MeetingRoomPartnerController extends Controller
                 "logo" => [
                     'media_id' => $meetingRoomPartner->logo_media_id,
                     'media_usage_id' => getMediaUsageId($meetingRoomPartner->logo_media_id, MediaEntityTypes::MEETING_ROOM_PARTNER_LOGO->value, $meetingRoomPartner->id),
-                    'url' => Media::where('id', $meetingRoomPartner->logo_media_id)->value('file_url'),
+                    'url' => $meetingRoomPartner->logo->file_url ?? null,
                 ],
                 "banner" => [
                     'media_id' => $meetingRoomPartner->banner_media_id,
                     'media_usage_id' => getMediaUsageId($meetingRoomPartner->banner_media_id, MediaEntityTypes::MEETING_ROOM_PARTNER_BANNER->value, $meetingRoomPartner->id),
-                    'url' => Media::where('id', $meetingRoomPartner->banner_media_id)->value('file_url'),
+                    'url' => $meetingRoomPartner->banner->file_url ?? null,
                 ],
 
                 "country" => $meetingRoomPartner->country,
@@ -69,7 +68,7 @@ class MeetingRoomPartnerController extends Controller
 
             return view('admin.event.meeting-room-partners.meeting_room_partner', [
                 "pageTitle" => "Meeting Room Partner",
-                "eventName" => $event->full_name,
+                "eventName" => $meetingRoomPartner->event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "meetingRoomPartnerData" => $meetingRoomPartnerData,

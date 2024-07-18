@@ -261,4 +261,48 @@ class MediaPartnerDetails extends Component
             'text' => "",
         ]);
     }
+
+
+
+    // DELETE ASSET
+    public function deleteMediaPartnerAsset($deleteAssetType)
+    {
+        if ($deleteAssetType == "Media partner logo") {
+            MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
+                'logo_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->mediaPartnerData['logo']['media_id'],
+                MediaEntityTypes::MEDIA_PARTNER_LOGO->value,
+                $this->mediaPartnerData['mediaPartnerId'],
+                $this->mediaPartnerData['logo']['media_usage_id']
+            );
+
+            $this->mediaPartnerData['logo'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        } else {
+            MediaPartners::where('id', $this->mediaPartnerData['mediaPartnerId'])->update([
+                'banner_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->mediaPartnerData['banner']['media_id'],
+                MediaEntityTypes::MEDIA_PARTNER_BANNER->value,
+                $this->mediaPartnerData['mediaPartnerId'],
+                $this->mediaPartnerData['banner']['media_usage_id']
+            );
+
+            $this->mediaPartnerData['banner'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        }
+    }
 }

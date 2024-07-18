@@ -36,7 +36,7 @@ class Sponsor extends Model
 
     public function event()
     {
-        return $this->belongsTo(Media::class, 'event_id');
+        return $this->belongsTo(Event::class, 'event_id');
     }
 
     public function feature()

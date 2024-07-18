@@ -11,7 +11,6 @@ use App\Models\SessionSpeaker;
 use App\Models\SessionSpeakerType;
 use App\Models\Speaker;
 use App\Models\Sponsor;
-use App\Models\SponsorType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -35,16 +34,14 @@ class SessionController extends Controller
 
     public function eventSessionView($eventCategory, $eventId, $sessionId)
     {
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        $session = Session::where('id', $sessionId)->first();
+        $session = Session::with(['event', 'feature'])->where('id', $sessionId)->first();
 
         if ($session) {
             if ($session->feature_id == 0) {
-                $category = $event->short_name;
+                $category = $session->event->short_name;
             } else {
-                $feature = Feature::where('event_id', $event->id)->where('id', $session->feature_id)->first();
-                if ($feature) {
-                    $category = $feature->short_name;
+                if ($session->feature) {
+                    $category = $session->feature->short_name;
                 } else {
                     $category = "Others";
                 }
@@ -79,27 +76,20 @@ class SessionController extends Controller
                 'speakers' => array(),
             ]);
 
-            $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('session_id', $sessionId)->get();
+            $sessionSpeakers = SessionSpeaker::with('speaker.pfp')->where('event_id', $eventId)->where('session_id', $sessionId)->get();
             if ($sessionSpeakers->isNotEmpty()) {
                 foreach ($sessionSpeakers as $sessionSpeaker) {
 
                     foreach ($sessionSpeakerGroup as $sessionSpeakerGroupIndex => $group) {
                         if ($group['sessionSpeakerTypeId'] == $sessionSpeaker['session_speaker_type_id']) {
 
-                            $speaker = Speaker::where('event_id', $eventId)->where('id', $sessionSpeaker->speaker_id)->first();
-                            $speakerName = $speaker->salutation . ' ' . $speaker->first_name . ' ' . $speaker->middle_name . ' ' . $speaker->last_name;
-
-                            if ($speaker->pfp_media_id) {
-                                $speakerPFP = Media::where('id', $speaker->pfp_media_id)->value('file_url');
-                            } else {
-                                $speakerPFP = asset('assets/images/pfp-placeholder.jpg');
-                            }
+                            $speakerName = $sessionSpeaker->speaker->salutation . ' ' . $sessionSpeaker->speaker->first_name . ' ' . $sessionSpeaker->speaker->middle_name . ' ' . $sessionSpeaker->speaker->last_name;
 
                             $speakers = [
                                 'sessionSpeakerId' => $sessionSpeaker->id,
-                                'speakerId' => $speaker->id,
+                                'speakerId' => $sessionSpeaker->speaker->id,
                                 'speakerName' => $speakerName,
-                                'speakerPFP' => $speakerPFP,
+                                'speakerPFP' => $sessionSpeaker->speaker->pfp->file_url ?? null,
                             ];
 
                             array_push($sessionSpeakerGroup[$sessionSpeakerGroupIndex]['speakers'], $speakers);
@@ -117,10 +107,15 @@ class SessionController extends Controller
             }
 
             if ($session->sponsor_id) {
-                $sponsor = Sponsor::where('id', $session->sponsor_id)->where('event_id', $eventId)->where('is_active', true)->first();
-                $sponsorTypeName = SponsorType::where('id', $sponsor->sponsor_type_id)->value('name');
-                $sponsorName = $sponsor->name . ' - ' . $sponsorTypeName;
-                $sessionSponsorLogo = Media::where('id', $sponsor->logo_media_id)->value('file_url');
+                $sponsor = Sponsor::with(['sponsorType', 'logo'])->where('id', $session->sponsor_id)->where('event_id', $eventId)->where('is_active', true)->first();
+                if($sponsor){
+                    $sponsorTypeName = $sponsor->sponsorType->name ?? null;
+                    $sponsorName = $sponsor->name . ' - ' . $sponsorTypeName;
+                    $sessionSponsorLogo = $sponsor->logo->file_url ?? null;
+                } else {
+                    $sponsorName = null;
+                    $sessionSponsorLogo = null;
+                }
             } else {
                 $sponsorName = null;
                 $sessionSponsorLogo = null;
@@ -156,7 +151,7 @@ class SessionController extends Controller
 
             return view('admin.event.sessions.session', [
                 "pageTitle" => "Session",
-                "eventName" => $event->full_name,
+                "eventName" => $session->event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "sessionData" => $sessionData,

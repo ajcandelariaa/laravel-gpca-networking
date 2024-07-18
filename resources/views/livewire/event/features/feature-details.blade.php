@@ -19,45 +19,60 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 mt-5">
-            <p class="font-bold text-2xl">{{ $featureData['featureFullName'] }}</p>
-            <p>({{ $featureData['featureEdition'] ?? 'N/A' }} - {{ $featureData['featureShortName'] ?? 'N/A' }})</p>
+        <div class="flex gap-3 items-center mt-5">
+            <p class="font-bold text-primaryColor">Full name:</p>
+            <p>{{ $featureData['featureFullName'] }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3 text-primaryColor">
-            <i class="fa-solid fa-location-dot"></i>
+        <div class="flex gap-3 items-center">
+            <p class="font-bold text-primaryColor">Short name:</p>
+            <p>{{ $featureData['featureShortName'] ?? 'N/A' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center">
+            <p class="font-bold text-primaryColor">Edition:</p>
+            <p>{{ $featureData['featureEdition'] ?? 'N/A' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center">
+            <p class="font-bold text-primaryColor">Location:</p>
             <p>{{ $featureData['featureLocation'] ?? 'N/A' }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-2 text-primaryColor">
-            <i class="fa-solid fa-calendar-days"></i>
-            <p>{{ $featureData['featureFormattedDate'] }}
-            </p>
+        <div class="flex gap-3 items-center">
+            <p class="font-bold text-primaryColor">Date:</p>
+            <p>{{ $featureData['featureFormattedDate'] }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-2 text-primaryColor">
-            <i class="fa-solid fa-link"></i>
+        <div class="flex gap-3 items-center">
+            <p class="font-bold text-primaryColor">Link:</p>
             <p>{{ $featureData['featureLink'] ?? 'N/A' }}</p>
         </div>
 
-        <div class="mt-5">
-            <hr>
-        </div>
+        <hr class="my-4">
 
-        <div class="mt-5">
+        <div>
             <p><span class="font-semibold">Primary BG Color:</span> {{ $featureData['featurePrimaryBgColor'] }}</p>
             <p><span class="font-semibold">Secondary BG Color:</span> {{ $featureData['featureSecondaryBgColor'] }}</p>
             <p><span class="font-semibold">Primary Text Color:</span> {{ $featureData['featurePrimaryTextColor'] }}</p>
             <p><span class="font-semibold">Secondary Text Color:</span> {{ $featureData['featureSecondaryTextColor'] }}</p>
         </div>
 
-        <div class="mt-5">
-            <hr>
-        </div>
+        <hr class="my-4">
 
-        <div class="mt-5">
+        <p><span class="font-semibold">Published date time:</span>
+            {{ $featureData['featureDateTimeAdded'] }}
+        </p>
+
+        <p><span class="font-semibold">Status:</span>
+            {{ $featureData['featureStatus'] ? 'Active' : 'Inactive' }}
+        </p>
+
+        <hr class="my-4">
+
+        <div>
             <p class="font-semibold">Description:</p>
-            <p class="ml-4">
+            <p>
                 @if ($featureData['featureDescriptionHTMLText'] == '' || $featureData['featureDescriptionHTMLText'] == null)
                     N/A
                 @else
@@ -68,38 +83,46 @@
     </div>
 
 
-
     {{-- FEATURE ASSETS --}}
     <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-10">
-        <h1 class="text-headingTextColor text-3xl font-bold">Feature Assets</h1>
+        <h1 class="text-headingTextColor text-3xl font-bold">Feature assets</h1>
 
-        <div class="grid grid-cols-3 gap-x-10 mt-10 items-start">
-            <div class="flex items-center flex-col">
-                <div class="relative -ml-5">
-                    <p class="text-center">Feature Logo</p>
-                    <button wire:click="showEditFeatureAsset('Feature Logo')"
-                        class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                        <i class="fa-solid fa-pen-to-square"></i> Edit
-                    </button>
+        <div class="grid grid-cols-2 gap-x-14 mt-10 items-start">
+            <div class="col-span-1">
+                <div class="flex items-center flex-col">
+                    <div class="relative">
+                        <p class="text-center">Feature Logo</p>
+                        <button wire:click="showEditFeatureAsset('Feature Logo')"
+                            class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                    @if ($featureData['featureLogo']['url'])
+                        <img src="{{ $featureData['featureLogo']['url'] }}" class="mt-3 w-80">
+                        <button wire:click="deleteFeatureAsset('Feature Logo')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                            Remove image
+                        </button>
+                    @else
+                        N/A
+                    @endif
                 </div>
-                @if ($featureData['featureLogo']['url'])
-                    <img src="{{ $featureData['featureLogo']['url'] }}" class="mt-3 w-60">
-                @else
-                    <p>N/A</p>
-                @endif
             </div>
-            <div class="flex items-center flex-col">
-                <div class="relative -ml-5">
+
+            <div class="col-span-1 flex items-center flex-col">
+                <div class="relative">
                     <p class="text-center">Feature Banner</p>
                     <button wire:click="showEditFeatureAsset('Feature Banner')"
-                        class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                        class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                        <i class="fa-solid fa-pen-to-square"></i>
                     </button>
                 </div>
                 @if ($featureData['featureBanner']['url'])
                     <img src="{{ $featureData['featureBanner']['url'] }}" class="mt-3 w-96">
+                    <button wire:click="deleteFeatureAsset('Feature Banner')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                        Remove image
+                    </button>
                 @else
-                    <p>N/A</p>
+                    N/A
                 @endif
             </div>
         </div>

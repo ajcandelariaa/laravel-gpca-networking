@@ -10,9 +10,7 @@ use App\Models\Sponsor as Sponsors;
 use App\Models\SponsorType as SponsorTypes;
 use App\Models\Feature as Features;
 use App\Models\Media as Medias;
-use Illuminate\Support\Facades\Storage;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
 
 class SponsorDetails extends Component
 {
@@ -322,6 +320,50 @@ class SponsorDetails extends Component
         $this->image_placeholder_text = null;
         $this->activeSelectedImage = null;
         $this->chooseImageModal = false;
+    }
+
+
+
+    // DELETE ASSET
+    public function deleteSponsorAsset($deleteAssetType)
+    {
+        if ($deleteAssetType == "Sponsor logo") {
+            Sponsors::where('id', $this->sponsorData['sponsorId'])->update([
+                'logo_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->sponsorData['logo']['media_id'],
+                MediaEntityTypes::SPONSOR_LOGO->value,
+                $this->sponsorData['sponsorId'],
+                $this->sponsorData['logo']['media_usage_id']
+            );
+
+            $this->sponsorData['logo'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        } else {
+            Sponsors::where('id', $this->sponsorData['sponsorId'])->update([
+                'banner_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->sponsorData['banner']['media_id'],
+                MediaEntityTypes::SPONSOR_BANNER->value,
+                $this->sponsorData['sponsorId'],
+                $this->sponsorData['banner']['media_usage_id']
+            );
+
+            $this->sponsorData['banner'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        }
     }
 
 

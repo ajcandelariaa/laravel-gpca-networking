@@ -21,4 +21,14 @@ class SessionSpeakerType extends Model
         
         'datetime_added',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function session()
+    {
+        return $this->belongsTo(Session::class, 'session_id');
+    }
 }

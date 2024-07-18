@@ -35,15 +35,14 @@ class EventController extends Controller
     public function eventsView()
     {
         $finalEvents = [];
-        $events = Event::orderBy('event_start_date', 'desc')->get();
+        $events = Event::with('eventLogo')->orderBy('event_start_date', 'desc')->get();
 
         if ($events->isNotEmpty()) {
             foreach ($events as $event) {
                 $eventFormattedDate =  Carbon::parse($event->event_start_date)->format('d M Y') . ' - ' . Carbon::parse($event->event_end_date)->format('d M Y');
-                $eventLogoUrl = Media::where('id', $event->event_logo_media_id)->first()->value('file_url');
                 array_push($finalEvents, [
                     'eventId' => $event->id,
-                    'eventLogo' => $eventLogoUrl,
+                    'eventLogo' => $event->eventLogo->file_url,
                     'eventName' => $event->full_name,
                     'eventCategory' => $event->category,
                     'eventLocation' => $event->location,
@@ -78,46 +77,10 @@ class EventController extends Controller
 
     public function eventDetailsView($eventCategory, $eventId)
     {
-        $event = Event::where('id', $eventId)->first();
+        $event = Event::with(['eventLogo', 'eventLogoInverted', 'appSponsorLogo', 'eventSplashScreen', 'eventBanner', 'appSponsorBanner'])->where('id', $eventId)->first();
 
         $finalEventStartDate = Carbon::parse($event->event_start_date)->format('d M Y');
         $finalEventEndDate = Carbon::parse($event->event_end_date)->format('d M Y');
-
-        if ($event->event_logo_media_id) {
-            $eventLogo = Media::where('id', $event->event_logo_media_id)->value('file_url');
-        } else {
-            $eventLogo = "https://via.placeholder.com/150";
-        }
-
-        if ($event->event_logo_inverted_media_id) {
-            $eventLogoInverted = Media::where('id', $event->event_logo_inverted_media_id)->value('file_url');
-        } else {
-            $eventLogoInverted = "https://via.placeholder.com/150";
-        }
-        if ($event->app_sponsor_logo_media_id) {
-            $appSponsorLogo = Media::where('id', $event->app_sponsor_logo_media_id)->value('file_url');
-        } else {
-            $appSponsorLogo = "https://via.placeholder.com/150";
-        }
-
-        if ($event->event_splash_screen_media_id) {
-            $eventSplashScreen = Media::where('id', $event->event_splash_screen_media_id)->value('file_url');
-        } else {
-            $eventSplashScreen = "http://via.placeholder.com/360x640";
-        }
-
-
-        if ($event->event_banner_media_id) {
-            $eventBanner = Media::where('id', $event->event_banner_media_id)->value('file_url');
-        } else {
-            $eventBanner = "http://via.placeholder.com/640x360";
-        }
-
-        if ($event->app_sponsor_banner_media_id) {
-            $appSponsorBanner = Media::where('id', $event->app_sponsor_banner_media_id)->value('file_url');
-        } else {
-            $appSponsorBanner = "http://via.placeholder.com/640x360";
-        }
 
         return view('admin.event.details.details', [
             "pageTitle" => "Event details",
@@ -147,7 +110,6 @@ class EventController extends Controller
                     'is_accessible_in_the_app' => $event->is_accessible_in_the_app,
 
                     'year' => $event->year,
-                    'is_active' => $event->is_active,
                 ],
                 "eventColors" => [
                     'primary_bg_color' => $event->primary_bg_color,
@@ -176,33 +138,33 @@ class EventController extends Controller
                     'event_logo' => [
                         'media_id' => $event->event_logo_media_id,
                         'media_usage_id' => getMediaUsageId($event->event_logo_media_id, MediaEntityTypes::EVENT_LOGO->value, $event->id),
-                        'url' => $eventLogo,
+                        'url' => $event->eventLogo->file_url ?? null,
                     ],
                     'event_logo_inverted' => [
                         'media_id' => $event->event_logo_inverted_media_id,
                         'media_usage_id' => getMediaUsageId($event->event_logo_inverted_media_id, MediaEntityTypes::EVENT_LOGO_INVERTED->value, $event->id),
-                        'url' => $eventLogoInverted,
+                        'url' => $event->eventLogoInverted->file_url ?? null,
                     ],
                     'app_sponsor_logo' => [
                         'media_id' => $event->app_sponsor_logo_media_id,
                         'media_usage_id' => getMediaUsageId($event->app_sponsor_logo_media_id, MediaEntityTypes::EVENT_APP_SPONSOR_LOGO->value, $event->id),
-                        'url' => $appSponsorLogo
+                        'url' => $event->appSponsorLogo->file_url ?? null,
                     ],
 
                     'event_splash_screen' => [
                         'media_id' => $event->event_splash_screen_media_id,
                         'media_usage_id' => getMediaUsageId($event->event_splash_screen_media_id, MediaEntityTypes::EVENT_SPLASH_SCREEN->value, $event->id),
-                        'url' => $eventSplashScreen,
+                        'url' => $event->eventSplashScreen->file_url ?? null,
                     ],
                     'event_banner' => [
                         'media_id' => $event->event_banner_media_id,
                         'media_usage_id' => getMediaUsageId($event->event_banner_media_id, MediaEntityTypes::EVENT_BANNER->value, $event->id),
-                        'url' => $eventBanner,
+                        'url' => $event->eventBanner->file_url ?? null,
                     ],
                     'app_sponsor_banner' => [
                         'media_id' => $event->app_sponsor_banner_media_id,
                         'media_usage_id' => getMediaUsageId($event->app_sponsor_banner_media_id, MediaEntityTypes::EVENT_APP_SPONSOR_BANNER->value, $event->id),
-                        'url' => $appSponsorBanner,
+                        'url' => $event->appSponsorBanner->file_url ?? null,
                     ],
                 ],
             ],

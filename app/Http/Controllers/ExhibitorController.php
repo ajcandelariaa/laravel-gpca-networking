@@ -30,8 +30,7 @@ class ExhibitorController extends Controller
 
     public function eventExhibitorView($eventCategory, $eventId, $exhibitorId)
     {
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        $exhibitor = Exhibitor::where('id', $exhibitorId)->first();
+        $exhibitor = Exhibitor::with(['event', 'logo', 'banner'])->where('id', $exhibitorId)->first();
 
         if ($exhibitor) {
             $exhibitorData = [
@@ -44,12 +43,12 @@ class ExhibitorController extends Controller
                 "logo" => [
                     'media_id' => $exhibitor->logo_media_id,
                     'media_usage_id' => getMediaUsageId($exhibitor->logo_media_id, MediaEntityTypes::EXHIBITOR_LOGO->value, $exhibitor->id),
-                    'url' => Media::where('id', $exhibitor->logo_media_id)->value('file_url'),
+                    'url' => $exhibitor->logo->file_url ?? null,
                 ],
                 "banner" => [
                     'media_id' => $exhibitor->banner_media_id,
                     'media_usage_id' => getMediaUsageId($exhibitor->banner_media_id, MediaEntityTypes::EXHIBITOR_BANNER->value, $exhibitor->id),
-                    'url' => Media::where('id', $exhibitor->banner_media_id)->value('file_url'),
+                    'url' => $exhibitor->banner->file_url ?? null,
                 ],
 
                 "country" => $exhibitor->country,
@@ -68,7 +67,7 @@ class ExhibitorController extends Controller
 
             return view('admin.event.exhibitors.exhibitor', [
                 "pageTitle" => "Exhibitor",
-                "eventName" => $event->full_name,
+                "eventName" => $exhibitor->event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "exhibitorData" => $exhibitorData,

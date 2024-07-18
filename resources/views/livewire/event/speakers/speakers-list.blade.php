@@ -36,7 +36,11 @@
                     class="grid grid-cols-12 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
                     <div class="col-span-1">{{ $index + 1 }}</div>
                     <div class="col-span-1 flex justify-center">
-                        <img src="{{ $finalListOfSpeaker['pfp'] }}" class="w-16">
+                        @if ($finalListOfSpeaker['pfp'])
+                            <img src="{{ $finalListOfSpeaker['pfp'] }}" class="w-16">
+                        @else 
+                            N/A
+                        @endif
                     </div>
                     <div class="col-span-2">{{ $finalListOfSpeaker['name'] }}</div>
                     <div class="col-span-1">{{ $finalListOfSpeaker['company_name'] }}</div>
@@ -57,15 +61,23 @@
                                 class="text-gray-700 bg-red-300 hover:bg-red-500 hover:text-white py-1 px-2 text-sm rounded-md">Inactive</button>
                         @endif
                     </div>
-                    <div class="col-span-1">
+                    <div class="col-span-1 flex gap-3 items-center justify-center">
                         <a href="{{ route('admin.event.speaker.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'speakerId' => $finalListOfSpeaker['id']]) }}"
                             class="cursor-pointer hover:text-gray-600 text-gray-500">
-                            <i class="fa-solid fa-eye"></i> View
+                            <i class="fa-solid fa-eye"></i>
                         </a>
+                        <button wire:click="deleteSpeakerConfirmation({{ $index }})"
+                            class="cursor-pointer hover:text-red-600 text-red-500 text-sm ">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             @endforeach
         </div>
+    @endif
+
+    @if ($chooseImageModal)
+        @include('livewire.common.choose_image_modal')
     @endif
 
     @if ($editSpeakerDateTimeForm)

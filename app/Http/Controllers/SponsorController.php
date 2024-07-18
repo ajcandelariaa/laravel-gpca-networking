@@ -5,10 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\MediaEntityTypes;
 use App\Models\AttendeeFavoriteSponsor;
 use App\Models\Event;
-use App\Models\Feature;
-use App\Models\Media;
 use App\Models\Sponsor;
-use App\Models\SponsorType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -46,24 +43,21 @@ class SponsorController extends Controller
 
     public function eventSponsorView($eventCategory, $eventId, $sponsorId)
     {
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        $sponsor = Sponsor::where('id', $sponsorId)->first();
+        $sponsor = Sponsor::with(['event', 'feature', 'sponsorType', 'logo', 'banner'])->where('id', $sponsorId)->first();
 
         if ($sponsor) {
             if ($sponsor->feature_id == 0) {
-                $categoryName = $event->short_name;
+                $categoryName = $sponsor->event->short_name;
             } else {
-                $feature = Feature::where('event_id', $event->id)->where('id', $sponsor->feature_id)->first();
-                if ($feature) {
-                    $categoryName = $feature->short_name;
+                if ($sponsor->feature) {
+                    $categoryName = $sponsor->feature->short_name;
                 } else {
                     $categoryName = "Others";
                 }
             }
 
-            $sponsorType = SponsorType::where('event_id', $event->id)->where('id', $sponsor->sponsor_type_id)->first();
-            if ($sponsorType) {
-                $typeName = $sponsorType->name;
+            if ($sponsor->sponsorType) {
+                $typeName = $sponsor->sponsorType->name;
             } else {
                 $typeName = "N/A";
             }
@@ -82,12 +76,12 @@ class SponsorController extends Controller
                 "logo" => [
                     'media_id' => $sponsor->logo_media_id,
                     'media_usage_id' => getMediaUsageId($sponsor->logo_media_id, MediaEntityTypes::SPONSOR_LOGO->value, $sponsor->id),
-                    'url' => Media::where('id', $sponsor->logo_media_id)->value('file_url'),
+                    'url' => $sponsor->logo->file_url ?? null,
                 ],
                 "banner" => [
                     'media_id' => $sponsor->banner_media_id,
                     'media_usage_id' => getMediaUsageId($sponsor->banner_media_id, MediaEntityTypes::SPONSOR_BANNER->value, $sponsor->id),
-                    'url' => Media::where('id', $sponsor->banner_media_id)->value('file_url'),
+                    'url' => $sponsor->banner->file_url ?? null,
                 ],
 
                 "country" => $sponsor->country,
@@ -106,7 +100,7 @@ class SponsorController extends Controller
 
             return view('admin.event.sponsors.sponsor', [
                 "pageTitle" => "Sponsor",
-                "eventName" => $event->full_name,
+                "eventName" => $sponsor->event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "sponsorData" => $sponsorData,

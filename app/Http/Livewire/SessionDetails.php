@@ -13,7 +13,6 @@ use App\Models\SessionSpeakerType as SessionSpeakerTypes;
 use App\Models\Sponsor;
 use App\Models\SponsorType;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 class SessionDetails extends Component
 {
@@ -182,8 +181,7 @@ class SessionDetails extends Component
                 'url' => null,
             ];
         } else {
-            $sponsorLogoId = Sponsor::where('id', $this->sponsor_id)->where('event_id', $this->event->id)->where('is_active', true)->value('logo_media_id');
-            $sessionSponsorLogo = Media::where('id', $sponsorLogoId)->value('file_url');
+            $sponsor = Sponsor::with('logo')->where('id', $this->sponsor_id)->where('event_id', $this->event->id)->where('is_active', true)->first();
 
             $sponsorName = null;
             foreach($this->sponsorsChoices as $sponsorChoice){
@@ -195,7 +193,7 @@ class SessionDetails extends Component
             $this->sessionData['sessionSponsorLogo'] = [
                 'sponsor_id' => $this->sponsor_id,
                 'name' => $sponsorName,
-                'url' => $sessionSponsorLogo,
+                'url' => $sponsor->logo->file_url ?? null,
             ];
         }
 

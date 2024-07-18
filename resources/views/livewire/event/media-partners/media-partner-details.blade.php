@@ -5,42 +5,30 @@
         <span>List of media partners</span>
     </a>
 
-    <h1 class="text-headingTextColor text-3xl font-bold mt-5">Media partner details</h1>
-
-    
-    <div class="mt-5 relative">
-        <div>
-            <img src="{{ $mediaPartnerData['banner']['url'] }}" alt="" class="w-full relative">
-            <button wire:click="showEditMediaPartnerAsset('Media partner banner')"
-                class="absolute top-2 right-3 cursor-pointer z-20">
-                <i
-                    class="fa-solid fa-pen bg-yellow-500 hover:bg-yellow-600 duration-200 text-gray-100 rounded-full p-3"></i>
-            </button>
-        </div>
-        <div class="absolute -bottom-32 left-1/2 -translate-x-1/2">
+    <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-5">
+        <div class="flex items-center justify-between">
+            <h1 class="text-headingTextColor text-3xl font-bold">Media partner details</h1>
             <div>
-                <img src="{{ $mediaPartnerData['logo']['url'] }}"
-                    class="w-44 h-44 bg-gray-200 p-0.5 z-10 relative">
-                <button wire:click="showEditMediaPartnerAsset('Media partner logo')"
-                    class="absolute -top-5 -right-4 cursor-pointer z-20">
-                    <i
-                        class="fa-solid fa-pen bg-yellow-500 hover:bg-yellow-600 duration-200 text-gray-100 rounded-full p-3"></i>
+                <button wire:click="showEditMediaPartnerDetails"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
+                    <span class="mr-2"><i class="fa-solid fa-file-pen"></i></span>
+                    <span>Edit</span>
                 </button>
             </div>
         </div>
-    </div>
 
-    <div class="mt-36 text-center">
-        <p class="font-semibold text-xl">{{ $mediaPartnerData['name'] }}</p>
-        <p class="font-semibold">{{ $mediaPartnerData['website'] }}</p>
-    </div>
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Name: </p>
+            <p>{{ $mediaPartnerData['name'] }}</p>
+        </div>
 
-    <div class="mt-4">
-        <hr>
-    </div>
+        <div class="flex gap-3 items-center">
+            <p class="font-bold text-primaryColor">Website: </p>
+            <p>{{ $mediaPartnerData['website'] ?? 'N/A' }}</p>
+        </div>
 
+        <hr class="my-4">
 
-    <div class="mt-6">
         <div class="flex items-start gap-10">
             <div>
                 <p><span class="font-semibold">Facebook:</span>
@@ -106,6 +94,16 @@
 
         <hr class="my-4">
 
+        <p><span class="font-semibold">Published date time:</span>
+            {{ $mediaPartnerData['datetime_added'] }}
+        </p>
+
+        <p><span class="font-semibold">Status:</span>
+            {{ $mediaPartnerData['is_active'] ? 'Active' : 'Inactive' }}
+        </p>
+
+        <hr class="my-4">
+
         <p class="font-semibold">Company profile:</p>
         <p>
             @if ($mediaPartnerData['profile_html_text'] == null || $mediaPartnerData['profile_html_text'] == '')
@@ -116,23 +114,59 @@
         </p>
     </div>
 
-    <div class="mt-4">
-        <button wire:click="showEditMediaPartnerDetails"
-            class="bg-yellow-500 hover:bg-yellow-600 duration-200 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
-            <span class="mr-2"><i class="fa-solid fa-file-pen"></i></span>
-            <span>Edit Profile</span>
-        </button>
+    <div class="border border-primaryColor rounded-2xl py-5 px-7 mt-10">
+        <h1 class="text-headingTextColor text-3xl font-bold">Media partner assets</h1>
+
+        <div class="grid grid-cols-2 gap-x-14 mt-10 items-start">
+            <div class="col-span-1">
+                <div class="flex items-center flex-col">
+                    <div class="relative">
+                        <p class="text-center">Media partner Logo</p>
+                        <button wire:click="showEditMediaPartnerAsset('Media partner logo')"
+                            class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                    @if ($mediaPartnerData['logo']['url'])
+                        <img src="{{ $mediaPartnerData['logo']['url'] }}" class="mt-3 w-80">
+                        <button wire:click="deleteMediaPartnerAsset('Media partner logo')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                            Remove image
+                        </button>
+                    @else
+                        N/A
+                    @endif
+                </div>
+            </div>
+
+            <div class="col-span-1 flex items-center flex-col">
+                <div class="relative">
+                    <p class="text-center">Media partner Banner</p>
+                    <button wire:click="showEditMediaPartnerAsset('Media partner banner')"
+                        class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                </div>
+                @if ($mediaPartnerData['banner']['url'])
+                    <img src="{{ $mediaPartnerData['banner']['url'] }}" class="mt-3 w-96">
+                    <button wire:click="deleteMediaPartnerAsset('Media partner banner')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                        Remove image
+                    </button>
+                @else
+                    N/A
+                @endif
+            </div>
+        </div>
     </div>
 
-    
+
     @if ($chooseImageModal)
         @include('livewire.common.choose_image_modal')
     @endif
-    
+
     @if ($editMediaPartnerDetailsForm)
         @include('livewire.event.media-partners.edit_details')
     @endif
-    
+
     @if ($editMediaPartnerAssetForm)
         @include('livewire.event.media-partners.edit_asset')
     @endif

@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Enums\MediaEntityTypes;
+use App\Enums\MediaUsageUpdateTypes;
 use App\Models\Event as Events;
 use App\Models\Exhibitor as Exhibitors;
 use App\Models\Media as Medias;
@@ -11,10 +13,11 @@ use Livewire\Component;
 class ExhibitorList extends Component
 {
     public $event;
-    public $finalListOfExhibitors = array(), $finalListOfExhibitorsConst = array();
+    public $finalListOfExhibitors = array();
 
     // EDIT DETAILS
     public $name, $website, $stand_number;
+    public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage, $image_media_id, $image_placeholder_text;
     public $addExhibitorForm;
 
     // EDIT DATE TIME
@@ -22,7 +25,10 @@ class ExhibitorList extends Component
     public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
     public $editExhibitorDateTimeForm;
 
-    protected $listeners = ['addExhibitorConfirmed' => 'addExhibitor'];
+    // DELETE
+    public $activeDeleteIndex;
+
+    protected $listeners = ['addExhibitorConfirmed' => 'addExhibitor', 'deleteExhibitorConfirmed' => 'deleteExhibitor'];
 
     public function mount($eventId, $eventCategory)
     {
@@ -42,7 +48,6 @@ class ExhibitorList extends Component
                     'datetime_added' => Carbon::parse($exhibitor->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
-            $this->finalListOfExhibitorsConst = $this->finalListOfExhibitors;
         }
 
         $this->inputNameVariableDateTime = "exhibitorDateTime";
@@ -51,6 +56,9 @@ class ExhibitorList extends Component
 
         $this->addExhibitorForm = false;
         $this->editExhibitorDateTimeForm = false;
+        
+        $this->mediaFileList = getMediaFileList();
+        $this->chooseImageModal = false;
     }
 
     public function render()
@@ -84,6 +92,8 @@ class ExhibitorList extends Component
         $this->name = null;
         $this->website = null;
         $this->stand_number = null;
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
     }
 
     public function addExhibitor(){
@@ -92,21 +102,29 @@ class ExhibitorList extends Component
             'name' => $this->name,
             'website' => $this->website,
             'stand_number' => $this->stand_number,
+            'logo_media_id' => $this->image_media_id ?? null,
             'datetime_added' => Carbon::now(),
         ]);
         
+
+        if($this->image_media_id){
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::ADD_ONLY->value,
+                $this->image_media_id,
+                MediaEntityTypes::EXHIBITOR_LOGO->value,
+                $newExhibitor->id,
+            );
+        }
         array_push($this->finalListOfExhibitors, [
             'id' => $newExhibitor->id,
             'name' => $this->name,
             'stand_number' => $this->stand_number,
             'website' => $this->website,
             'is_active' => true,
-            'logo' => null,
+            'logo' => $this->image_media_id ? Medias::where('id', $this->image_media_id)->value('file_url') : null,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);
 
-        $this->finalListOfExhibitorsConst = $this->finalListOfExhibitors;
-        
         $this->resetAddExhibitorFields();
 
         $this->dispatchBrowserEvent('swal:success', [
@@ -115,6 +133,41 @@ class ExhibitorList extends Component
             'text' => ''
         ]);
     }
+
+    
+
+    // FOR CHOOSING IMAGE MODAL
+    public function chooseImage()
+    {
+        $this->chooseImageModal = true;
+    }
+
+    public function showMediaFileDetails($arrayIndex)
+    {
+        $this->activeSelectedImage = $this->mediaFileList[$arrayIndex];
+    }
+
+    public function unshowMediaFileDetails()
+    {
+        $this->activeSelectedImage = array();
+    }
+
+    public function selectChooseImage()
+    {
+        $this->image_media_id = $this->activeSelectedImage['id'];
+        $this->image_placeholder_text = $this->activeSelectedImage['file_name'];
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
+
+    public function cancelChooseImage()
+    {
+        $this->image_media_id = null;
+        $this->image_placeholder_text = null;
+        $this->activeSelectedImage = null;
+        $this->chooseImageModal = false;
+    }
+
 
 
 
@@ -125,7 +178,6 @@ class ExhibitorList extends Component
         ]);
 
         $this->finalListOfExhibitors[$arrayIndex]['is_active'] = !$this->finalListOfExhibitors[$arrayIndex]['is_active'];
-        $this->finalListOfExhibitorsConst[$arrayIndex]['is_active'] = !$this->finalListOfExhibitorsConst[$arrayIndex]['is_active'];
     }
 
 
@@ -160,13 +212,64 @@ class ExhibitorList extends Component
         ]);
 
         $this->finalListOfExhibitors[$this->exhibitorArrayIndex]['datetime_added'] = Carbon::parse($this->exhibitorDateTime)->format('M j, Y g:i A');
-        $this->finalListOfExhibitorsConst[$this->exhibitorArrayIndex]['datetime_added'] = Carbon::parse($this->exhibitorDateTime)->format('M j, Y g:i A');
 
         $this->resetEditExhibitorDateTimeFields();
 
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'Exhibitor Datetime updated successfully!',
+            'text' => ''
+        ]);
+    }
+
+    
+
+    public function deleteExhibitorConfirmation($index)
+    {
+        $this->activeDeleteIndex = $index;
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure you want to delete?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, delete it!",
+            'livewireEmit' => "deleteExhibitorConfirmed",
+        ]);
+    }
+
+    public function deleteExhibitor()
+    {
+        $exhibitor = Exhibitors::where('id', $this->finalListOfExhibitors[$this->activeDeleteIndex]['id'])->first();
+
+        if($exhibitor){
+            if($exhibitor->logo_media_id){
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                    $exhibitor->logo_media_id,
+                    MediaEntityTypes::EXHIBITOR_LOGO->value,
+                    $exhibitor->id,
+                    getMediaUsageId($exhibitor->logo_media_id, MediaEntityTypes::EXHIBITOR_LOGO->value, $exhibitor->id),
+                );
+            }
+
+            if($exhibitor->banner_media_id){
+                mediaUsageUpdate(
+                    MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                    $exhibitor->banner_media_id,
+                    MediaEntityTypes::EXHIBITOR_BANNER->value,
+                    $exhibitor->id,
+                    getMediaUsageId($exhibitor->banner_media_id, MediaEntityTypes::EXHIBITOR_BANNER->value, $exhibitor->id),
+                );
+            }
+
+            $exhibitor->delete();
+
+            unset($this->finalListOfExhibitors[$this->activeDeleteIndex]);
+            $this->finalListOfExhibitors = array_values($this->finalListOfExhibitors);
+        }
+        
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Exhibitor deleted successfully!',
             'text' => ''
         ]);
     }

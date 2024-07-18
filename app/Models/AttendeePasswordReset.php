@@ -15,4 +15,14 @@ class AttendeePasswordReset extends Model
         'password_changed_by',
         'password_changed_date_time',
     ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function attendee()
+    {
+        return $this->belongsTo(Attendee::class, 'attendee_id');
+    }
 }

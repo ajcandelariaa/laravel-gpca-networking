@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Enums\MediaEntityTypes;
 use App\Enums\MediaUsageUpdateTypes;
 use App\Models\Event as Events;
+use App\Models\Media as Medias;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -460,6 +461,13 @@ class EventDetails extends Component
                     $this->eventData['eventAssets']['event_logo']['media_usage_id']
                 );
             }
+
+            $this->eventData['eventAssets']['event_logo'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_LOGO->value, $this->eventData['eventId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
+
         } else if ($this->assetType == 'Event Logo inverted') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_logo_inverted_media_id' => $this->image_media_id,
@@ -482,6 +490,13 @@ class EventDetails extends Component
                     $this->eventData['eventAssets']['event_logo_inverted']['media_usage_id']
                 );
             }
+
+            $this->eventData['eventAssets']['event_logo_inverted'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_LOGO_INVERTED->value, $this->eventData['eventId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
+
         } else if ($this->assetType == 'App Sponsor logo') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_logo_media_id' => $this->image_media_id,
@@ -504,6 +519,13 @@ class EventDetails extends Component
                     $this->eventData['eventAssets']['app_sponsor_logo']['media_usage_id']
                 );
             }
+
+            $this->eventData['eventAssets']['app_sponsor_logo'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_APP_SPONSOR_LOGO->value, $this->eventData['eventId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
+
         } else if ($this->assetType == 'Event Banner') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_banner_media_id' => $this->image_media_id,
@@ -526,6 +548,13 @@ class EventDetails extends Component
                     $this->eventData['eventAssets']['event_banner']['media_usage_id']
                 );
             }
+
+            $this->eventData['eventAssets']['event_banner'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_BANNER->value, $this->eventData['eventId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
+
         } else if ($this->assetType == 'App Sponsor banner') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_banner_media_id' => $this->image_media_id,
@@ -548,6 +577,13 @@ class EventDetails extends Component
                     $this->eventData['eventAssets']['app_sponsor_banner']['media_usage_id']
                 );
             }
+
+            $this->eventData['eventAssets']['app_sponsor_banner'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_APP_SPONSOR_BANNER->value, $this->eventData['eventId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
+
         } else {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_splash_screen_media_id' => $this->image_media_id,
@@ -570,6 +606,12 @@ class EventDetails extends Component
                     $this->eventData['eventAssets']['event_splash_screen']['media_usage_id']
                 );
             }
+
+            $this->eventData['eventAssets']['event_splash_screen'] = [
+                'media_id' => $this->image_media_id,
+                'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_SPLASH_SCREEN->value, $this->eventData['eventId']),
+                'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
+            ];
         }
 
         $this->dispatchBrowserEvent('swal:success', [
@@ -612,5 +654,123 @@ class EventDetails extends Component
         $this->image_placeholder_text = null;
         $this->activeSelectedImage = null;
         $this->chooseImageModal = false;
+    }
+
+
+    public function deleteEventAsset($deleteAssetType){
+        if ($deleteAssetType == "Event Logo") {
+            Events::where('id', $this->eventData['eventId'])->update([
+                'event_logo_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->eventData['eventAssets']['event_logo']['media_id'],
+                MediaEntityTypes::EVENT_LOGO->value,
+                $this->eventData['eventId'],
+                $this->eventData['eventAssets']['event_logo']['media_usage_id']
+            );
+
+            $this->eventData['eventAssets']['event_logo'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+
+        } else if ($deleteAssetType == 'Event Logo inverted') {
+            Events::where('id', $this->eventData['eventId'])->update([
+                'event_logo_inverted_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->eventData['eventAssets']['event_logo_inverted']['media_id'],
+                MediaEntityTypes::EVENT_LOGO_INVERTED->value,
+                $this->eventData['eventId'],
+                $this->eventData['eventAssets']['event_logo_inverted']['media_usage_id']
+            );
+
+            $this->eventData['eventAssets']['event_logo_inverted'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+
+        } else if ($deleteAssetType == 'App Sponsor logo') {
+            Events::where('id', $this->eventData['eventId'])->update([
+                'app_sponsor_logo_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->eventData['eventAssets']['app_sponsor_logo']['media_id'],
+                MediaEntityTypes::EVENT_APP_SPONSOR_LOGO->value,
+                $this->eventData['eventId'],
+                $this->eventData['eventAssets']['app_sponsor_logo']['media_usage_id']
+            );
+
+            $this->eventData['eventAssets']['app_sponsor_logo'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+
+        } else if ($deleteAssetType == 'Event Banner') {
+            Events::where('id', $this->eventData['eventId'])->update([
+                'event_banner_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->eventData['eventAssets']['event_banner']['media_id'],
+                MediaEntityTypes::EVENT_BANNER->value,
+                $this->eventData['eventId'],
+                $this->eventData['eventAssets']['event_banner']['media_usage_id']
+            );
+
+            $this->eventData['eventAssets']['event_banner'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+
+        } else if ($deleteAssetType == 'App Sponsor banner') {
+            Events::where('id', $this->eventData['eventId'])->update([
+                'app_sponsor_banner_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->eventData['eventAssets']['app_sponsor_banner']['media_id'],
+                MediaEntityTypes::EVENT_APP_SPONSOR_BANNER->value,
+                $this->eventData['eventId'],
+                $this->eventData['eventAssets']['app_sponsor_banner']['media_usage_id']
+            );
+
+            $this->eventData['eventAssets']['app_sponsor_banner'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+
+        } else {
+            Events::where('id', $this->eventData['eventId'])->update([
+                'event_splash_screen_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->eventData['eventAssets']['event_splash_screen']['media_id'],
+                MediaEntityTypes::EVENT_SPLASH_SCREEN->value,
+                $this->eventData['eventId'],
+                $this->eventData['eventAssets']['event_splash_screen']['media_usage_id']
+            );
+
+            $this->eventData['eventAssets']['event_splash_screen'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        }
     }
 }

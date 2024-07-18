@@ -5,19 +5,38 @@ namespace App\Http\Livewire;
 use App\Models\Event as Events;
 use App\Models\Session as Sessions;
 use App\Models\Feature as Features;
+use App\Models\SessionDate as SessionDates;
+use App\Models\SessionDay as SessionDays;
+use App\Models\SessionType as SessionTypes;
 use Carbon\Carbon;
 use Livewire\Component;
 
 class SessionList extends Component
 {
     public $event;
-    public $finalListOfSessions = array(), $finalListOfSessionsConst = array();
+    public $finalListOfSessions = [];
 
     // Add Sesssion
-    public $feature_id, $session_date, $session_day, $session_type, $title, $start_time, $end_time, $categoryChoices = array();
+    public $feature_id, $session_date, $session_day, $session_type, $title, $start_time, $end_time;
+    public $categoryChoices = [], $sessionDateChoices = [], $sessionDayChoices = [], $sessionTypeChoices = [];
     public $addSessionForm;
 
-    protected $listeners = ['addSessionConfirmed' => 'addSession'];
+    // Add Session date
+    public $add_session_date, $add_session_date_desc, $session_dates = [];
+    public $addSessionDateForm;
+
+    // Add Session day
+    public $add_session_day, $add_session_day_desc , $session_days = [];
+    public $addSessionDayForm;
+
+    // Add Session day
+    public $add_session_type, $add_session_type_desc , $session_types = [];
+    public $addSessionTypeForm;
+
+    // DELETE
+    public $activeDeleteIndex;
+
+    protected $listeners = ['addSessionConfirmed' => 'addSession', 'deleteSessionConfirmed' => 'deleteSession'];
 
     public function mount($eventId, $eventCategory)
     {
@@ -55,10 +74,12 @@ class SessionList extends Component
                     'datetime_added' => Carbon::parse($session->datetime_added)->format('M j, Y g:i A'),
                 ]);
             }
-            $this->finalListOfSessionsConst = $this->finalListOfSessions;
         }
 
         $this->addSessionForm = false;
+        $this->addSessionDateForm = false;
+        $this->addSessionDayForm = false;
+        $this->addSessionTypeForm = false;
     }
 
     public function render()
@@ -82,6 +103,31 @@ class SessionList extends Component
                 ]);
             }
         }
+
+        $sessionDates = SessionDates::where('event_id', $this->event->id)->get();
+        if($sessionDates->isNotEmpty()){
+            foreach ($sessionDates as $sessionDate) {
+                array_push($this->sessionDateChoices, [
+                    'name' => Carbon::parse($sessionDate->session_date)->format('F d, Y'),
+                    'value' => $sessionDate->session_date,
+                ]);
+            }
+        }
+
+        $sessionDays = SessionDays::where('event_id', $this->event->id)->get();
+        if($sessionDays->isNotEmpty()){
+            foreach ($sessionDays as $sessionDay) {
+                array_push($this->sessionDayChoices, $sessionDay->session_day);
+            }
+        }
+
+        $sessionTypes = SessionTypes::where('event_id', $this->event->id)->get();
+        if($sessionTypes->isNotEmpty()){
+            foreach ($sessionTypes as $sessionType) {
+                array_push($this->sessionTypeChoices, $sessionType->session_type);
+            }
+        }
+
         $this->addSessionForm = true;
     }
 
@@ -114,7 +160,10 @@ class SessionList extends Component
         $this->title = null;
         $this->start_time = null;
         $this->end_time = null;
-        $this->categoryChoices = array();
+        $this->categoryChoices = [];
+        $this->sessionDateChoices = [];
+        $this->sessionDayChoices = [];
+        $this->sessionTypeChoices = [];
     }
 
     public function addSession()
@@ -155,15 +204,13 @@ class SessionList extends Component
         array_push($this->finalListOfSessions, [
             'id' => $newSession->id,
             'categoryName' => $selectedCategory,
-            'session_date' => $this->session_date,
+            'session_date' => Carbon::parse($this->session_date)->format('F d, Y'),
             'session_day' => $this->session_day,
             'title' => $this->title,
             'timings' => $forArrayTimings,
             'is_active' => true,
             'datetime_added' => Carbon::parse(Carbon::now())->format('M j, Y g:i A'),
         ]);
-
-        $this->finalListOfSessionsConst = $this->finalListOfSessions;
 
         $this->resetAddSessionFields();
 
@@ -182,6 +229,193 @@ class SessionList extends Component
         ]);
 
         $this->finalListOfSessions[$arrayIndex]['is_active'] = !$this->finalListOfSessions[$arrayIndex]['is_active'];
-        $this->finalListOfSessionsConst[$arrayIndex]['is_active'] = !$this->finalListOfSessionsConst[$arrayIndex]['is_active'];
+    }
+
+    public function deleteSessionConfirmation($index){
+        $this->activeDeleteIndex = $index;
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure you want to delete?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, delete it!",
+            'livewireEmit' => "deleteSessionConfirmed",
+        ]);
+    }
+
+    public function deleteSession()
+    {
+        $session = Sessions::where('id', $this->finalListOfSessions[$this->activeDeleteIndex]['id'])->first();
+        if($session){
+            $session->delete();
+            unset($this->finalListOfSessions[$this->activeDeleteIndex]);
+            $this->finalListOfSessions = array_values($this->finalListOfSessions);
+        }
+        
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Session deleted successfully!',
+            'text' => ''
+        ]);
+    }
+
+
+    // ADD SESSION DATES
+    public function showAddSessionDate(){
+        $sessionDates = SessionDates::where('event_id', $this->event->id)->get();
+        
+        if($sessionDates->isNotEmpty()){
+            $this->session_dates = $sessionDates->map(function ($session_date) {
+                return [
+                    'id' => $session_date->id,
+                    'session_date' => Carbon::parse($session_date->session_date)->format('F d, Y'),
+                    'description' => $session_date->description,
+                ];
+            });
+        }
+        $this->addSessionDateForm = true;
+    }
+
+    public function resetAddSessionDateFields(){
+        $this->addSessionDateForm = false;
+        $this->add_session_date = null;
+        $this->add_session_date_desc = null;
+        $this->session_dates = [];
+    }
+
+    public function addSessionDate(){
+        $this->validate([
+            'add_session_date' => 'required',
+        ]);
+
+        $sessionDate = SessionDates::create([
+            'event_id' => $this->event->id,
+            'session_date' => $this->add_session_date,
+            'description' => $this->add_session_date_desc,
+        ]);
+        
+        $this->session_dates[] = [
+            'id' => $sessionDate->id,
+            'session_date' => Carbon::parse($this->add_session_date)->format('F d, Y'),
+            'description' => $this->add_session_date_desc,
+        ];
+        
+        $this->add_session_date = null;
+        $this->add_session_date_desc = null;
+    }
+
+    public function deleteSessionDate($arrayIndex){
+        $sessionDate = SessionDates::find($this->session_dates[$arrayIndex]['id']);
+        if($sessionDate){
+            $sessionDate->delete();
+        }
+        unset($this->session_dates[$arrayIndex]);
+    }
+
+
+
+    // ADD SESSION DAYS
+    public function showAddSessionDay(){
+        $sessionDays = SessionDays::where('event_id', $this->event->id)->get();
+        
+        if($sessionDays->isNotEmpty()){
+            $this->session_days = $sessionDays->map(function ($session_day) {
+                return [
+                    'id' => $session_day->id,
+                    'session_day' => $session_day->session_day,
+                    'description' => $session_day->description,
+                ];
+            });
+        }
+        $this->addSessionDayForm = true;
+    }
+
+    public function resetAddSessionDayFields(){
+        $this->addSessionDayForm = false;
+        $this->add_session_day = null;
+        $this->add_session_day_desc = null;
+        $this->session_days = [];
+    }
+
+    public function addSessionDay(){
+        $this->validate([
+            'add_session_day' => 'required',
+        ]);
+
+        $sessionDay = SessionDays::create([
+            'event_id' => $this->event->id,
+            'session_day' => $this->add_session_day,
+            'description' => $this->add_session_day_desc,
+        ]);
+        
+        $this->session_days[] = [
+            'id' => $sessionDay->id,
+            'session_day' => $this->add_session_day,
+            'description' => $this->add_session_day_desc,
+        ];
+        
+        $this->add_session_day = null;
+        $this->add_session_day_desc = null;
+    }
+
+    public function deleteSessionDay($arrayIndex){
+        $sessionDay = SessionDays::find($this->session_days[$arrayIndex]['id']);
+        if($sessionDay){
+            $sessionDay->delete();
+        }
+        unset($this->session_days[$arrayIndex]);
+    }
+
+
+
+    // ADD SESSION TYPES
+    public function showAddSessionType(){
+        $sessionTypes = SessionTypes::where('event_id', $this->event->id)->get();
+        
+        if($sessionTypes->isNotEmpty()){
+            $this->session_types = $sessionTypes->map(function ($session_type) {
+                return [
+                    'id' => $session_type->id,
+                    'session_type' => $session_type->session_type,
+                    'description' => $session_type->description,
+                ];
+            });
+        }
+        $this->addSessionTypeForm = true;
+    }
+
+    public function resetAddSessionTypeFields(){
+        $this->addSessionTypeForm = false;
+        $this->add_session_type = null;
+        $this->add_session_type_desc = null;
+        $this->session_types = [];
+    }
+
+    public function addSessionType(){
+        $this->validate([
+            'add_session_type' => 'required',
+        ]);
+
+        $sessionType = SessionTypes::create([
+            'event_id' => $this->event->id,
+            'session_type' => $this->add_session_type,
+            'description' => $this->add_session_type_desc,
+        ]);
+        
+        $this->session_types[] = [
+            'id' => $sessionType->id,
+            'session_type' => $this->add_session_type,
+            'description' => $this->add_session_type_desc,
+        ];
+        
+        $this->add_session_type = null;
+        $this->add_session_type_desc = null;
+    }
+
+    public function deleteSessionType($arrayIndex){
+        $sessionType = SessionTypes::find($this->session_types[$arrayIndex]['id']);
+        if($sessionType){
+            $sessionType->delete();
+        }
+        unset($this->session_types[$arrayIndex]);
     }
 }

@@ -26,7 +26,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -49,20 +48,20 @@ class AttendeesController extends Controller
 
     public function eventAttendeeView($eventCategory, $eventId, $attendeeId)
     {
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        $attendee = Attendee::where('id', $attendeeId)->first();
+        $attendee = Attendee::with(['event', 'pfp', 'passwordResets'])->find($attendeeId);
+
+        if (!$attendee) {
+            abort(404, 'The URL is incorrect');
+        }
 
         $passwordResetDetails = [];
-        $attendeeResets = AttendeePasswordReset::where('attendee_id', $attendee->id)->get();
-
-
-        if ($attendeeResets->isNotEmpty()) {
-            foreach ($attendeeResets as $attendeeReset) {
-                array_push($passwordResetDetails, [
+        if ($attendee->passwordResets->isNotEmpty()) {
+            $passwordResetDetails = $attendee->passwordResets->map(function($attendeeReset) {
+                return [
                     'changed_by' => $attendeeReset->password_changed_by,
                     'datetime' => Carbon::parse($attendeeReset->password_changed_date_time)->format('M j, Y g:i A'),
-                ]);
-            }
+                ];
+            })->toArray();
         }
 
         $attendeeData = [
@@ -90,8 +89,8 @@ class AttendeesController extends Controller
 
             "pfp" => [
                 'media_id' => $attendee->pfp_media_id,
-                'media_usage_id' => getMediaUsageId($attendee->pfp_media_id, MediaEntityTypes::ATTENDEE_PFP->value, $event->id),
-                'url' => Media::where('id', $attendee->pfp_media_id)->value('file_url'),
+                'media_usage_id' => getMediaUsageId($attendee->pfp_media_id, MediaEntityTypes::ATTENDEE_PFP->value, $attendee->id),
+                'url' => $attendee->pfp->file_url ?? null,
             ],
             "biography" => $attendee->biography,
 
@@ -118,7 +117,7 @@ class AttendeesController extends Controller
 
         return view('admin.event.attendees.attendee', [
             "pageTitle" => "Attendee",
-            "eventName" => $event->full_name,
+            "eventName" => $attendee->event->full_name,
             "eventCategory" => $eventCategory,
             "eventId" => $eventId,
             "attendeeData" => $attendeeData,
@@ -309,7 +308,7 @@ class AttendeesController extends Controller
     {
         try {
             $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
-
+            
             if ($attendee->pass_type == PassTypes::FULL_MEMBER->value) {
                 $passTypeName = "Full Member";
             } else if ($attendee->pass_type == PassTypes::MEMBER->value) {
@@ -334,7 +333,7 @@ class AttendeesController extends Controller
                 'job_title' => $attendee->job_title,
                 'email_address' => $attendee->email_address,
                 'mobile_number' => $attendee->mobile_number,
-                'pfp' => $attendee->pfp->file_url,
+                'pfp' => $attendee->pfp->file_url ?? null,
                 'biography' => $attendee->biography,
                 'gender' => $attendee->gender,
                 'birthdate' => Carbon::parse($attendee->birthdate)->format('F d, Y'),

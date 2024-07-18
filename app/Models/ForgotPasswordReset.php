@@ -18,7 +18,6 @@ class ForgotPasswordReset extends Model
         'is_password_changed',
     ];
 
-
     public function attendee()
     {
         return $this->belongsTo(Attendee::class, 'attendee_id');

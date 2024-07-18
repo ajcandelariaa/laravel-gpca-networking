@@ -39,8 +39,13 @@
                             Session date<span class="text-red-500">*</span>
                         </div>
                         <div class="mt-2">
-                            <input type="date" wire:model.lazy="session_date" placeholder="Select a date"
+                            <select wire:model.lazy="session_date"
                                 class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                <option value=""></option>
+                                @foreach ($sessionDateChoices as $sessionDateChoice)
+                                    <option value="{{ $sessionDateChoice['value'] }}">{{ $sessionDateChoice['name'] }}</option>
+                                @endforeach
+                            </select>
 
                             @error('session_date')
                                 <div class="text-red-500 text-xs italic mt-1">
@@ -56,8 +61,13 @@
                             Session Day <span class="text-red-500">*</span>
                         </div>
                         <div class="mt-2">
-                            <input placeholder="Session Day" type="text" wire:model.lazy="session_day"
+                            <select wire:model.lazy="session_day"
                                 class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                <option value=""></option>
+                                @foreach ($sessionDayChoices as $sessionDayChoice)
+                                    <option value="{{ $sessionDayChoice }}">{{ $sessionDayChoice }}</option>
+                                @endforeach
+                            </select>
 
                             @error('session_day')
                                 <div class="text-red-500 text-xs italic mt-1">
@@ -73,8 +83,19 @@
                             Session Type
                         </div>
                         <div class="mt-2">
-                            <input placeholder="Session Type" type="text" wire:model.lazy="session_type"
+                            <select wire:model.lazy="session_type"
                                 class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                <option value=""></option>
+                                @foreach ($sessionTypeChoices as $sessionTypeChoice)
+                                    <option value="{{ $sessionTypeChoice }}">{{ $sessionTypeChoice }}</option>
+                                @endforeach
+                            </select>
+
+                            @error('session_type')
+                                <div class="text-red-500 text-xs italic mt-1">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
 
@@ -97,7 +118,7 @@
 
                     <div class="mt-5">
                         <div class="text-primaryColor">
-                            Start time<span class="text-red-500">*</span>
+                            Start time <span class="text-red-500">*</span>
                         </div>
                         <div class="mt-2">
                             <input type="time" wire:model.lazy="start_time" placeholder="Select a time"
@@ -113,7 +134,7 @@
 
                     <div class="mt-5">
                         <div class="text-primaryColor">
-                            End time<span class="text-red-500">*</span>
+                            End time
                         </div>
                         <div class="mt-2">
                             <input type="time" wire:model.lazy="end_time" placeholder="Select a time"

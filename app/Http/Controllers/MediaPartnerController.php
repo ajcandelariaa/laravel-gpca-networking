@@ -30,8 +30,7 @@ class MediaPartnerController extends Controller
 
     public function eventMediaPartnerView($eventCategory, $eventId, $mediaPartnerId)
     {
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        $mediaPartner = MediaPartner::where('id', $mediaPartnerId)->first();
+        $mediaPartner = MediaPartner::with(['event', 'logo', 'banner'])->where('id', $mediaPartnerId)->first();
 
         if ($mediaPartner) {
             $mediaPartnerData = [
@@ -43,12 +42,12 @@ class MediaPartnerController extends Controller
                 "logo" => [
                     'media_id' => $mediaPartner->logo_media_id,
                     'media_usage_id' => getMediaUsageId($mediaPartner->logo_media_id, MediaEntityTypes::MEDIA_PARTNER_LOGO->value, $mediaPartner->id),
-                    'url' => Media::where('id', $mediaPartner->logo_media_id)->value('file_url'),
+                    'url' => $mediaPartner->logo->file_url ?? null,
                 ],
                 "banner" => [
                     'media_id' => $mediaPartner->banner_media_id,
                     'media_usage_id' => getMediaUsageId($mediaPartner->banner_media_id, MediaEntityTypes::MEDIA_PARTNER_BANNER->value, $mediaPartner->id),
-                    'url' => Media::where('id', $mediaPartner->banner_media_id)->value('file_url'),
+                    'url' => $mediaPartner->banner->file_url ?? null,
                 ],
 
                 "country" => $mediaPartner->country,
@@ -67,7 +66,7 @@ class MediaPartnerController extends Controller
 
             return view('admin.event.media-partners.media_partner', [
                 "pageTitle" => "Media Partner",
-                "eventName" => $event->full_name,
+                "eventName" => $mediaPartner->event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "mediaPartnerData" => $mediaPartnerData,

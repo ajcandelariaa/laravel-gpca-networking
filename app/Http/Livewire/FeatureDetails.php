@@ -272,4 +272,50 @@ class FeatureDetails extends Component
             'text' => "",
         ]);
     }
+
+    
+
+
+
+    // DELETE ASSET
+    public function deleteFeatureAsset($deleteAssetType)
+    {
+        if ($deleteAssetType == "Feature Logo") {
+            Features::where('id', $this->featureData['featureId'])->update([
+                'logo_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->featureData['featureLogo']['media_id'],
+                MediaEntityTypes::FEATURE_LOGO->value,
+                $this->featureData['featureId'],
+                $this->featureData['featureLogo']['media_usage_id']
+            );
+
+            $this->featureData['featureLogo'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        } else {
+            Features::where('id', $this->featureData['featureId'])->update([
+                'banner_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->featureData['featureBanner']['media_id'],
+                MediaEntityTypes::FEATURE_BANNER->value,
+                $this->featureData['featureId'],
+                $this->featureData['featureBanner']['media_usage_id']
+            );
+
+            $this->featureData['featureBanner'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        }
+    }
 }

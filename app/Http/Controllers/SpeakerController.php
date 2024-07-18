@@ -10,7 +10,6 @@ use App\Models\Media;
 use App\Models\Session;
 use App\Models\SessionSpeaker;
 use App\Models\Speaker;
-use App\Models\SpeakerType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -46,36 +45,21 @@ class SpeakerController extends Controller
 
     public function eventSpeakerView($eventCategory, $eventId, $speakerId)
     {
-        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
-        $speaker = Speaker::where('id', $speakerId)->first();
+        $speaker = Speaker::with(['event', 'feature', 'speakerType', 'pfp', 'coverPhoto'])->where('id', $speakerId)->first();
 
         if ($speaker) {
-            if ($speaker->pfp_media_id) {
-                $speakerPFPUrl = Media::where('id', $speaker->pfp_media_id)->value('file_url');
-            } else {
-                $speakerPFPUrl = asset('assets/images/pfp-placeholder.jpg');
-            }
-
-            if ($speaker->cover_photo_media_id) {
-                $speakerCoverPhotoUrl = Media::where('id', $speaker->cover_photo_media_id)->value('file_url');
-            } else {
-                $speakerCoverPhotoUrl = asset('assets/images/cover-photo-placeholder.jpg');
-            }
-
             if ($speaker->feature_id == 0) {
-                $categoryName = $event->short_name;
+                $categoryName = $speaker->event->short_name;
             } else {
-                $feature = Feature::where('event_id', $event->id)->where('id', $speaker->feature_id)->first();
-                if ($feature) {
-                    $categoryName = $feature->short_name;
+                if ($speaker->feature) {
+                    $categoryName = $speaker->feature->short_name;
                 } else {
                     $categoryName = "Others";
                 }
             }
 
-            $speakerType = SpeakerType::where('event_id', $event->id)->where('id', $speaker->speaker_type_id)->first();
-            if ($speakerType) {
-                $typeName = $speakerType->name;
+            if ($speaker->speakerType) {
+                $typeName = $speaker->speakerType->name;
             } else {
                 $typeName = "N/A";
             }
@@ -98,12 +82,12 @@ class SpeakerController extends Controller
                 'pfp' => [
                     'media_id' => $speaker->pfp_media_id,
                     'media_usage_id' => getMediaUsageId($speaker->pfp_media_id, MediaEntityTypes::SPEAKER_PFP->value, $speaker->id),
-                    'url' => $speakerPFPUrl,
+                    'url' => $speaker->pfp->file_url ?? null,
                 ],
                 'cover_photo' => [
                     'media_id' => $speaker->cover_photo_media_id,
                     'media_usage_id' => getMediaUsageId($speaker->cover_photo_media_id, MediaEntityTypes::SPEAKER_COVER_PHOTO->value, $speaker->id),
-                    'url' => $speakerCoverPhotoUrl,
+                    'url' => $speaker->coverPhoto->file_url ?? null,
                 ],
                 "country" => $speaker->country,
                 "email_address" => $speaker->email_address,
@@ -119,7 +103,7 @@ class SpeakerController extends Controller
             ];
             return view('admin.event.speakers.speaker', [
                 "pageTitle" => "Speakers",
-                "eventName" => $event->full_name,
+                "eventName" => $speaker->event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "speakerData" => $speakerData,

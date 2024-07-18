@@ -43,6 +43,29 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="mt-5">
+                        <div>
+                            <div class="text-primaryColor">
+                                Logo
+                            </div>
+                            <div class="mt-2">
+                                <div class="flex gap-5 items-center">
+                                    <input wire:model.lazy="image_placeholder_text" placeholder="test.jpg" type="text"
+                                        class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200"
+                                        disabled>
+                                    <button type="button" wire:click.prevent="chooseImage"
+                                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-5 rounded items-center text-sm cursor-pointer">Choose</button>
+                                </div>
+                                @error('image_placeholder_text')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">

@@ -32,7 +32,7 @@ class MeetingRoomPartner extends Model
         'is_active',
         'datetime_added',
     ];
-
+    
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_id');

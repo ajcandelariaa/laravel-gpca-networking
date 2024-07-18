@@ -8,7 +8,6 @@ use Livewire\Component;
 use App\Models\Event as Events;
 use App\Models\Media as Medias;
 use App\Models\MeetingRoomPartner as MeetingRoomPartners;
-use Illuminate\Support\Facades\Storage;
 
 class MeetingRoomPartnerDetails extends Component
 {
@@ -267,5 +266,49 @@ class MeetingRoomPartnerDetails extends Component
             'message' => 'Meeting room partner details updated succesfully!',
             'text' => "",
         ]);
+    }
+
+
+
+    // DELETE ASSET
+    public function deleteMeetingRoomPartnerAsset($deleteAssetType)
+    {
+        if ($deleteAssetType == "Meeting room partner logo") {
+            MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
+                'logo_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->meetingRoomPartnerData['logo']['media_id'],
+                MediaEntityTypes::MEETING_ROOM_PARTNER_LOGO->value,
+                $this->meetingRoomPartnerData['meetingRoomPartnerId'],
+                $this->meetingRoomPartnerData['logo']['media_usage_id']
+            );
+
+            $this->meetingRoomPartnerData['logo'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        } else {
+            MeetingRoomPartners::where('id', $this->meetingRoomPartnerData['meetingRoomPartnerId'])->update([
+                'banner_media_id' => null,
+            ]);
+
+            mediaUsageUpdate(
+                MediaUsageUpdateTypes::REMOVED_ONLY->value,
+                $this->meetingRoomPartnerData['banner']['media_id'],
+                MediaEntityTypes::MEETING_ROOM_PARTNER_BANNER->value,
+                $this->meetingRoomPartnerData['meetingRoomPartnerId'],
+                $this->meetingRoomPartnerData['banner']['media_usage_id']
+            );
+
+            $this->meetingRoomPartnerData['banner'] = [
+                'media_id' => null,
+                'media_usage_id' => null,
+                'url' => null,
+            ];
+        }
     }
 }

@@ -30,32 +30,51 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 mt-5">
-            <p class="font-bold text-2xl">{{ $eventData['eventDetails']['full_name'] }}</p>
-            <p>({{ $eventData['eventDetails']['edition'] }} - {{ $eventData['eventDetails']['short_name'] }})</p>
-            <p class="text-primaryColor rounded-full border border-primaryColor px-4 font-bold text-sm">
-                {{ $eventData['eventDetails']['category'] }}</p>
+        <div class="flex gap-3 items-center mt-3">
+            <p class="font-bold text-primaryColor">Full Name:</p>
+            <p>{{ $eventData['eventDetails']['full_name'] }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3 text-primaryColor">
-            <i class="fa-solid fa-location-dot"></i>
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Short Name:</p>
+            <p>{{ $eventData['eventDetails']['short_name'] }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Category:</p>
+            <p>{{ $eventData['eventDetails']['category'] }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Location:</p>
             <p>{{ $eventData['eventDetails']['location'] }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-2 text-primaryColor">
-            <i class="fa-solid fa-calendar-days"></i>
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Event dates:</p>
             <p>{{ $eventData['eventDetails']['finalEventStartDate'] . ' - ' . $eventData['eventDetails']['finalEventEndDate'] }}
-            </p>
         </div>
 
-        <div class="flex gap-3 items-center mt-2 text-primaryColor">
-            <i class="fa-solid fa-link"></i>
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Full link:</p>
             <p>{{ $eventData['eventDetails']['event_full_link'] }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-2 text-primaryColor">
-            <i class="fa-solid fa-link"></i>
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Short link:</p>
             <p>{{ $eventData['eventDetails']['event_short_link'] }}</p>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Is Visible in the app:</p>
+            <p>{{ $eventData['eventDetails']['is_visible_in_the_app'] ? 'Yes' : 'No' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Is Accessible in the app:</p>
+            <p>{{ $eventData['eventDetails']['is_accessible_in_the_app'] ? 'Yes' : 'No' }}</p>
         </div>
     </div>
 
@@ -78,17 +97,17 @@
             <p>{{ $eventData['eventColors']['primary_bg_color'] }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Secondary Background Color: </p>
             <p>{{ $eventData['eventColors']['secondary_bg_color'] }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Primary Text Color: </p>
             <p>{{ $eventData['eventColors']['primary_text_color'] }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Secondary Text Color: </p>
             <p>{{ $eventData['eventColors']['secondary_text_color'] }}</p>
         </div>
@@ -112,22 +131,22 @@
             <p>{{ $eventData['eventWebViewLinks']['delegate_feedback_survey_link'] ?? 'N/A' }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">App feedback survey link: </p>
             <p>{{ $eventData['eventWebViewLinks']['app_feedback_survey_link'] ?? 'N/A' }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">About event link: </p>
             <p>{{ $eventData['eventWebViewLinks']['about_event_link'] ?? 'N/A' }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Venue link: </p>
             <p>{{ $eventData['eventWebViewLinks']['venue_link'] ?? 'N/A' }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Press releases link: </p>
             <p>{{ $eventData['eventWebViewLinks']['press_releases_link'] ?? 'N/A' }}</p>
         </div>
@@ -151,7 +170,7 @@
             <p>{{ $eventData['eventFloorPlanLinks']['floor_plan_3d_image_link'] ?? 'N/A' }}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">App feedback survey link: </p>
             <p>{{ $eventData['eventFloorPlanLinks']['floor_plan_exhibition_image_link'] ?? 'N/A' }}</p>
         </div>
@@ -175,17 +194,17 @@
             <p>{{ $eventData['eventHTMLTexts']['description_html_text'] ?? 'N/A'}}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Login HTML Text: </p>
             <p>{{ $eventData['eventHTMLTexts']['login_html_text'] ?? 'N/A'}}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Continue as guest HTML Text: </p>
             <p>{{ $eventData['eventHTMLTexts']['continue_as_guest_html_text'] ?? 'N/A'}}</p>
         </div>
 
-        <div class="flex gap-3 items-center mt-3">
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Forgot password HTML Text: </p>
             <p>{{ $eventData['eventHTMLTexts']['forgot_password_html_text'] ?? 'N/A'}}</p>
         </div>
@@ -196,73 +215,123 @@
         <h1 class="text-headingTextColor text-3xl font-bold">Event Assets</h1>
 
         <div class="grid grid-cols-3 gap-x-14 mt-10 items-start">
-            <div class="col-span-2">
-                <div class="grid grid-cols-3 gap-x-10">
-                    <div class="flex items-center flex-col">
-                        <div class="relative">
-                            <p class="text-center">Event Logo</p>
-                            <button wire:click="showEditEventAsset('Event Logo')"
-                                class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                            </button>
-                        </div>
-                        <img src="{{ $eventData['eventAssets']['event_logo']['url'] }}" class="mt-3">
+            <div class="col-span-1">
+                <div class="flex items-center flex-col">
+                    <div class="relative">
+                        <p class="text-center">Event Logo</p>
+                        <button wire:click="showEditEventAsset('Event Logo')"
+                            class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
                     </div>
-                    <div class="flex items-center flex-col">
-                        <div class="relative">
-                            <p class="text-center">Event Logo inverted</p>
-                            <button wire:click="showEditEventAsset('Event Logo inverted')"
-                                class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                            </button>
-                        </div>
-                        <img src="{{ $eventData['eventAssets']['event_logo_inverted']['url'] }}" class="mt-3">
-                    </div>
-                    <div class="flex items-center flex-col">
-                        <div class="relative">
-                            <p class="text-center">App Sponsor logo</p>
-                            <button wire:click="showEditEventAsset('App Sponsor logo')"
-                                class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                            </button>
-                        </div>
-                        <img src="{{ $eventData['eventAssets']['app_sponsor_logo']['url'] }}" class="mt-3">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-x-10 mt-10">
-                    <div class="flex items-center flex-col">
-                        <div class="relative">
-                            <p class="text-center">Event Banner</p>
-                            <button wire:click="showEditEventAsset('Event Banner')"
-                                class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                            </button>
-                        </div>
-                        <img src="{{ $eventData['eventAssets']['event_banner']['url'] }}" class="mt-3">
-                    </div>
-                    <div class="flex items-center flex-col">
-                        <div class="relative">
-                            <p class="text-center">App Sponsor banner</p>
-                            <button wire:click="showEditEventAsset('App Sponsor banner')"
-                                class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                            </button>
-                        </div>
-                        <img src="{{ $eventData['eventAssets']['app_sponsor_banner']['url'] }}" class="mt-3">
-                    </div>
+                    @if ($eventData['eventAssets']['event_logo']['url'])
+                        <img src="{{ $eventData['eventAssets']['event_logo']['url'] }}" class="mt-3 w-80">
+                    @else
+                        N/A
+                    @endif
                 </div>
             </div>
 
-            <div class="col-span-1 flex items-center flex-col">
-                <div class="relative">
-                    <p class="text-center">Event splash screen</p>
-                    <button wire:click="showEditEventAsset('Event splash screen')"
-                        class="absolute top-0 -right-14 cursor-pointer hover:text-yellow-600 text-yellow-500">
-                        <i class="fa-solid fa-pen-to-square"></i> Edit
-                    </button>
+            <div class="col-span-1">
+                <div class="flex items-center flex-col">
+                    <div class="relative">
+                        <p class="text-center">Event Logo inverted</p>
+                        <button wire:click="showEditEventAsset('Event Logo inverted')"
+                            class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                    @if ($eventData['eventAssets']['event_logo_inverted']['url'])
+                        <img src="{{ $eventData['eventAssets']['event_logo_inverted']['url'] }}" class="mt-3 w-80">
+                        <button wire:click="deleteEventAsset('Event Logo inverted')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                            Remove image
+                        </button>
+                    @else
+                        N/A
+                    @endif
                 </div>
-                <img src="{{ $eventData['eventAssets']['event_splash_screen']['url'] }}" class="mt-3 ">
+            </div>
+
+            <div class="col-span-1">
+                <div class="flex items-center flex-col">
+                    <div class="relative">
+                        <p class="text-center">App Sponsor logo</p>
+                        <button wire:click="showEditEventAsset('App Sponsor logo')"
+                            class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                    @if ($eventData['eventAssets']['app_sponsor_logo']['url'])
+                        <img src="{{ $eventData['eventAssets']['app_sponsor_logo']['url'] }}" class="mt-3 w-80">
+                        <button wire:click="deleteEventAsset('App Sponsor logo')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                            Remove image
+                        </button>
+                    @else
+                        N/A
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-x-14 mt-20 items-start">
+            <div class="col-span-1">
+                <div class="flex items-center flex-col">
+                    <div class="relative">
+                        <p class="text-center">Event Banner</p>
+                        <button wire:click="showEditEventAsset('Event Banner')"
+                            class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                    @if ($eventData['eventAssets']['event_banner']['url'])
+                        <img src="{{ $eventData['eventAssets']['event_banner']['url'] }}" class="mt-3 w-80">
+                        <button wire:click="deleteEventAsset('Event Banner')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                            Remove image
+                        </button>
+                    @else
+                        N/A
+                    @endif
+                </div>
+            </div>
+
+            <div class="col-span-1">
+                <div class="flex items-center flex-col">
+                    <div class="relative">
+                        <p class="text-center">App Sponsor banner</p>
+                        <button wire:click="showEditEventAsset('App Sponsor banner')"
+                            class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                    @if ($eventData['eventAssets']['app_sponsor_banner']['url'])
+                        <img src="{{ $eventData['eventAssets']['app_sponsor_banner']['url'] }}" class="mt-3 w-80">
+                        <button wire:click="deleteEventAsset('App Sponsor banner')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                            Remove image
+                        </button>
+                    @else
+                        N/A
+                    @endif
+                </div>
+            </div>
+
+            <div class="col-span-1">
+                <div class="flex items-center flex-col">
+                    <div class="relative">
+                        <p class="text-center">Event splash screen</p>
+                        <button wire:click="showEditEventAsset('Event splash screen')"
+                            class="absolute top-0 -right-6 cursor-pointer hover:text-yellow-600 text-yellow-500">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </div>
+                    @if ($eventData['eventAssets']['event_splash_screen']['url'])
+                        <img src="{{ $eventData['eventAssets']['event_splash_screen']['url'] }}" class="mt-3 w-80">
+                        <button wire:click="deleteEventAsset('Event splash screen')"class="cursor-pointer hover:bg-red-500 bg-red-400 text-white text-sm py-1 px-5 rounded-md mt-4">
+                            Remove image
+                        </button>
+                    @else
+                        N/A
+                    @endif
+                </div>
             </div>
         </div>
     </div>
