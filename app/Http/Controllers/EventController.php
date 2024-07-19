@@ -291,7 +291,7 @@ class EventController extends Controller
                 'speaker_type_name' => $speaker->speakerType->name,
                 'pfp' => $speaker->pfp->file_url ?? null,
             ];
-        });
+        })->values();
 
         if ($mainConferenceSpeakers->isNotEmpty()) {
             $data[] = [
@@ -317,7 +317,7 @@ class EventController extends Controller
                     'speaker_type_name' => $speaker->speakerType->name,
                     'pfp' => $speaker->pfp->file_url ?? null,
                 ];
-            });
+            })->values();
 
             if ($categorizedSpeakers->isNotEmpty()) {
                 $data[] = [
