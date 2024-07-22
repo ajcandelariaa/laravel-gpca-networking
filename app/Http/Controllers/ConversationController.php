@@ -29,7 +29,7 @@ class ConversationController extends Controller
                     ->where('recipient_attendee_id', $attendeeId);
             })->orderBy('updated_at', 'DESC')->get();
 
-            $data = [];
+            $data = array();
             if ($conversations->isNotEmpty()) {
                 foreach ($conversations as $conversation) {
                     if ($conversation->created_by_attendee_id != $attendeeId) {
@@ -63,8 +63,8 @@ class ConversationController extends Controller
 
     public function apiConversationMessages($apiCode, $eventCategory, $eventId, $attendeeId, $conversationId)
     {
-        $data = [];
-        $dataMessages = [];
+        $data = array();
+        $dataMessages = array();
 
         $messages = SingleConversationMessage::where('single_conversation_id', $conversationId)->orderBy('created_at', 'ASC')->get();
         foreach ($messages as $message) {

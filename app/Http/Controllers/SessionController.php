@@ -196,36 +196,42 @@ class SessionController extends Controller
 
             $sessionSpeakerTypes = SessionSpeakerType::where('event_id', $eventId)->where('session_id', $sessionId)->orderBy('datetime_added', 'ASC')->get();
 
-            $sessionSpeakerCategorized = $sessionSpeakerTypes->map(function ($sessionSpeakerType) use ($eventId, $sessionId) {
-                $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('session_id', $sessionId)->where('session_speaker_type_id', $sessionSpeakerType->id)->get();
+            if ($sessionSpeakerTypes->isNotEmpty()) {
+                $sessionSpeakerCategorized = array();
+                foreach ($sessionSpeakerTypes as $sessionSpeakerType) {
+                    $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('session_id', $sessionId)->where('session_speaker_type_id', $sessionSpeakerType->id)->get();
 
-                $categorizedSpeakers = $sessionSpeakers->map(function ($sessionSpeaker) use ($eventId) {
-                    $speaker = Speaker::with('pfp')->where('id', $sessionSpeaker->speaker_id)->where('event_id', $eventId)->where('is_active', true)->first();
-                    if ($speaker) {
-                        return [
-                            'speaker_id' => $speaker->id,
-                            'salutation' => $speaker->salutation,
-                            'first_name' => $speaker->first_name,
-                            'middle_name' => $speaker->middle_name,
-                            'last_name' => $speaker->last_name,
-                            'company_name' => $speaker->company_name,
-                            'job_title' => $speaker->job_title,
-                            'pfp' => $speaker->pfp->file_url ?? null,
-                        ];
+                    if ($sessionSpeakers->isNotEmpty()) {
+                        $categorizedSpeakers = array();
+
+                        foreach ($sessionSpeakers as $sessionSpeaker) {
+                            $speaker = Speaker::where('id', $sessionSpeaker->speaker_id)->where('event_id', $eventId)->where('is_active', true)->first();
+
+                            if ($speaker) {
+                                array_push($categorizedSpeakers, [
+                                    'speaker_id' => $speaker->id,
+                                    'salutation' => $speaker->salutation,
+                                    'first_name' => $speaker->first_name,
+                                    'middle_name' => $speaker->middle_name,
+                                    'last_name' => $speaker->last_name,
+                                    'company_name' => $speaker->company_name,
+                                    'job_title' => $speaker->job_title,
+                                    'pfp' => $speaker->pfp->file_url ?? null,
+                                ]);
+                            }
+                        }
+
+                        if (count($categorizedSpeakers) > 0) {
+                            array_push($sessionSpeakerCategorized, [
+                                'speaker_type_name' => $sessionSpeakerType->name,
+                                'text_color' => $sessionSpeakerType->text_color,
+                                'background_color' => $sessionSpeakerType->background_color,
+                                'speakers' => $categorizedSpeakers,
+                            ]);
+                        }
                     }
-                    return null;
-                })->filter()->values();
-
-                if ($categorizedSpeakers->isNotEmpty()) {
-                    return [
-                        'speaker_type_name' => $sessionSpeakerType->name,
-                        'text_color' => $sessionSpeakerType->text_color,
-                        'background_color' => $sessionSpeakerType->background_color,
-                        'speakers' => $categorizedSpeakers,
-                    ];
                 }
-                return null;
-            })->filter()->values();
+            }
 
             $data = [
                 'session_id' => $session->id,

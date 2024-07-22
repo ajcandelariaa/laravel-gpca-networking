@@ -56,7 +56,7 @@ class AttendeesController extends Controller
 
         $passwordResetDetails = [];
         if ($attendee->passwordResets->isNotEmpty()) {
-            $passwordResetDetails = $attendee->passwordResets->map(function($attendeeReset) {
+            $passwordResetDetails = $attendee->passwordResets->map(function ($attendeeReset) {
                 return [
                     'changed_by' => $attendeeReset->password_changed_by,
                     'datetime' => Carbon::parse($attendeeReset->password_changed_date_time)->format('M j, Y g:i A'),
@@ -179,8 +179,8 @@ class AttendeesController extends Controller
 
         try {
             $attendee = Attendee::with('event')->where('email_address', $request->email_address)->first();
-            
-            if(!$attendee){
+
+            if (!$attendee) {
                 return $this->error(null, "Email address doesn't exist", 404);
             }
 
@@ -206,7 +206,7 @@ class AttendeesController extends Controller
             Mail::to($request->email_address)->send(new ForgotPasswordOtp($details));
 
             return $this->success(null, "OTP sent successfully", 200);
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->error($e, "An error occurred while sending the OTP", 500);
         }
     }
@@ -224,20 +224,21 @@ class AttendeesController extends Controller
 
         try {
             $checkOtp = ForgotPasswordReset::where('email_address', $request->email_address)->where('is_used', false)->where('expires_at', '>', Carbon::now())->first();
-            
-            if(!$checkOtp || !Hash::check($request->otp, $checkOtp->otp)){
+
+            if (!$checkOtp || !Hash::check($request->otp, $checkOtp->otp)) {
                 return $this->error(null, "Invalid or expired OTP", 400);
             }
 
             $checkOtp->update(['is_used' => true]);
 
             return $this->success(['attendee_id' => $checkOtp->attendee_id, 'otp_id' => $checkOtp->id], "OTP verified", 200);
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->error($e, "An error occurred while verifying the otp", 500);
         }
     }
 
-    public function apiForgotPasswordReset(Request $request, $apiCode, $eventCategory, $eventId){
+    public function apiForgotPasswordReset(Request $request, $apiCode, $eventCategory, $eventId)
+    {
         $validator = Validator::make($request->all(), [
             'attendee_id' => 'required|exists:attendees,id',
             'otp_id' => 'required|exists:forgot_password_resets,id',
@@ -255,7 +256,7 @@ class AttendeesController extends Controller
             }
 
             $resetRecord = ForgotPasswordReset::where('id', $request->otp_id)->where('attendee_id', $request->attendee_id)->where('is_password_changed', false)->first();
-            
+
             if (!$resetRecord) {
                 return $this->error(null, "Invalid OTP or password already changed", 400);
             }
@@ -289,7 +290,7 @@ class AttendeesController extends Controller
             Mail::to($attendee->email_address)->send(new AttendeeResetPassword($details));
 
             return $this->success(null, "Password reset successfully", 200);
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->error($e, "An error occurred while resetting password", 500);
         }
     }
@@ -308,7 +309,7 @@ class AttendeesController extends Controller
     {
         try {
             $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
-            
+
             if ($attendee->pass_type == PassTypes::FULL_MEMBER->value) {
                 $passTypeName = "Full Member";
             } else if ($attendee->pass_type == PassTypes::MEMBER->value) {
@@ -614,12 +615,12 @@ class AttendeesController extends Controller
     public function apiAttendeeFavorites($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         try {
-            $favoriteSessions = [];
-            $favoriteSpeakers = [];
-            $favoriteSponsors = [];
-            $favoriteExhibitors = [];
-            $favoriteMrps = [];
-            $favoriteMps = [];
+            $favoriteSessions = array();
+            $favoriteSpeakers = array();
+            $favoriteSponsors = array();
+            $favoriteExhibitors = array();
+            $favoriteMrps = array();
+            $favoriteMps = array();
 
             $attendeeFavoriteSessions = AttendeeFavoriteSession::with('session')->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
             $attendeeFavoriteSpeakers = AttendeeFavoriteSpeaker::with('speaker.pfp')->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
@@ -629,9 +630,9 @@ class AttendeesController extends Controller
             $attendeeFavoriteMps = AttendeeFavoriteMp::with('mediaPartner.logo')->where('attendee_id', $attendeeId)->where('event_id', $eventId)->get();
 
             if ($attendeeFavoriteSessions->isNotEmpty()) {
-                $favoriteSessions = $attendeeFavoriteSessions->map(function ($favorite) {
+                foreach ($attendeeFavoriteSessions as $favorite) {
                     if ($favorite->session->is_active) {
-                        return [
+                        array_push($favoriteSessions, [
                             'session_id' => $favorite->session->id,
                             'title' => $favorite->session->title,
                             'start_time' => $favorite->session->start_time,
@@ -639,15 +640,15 @@ class AttendeesController extends Controller
                             'session_date' => Carbon::parse($favorite->session->session_date)->format('F d, Y'),
                             'session_week_day' => Carbon::parse($favorite->session->session_date)->format('l'),
                             'session_day' => $favorite->session->session_day,
-                        ];
+                        ]);
                     }
-                });
+                }
             }
 
             if ($attendeeFavoriteSpeakers->isNotEmpty()) {
-                $favoriteSpeakers = $attendeeFavoriteSpeakers->map(function ($favorite) {
+                foreach ($attendeeFavoriteSpeakers as $favorite) {
                     if ($favorite->speaker->is_active) {
-                        return [
+                        array_push($favoriteSpeakers, [
                             'speaker_id' => $favorite->speaker->id,
                             'salutation' => $favorite->speaker->salutation,
                             'first_name' => $favorite->speaker->first_name,
@@ -656,61 +657,61 @@ class AttendeesController extends Controller
                             'company_name' => $favorite->speaker->company_name,
                             'job_title' => $favorite->speaker->job_title,
                             'pfp' => $favorite->speaker->pfp->file_url ?? null,
-                        ];
+                        ]);
                     }
-                });
+                }
             }
 
             if ($attendeeFavoriteSponsors->isNotEmpty()) {
-                $favoriteSponsors = $attendeeFavoriteSponsors->map(function ($favorite) {
+                foreach ($attendeeFavoriteSponsors as $favorite) {
                     if ($favorite->sponsor->is_active) {
-                        return [
+                        array_push($favoriteSponsors, [
                             'sponsor_id' => $favorite->sponsor->id,
                             'name' => $favorite->sponsor->name,
                             'type' => $favorite->sponsor->sponsorType->name ?? null,
                             'logo' => $favorite->sponsor->logo->file_url ?? null,
-                        ];
+                        ]);
                     }
-                });
+                }
             }
 
             if ($attendeeFavoriteExhibitors->isNotEmpty()) {
-                $favoriteExhibitors = $attendeeFavoriteExhibitors->map(function ($favorite) {
+                foreach ($attendeeFavoriteExhibitors as $favorite) {
                     if ($favorite->exhibitor->is_active) {
-                        return [
+                        array_push($favoriteExhibitors, [
                             'exhibitor_id' => $favorite->exhibitor->id,
                             'name' => $favorite->exhibitor->name,
                             'stand_number' => $favorite->exhibitor->stand_number,
                             'logo' => $favorite->exhibitor->logo->file_url ?? null,
-                        ];
+                        ]);
                     }
-                });
+                }
             }
 
             if ($attendeeFavoriteMrps->isNotEmpty()) {
-                $favoriteMrps = $attendeeFavoriteMrps->map(function ($favorite) {
+                foreach ($attendeeFavoriteMrps as $favorite) {
                     if ($favorite->meetingRoomPartner->is_active) {
-                        return [
+                        array_push($favoriteMrps, [
                             'meetingRoomPartner_id' => $favorite->meetingRoomPartner->id,
                             'name' => $favorite->meetingRoomPartner->name,
                             'location' => $favorite->meetingRoomPartner->location,
                             'logo' => $favorite->meetingRoomPartner->logo->file_url ?? null,
-                        ];
+                        ]);
                     }
-                });
+                }
             }
 
             if ($attendeeFavoriteMps->isNotEmpty()) {
-                $favoriteMps = $attendeeFavoriteMps->map(function ($favorite) {
+                foreach ($attendeeFavoriteMps as $favorite) {
                     if ($favorite->mediaPartner->is_active) {
-                        return [
+                        array_push($favoriteMps, [
                             'mediaPartner_id' => $favorite->mediaPartner->id,
                             'name' => $favorite->mediaPartner->name,
                             'website' => $favorite->mediaPartner->website,
                             'logo' => $favorite->mediaPartner->logo->file_url ?? null,
-                        ];
+                        ]);
                     }
-                });
+                }
             }
 
             $data = [
@@ -736,8 +737,9 @@ class AttendeesController extends Controller
                 return $this->error(null, "There are no attendees yet", 404);
             }
 
-            $data = $attendees->map(function ($attendee) {
-                return [
+            $data = array();
+            foreach ($attendees as $attendee) {
+                array_push($data, [
                     'attendee_id' => $attendee->id,
                     'salutation' => $attendee->salutation,
                     'first_name' => $attendee->first_name,
@@ -747,9 +749,8 @@ class AttendeesController extends Controller
                     'company_name' => $attendee->company_name,
                     'registration_type' => $attendee->registration_type,
                     'pfp' => $attendee->pfp->file_url ?? null,
-                ];
-            });
-
+                ]);
+            }
             return $this->success($data, "Attendees list", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while getting the attendees list", 500);

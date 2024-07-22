@@ -189,8 +189,10 @@ class EventController extends Controller
                 return $this->error(null, "There's no events yet.", 404);
             }
 
-            $data = $events->map(function ($event) {
-                return [
+            $data = array();
+
+            foreach ($events as $event) {
+                array_push($data, [
                     'id' => $event->id,
                     'category' => $event->category,
 
@@ -211,8 +213,9 @@ class EventController extends Controller
                     'secondary_text_color' => $event->secondary_text_color,
 
                     'is_accessible_in_the_app' => $event->is_accessible_in_the_app,
-                ];
-            });
+                ]);
+            }
+
             return $this->success($data, "Events List", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while getting the list of events", 500);
@@ -276,37 +279,12 @@ class EventController extends Controller
             return null;
         }
 
-        $data = [];
-        $mainConferenceSpeakers = $speakers->filter(function ($speaker) {
-            return $speaker->feature_id == 0;
-        })->map(function ($speaker) {
-            return [
-                'id' => $speaker->id,
-                'salutation' => $speaker->salutation,
-                'first_name' => $speaker->first_name,
-                'middle_name' => $speaker->middle_name,
-                'last_name' => $speaker->last_name,
-                'company_name' => $speaker->company_name,
-                'job_title' => $speaker->job_title,
-                'speaker_type_name' => $speaker->speakerType->name,
-                'pfp' => $speaker->pfp->file_url ?? null,
-            ];
-        })->values();
+        $data = array();
+        $mainConferenceSpeakers = array();
 
-        if ($mainConferenceSpeakers->isNotEmpty()) {
-            $data[] = [
-                'speakerCategoryName' => "Main Conference",
-                'speakerCategoryTextColor' => $event->primary_text_color,
-                'speakerCategoryBackgroundColor' => $event->primary_bg_color,
-                'speakers' => $mainConferenceSpeakers,
-            ];
-        }
-
-        foreach ($features as $feature) {
-            $categorizedSpeakers = $speakers->filter(function ($speaker) use ($feature) {
-                return $speaker->feature_id == $feature->id;
-            })->map(function ($speaker) {
-                return [
+        foreach ($speakers as $speaker) {
+            if ($speaker->feature_id == 0) {
+                array_push($mainConferenceSpeakers, [
                     'id' => $speaker->id,
                     'salutation' => $speaker->salutation,
                     'first_name' => $speaker->first_name,
@@ -316,16 +294,45 @@ class EventController extends Controller
                     'job_title' => $speaker->job_title,
                     'speaker_type_name' => $speaker->speakerType->name,
                     'pfp' => $speaker->pfp->file_url ?? null,
-                ];
-            })->values();
+                ]);
+            }
+        }
 
-            if ($categorizedSpeakers->isNotEmpty()) {
-                $data[] = [
+        if (count($mainConferenceSpeakers) > 0) {
+            array_push($data, [
+                'speakerCategoryName' => "Main Conference",
+                'speakerCategoryTextColor' => $event->primary_text_color,
+                'speakerCategoryBackgroundColor' => $event->primary_bg_color,
+                'speakers' => $mainConferenceSpeakers,
+            ]);
+        }
+
+        foreach ($features as $feature) {
+            $categorizedSpeakers = array();
+
+            foreach ($speakers as $speakers) {
+                if ($speaker->feature_id == $feature->id) {
+                    array_push($categorizedSpeakers, [
+                        'id' => $speaker->id,
+                        'salutation' => $speaker->salutation,
+                        'first_name' => $speaker->first_name,
+                        'middle_name' => $speaker->middle_name,
+                        'last_name' => $speaker->last_name,
+                        'company_name' => $speaker->company_name,
+                        'job_title' => $speaker->job_title,
+                        'speaker_type_name' => $speaker->speakerType->name,
+                        'pfp' => $speaker->pfp->file_url ?? null,
+                    ]);
+                }
+            }
+
+            if (count($categorizedSpeakers) > 0) {
+                array_push($data, [
                     'speakerCategoryName' => $feature->short_name,
                     'speakerCategoryTextColor' => $feature->primary_text_color,
                     'speakerCategoryBackgroundColor' => $feature->primary_bg_color,
                     'speakers' => $categorizedSpeakers,
-                ];
+                ]);
             }
         }
         return $data;
@@ -341,8 +348,8 @@ class EventController extends Controller
             return null;
         }
 
-        $data = [];
-        $categorizedSessionsByDate = [];
+        $data = array();
+        $categorizedSessionsByDate = array();
         $storeDatesCategoryTemp = [];
 
         // GET THE DATES FIRST
@@ -359,7 +366,7 @@ class EventController extends Controller
 
 
         foreach ($uniqueDates as $uniqueDate) {
-            $sessionsTemp = [];
+            $sessionsTemp = array();
             foreach ($sessions as $session) {
                 if ($session->feature_id == 0) {
                     if ($session->session_date == $uniqueDate) {
@@ -414,7 +421,7 @@ class EventController extends Controller
 
         if ($features->isNotEmpty()) {
             foreach ($features as $feature) {
-                $categorizedSessionsByDate = [];
+                $categorizedSessionsByDate = array();
                 $storeDatesCategoryTemp = [];
 
 
@@ -498,27 +505,28 @@ class EventController extends Controller
             return null;
         }
 
-        $data = [];
+        $data = array();
 
         foreach ($sponsorTypes as $sponsorType) {
-            $categorizedSponsors = $sponsors->filter(function ($sponsor) use ($sponsorType) {
-                return $sponsor->sponsor_type_id == $sponsorType->id;
-            })->map(function ($sponsor) {
-                return [
-                    'id' => $sponsor->id,
-                    'name' => $sponsor->name,
-                    'website' => $sponsor->website,
-                    'logo' => $sponsor->logo->file_url ?? null,
-                ];
-            });
+            $categorizedSponsors = array();
+            foreach ($sponsors as $sponsor) {
+                if ($sponsorType->id == $sponsor->sponsor_type_id) {
+                    array_push($categorizedSponsors, [
+                        'id' => $sponsor->id,
+                        'name' => $sponsor->name,
+                        'website' => $sponsor->website,
+                        'logo' => $sponsor->logo->file_url ?? null,
+                    ]);
+                }
+            }
 
-            if ($categorizedSponsors->isNotEmpty()) {
-                $data[] = [
+            if (count($categorizedSponsors) > 0) {
+                array_push($data, [
                     'sponsorTypeName' => $sponsorType->name,
                     'sponsorTypeTextColor' => $sponsorType->text_color,
                     'sponsorTypeBackgroundColor' => $sponsorType->background_color,
                     'sponsors' => $categorizedSponsors,
-                ];
+                ]);
             }
         }
 
@@ -533,14 +541,16 @@ class EventController extends Controller
             return null;
         }
 
-        return $exhibitors->map(function ($exhibitor) {
-            return [
+        $data = array();
+        foreach ($exhibitors as $exhibitor) {
+            array_push($data, [
                 'id' => $exhibitor->id,
                 'name' => $exhibitor->name,
                 'stand_number' => $exhibitor->stand_number,
                 'logo' => $exhibitor->logo->file_url ?? null,
-            ];
-        });
+            ]);
+        }
+        return $data;
     }
 
     public function apiGetMrpsList($eventCategory, $eventId)
@@ -551,14 +561,16 @@ class EventController extends Controller
             return null;
         }
 
-        return $meetingRoomPartners->map(function ($meetingRoomPartner) {
-            return [
+        $data = array();
+        foreach ($meetingRoomPartners as $meetingRoomPartner) {
+            array_push($data, [
                 'id' => $meetingRoomPartner->id,
                 'name' => $meetingRoomPartner->name,
                 'location' => $meetingRoomPartner->location,
                 'logo' => $meetingRoomPartner->logo->file_url ?? null,
-            ];
-        });
+            ]);
+        }
+        return $data;
     }
 
     public function apiGetMpsList($eventCategory, $eventId)
@@ -569,13 +581,15 @@ class EventController extends Controller
             return null;
         }
 
-        return $mediaPartners->map(function ($mediaPartner) {
-            return [
+        $data = array();
+        foreach ($mediaPartners as $mediaPartner) {
+            array_push($data, [
                 'id' => $mediaPartner->id,
                 'name' => $mediaPartner->name,
                 'website' => $mediaPartner->website,
                 'logo' => $mediaPartner->logo->file_url ?? null,
-            ];
-        });
+            ]);
+        }
+        return $data;
     }
 }

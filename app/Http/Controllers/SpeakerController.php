@@ -128,13 +128,13 @@ class SpeakerController extends Controller
                 return $this->error(null, "Speaker doesn't exist", 404);
             }
             
-            $speakerSessions = [];
+            $speakerSessions = array();
             $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('speaker_id', $speakerId)->get();
 
             if ($sessionSpeakers->isNotEmpty()) {
-                $speakerSessions = $sessionSpeakers->map(function ($sessionSpeaker) use ($eventId) {
+                foreach ($sessionSpeakers as $sessionSpeaker) {
                     $session = Session::where('id', $sessionSpeaker->session_id)->where('event_id', $eventId)->where('is_active', true)->first();
-                    return [
+                    array_push($speakerSessions, [
                         'session_id' => $session->id,
                         'title' => $session->title,
                         'start_time' => $session->start_time,
@@ -142,8 +142,8 @@ class SpeakerController extends Controller
                         'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
                         'session_week_day' => Carbon::parse($session->session_date)->format('l'),
                         'session_day' => $session->session_day,
-                    ];
-                });
+                    ]);
+                }
             }
 
             $data = [
