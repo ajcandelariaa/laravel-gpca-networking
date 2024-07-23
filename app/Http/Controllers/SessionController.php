@@ -196,8 +196,8 @@ class SessionController extends Controller
 
             $sessionSpeakerTypes = SessionSpeakerType::where('event_id', $eventId)->where('session_id', $sessionId)->orderBy('datetime_added', 'ASC')->get();
 
+            $sessionSpeakerCategorized = array();
             if ($sessionSpeakerTypes->isNotEmpty()) {
-                $sessionSpeakerCategorized = array();
                 foreach ($sessionSpeakerTypes as $sessionSpeakerType) {
                     $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('session_id', $sessionId)->where('session_speaker_type_id', $sessionSpeakerType->id)->get();
 
