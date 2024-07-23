@@ -166,12 +166,12 @@
         </div>
 
         <div class="flex gap-3 items-center mt-3">
-            <p class="font-bold text-primaryColor">Delegate feedback survey link: </p>
+            <p class="font-bold text-primaryColor">Floor plan 3d image link: </p>
             <p>{{ $eventData['eventFloorPlanLinks']['floor_plan_3d_image_link'] ?? 'N/A' }}</p>
         </div>
 
         <div class="flex gap-3 items-center mt-1">
-            <p class="font-bold text-primaryColor">App feedback survey link: </p>
+            <p class="font-bold text-primaryColor">Floor plan exhibition image link: </p>
             <p>{{ $eventData['eventFloorPlanLinks']['floor_plan_exhibition_image_link'] ?? 'N/A' }}</p>
         </div>
     </div>
