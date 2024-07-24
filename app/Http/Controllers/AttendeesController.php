@@ -21,6 +21,7 @@ use App\Models\AttendeePasswordReset;
 use App\Models\Event;
 use App\Models\ForgotPasswordReset;
 use App\Models\Media;
+use App\Models\SingleConversation;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -739,17 +740,37 @@ class AttendeesController extends Controller
 
             $data = array();
             foreach ($attendees as $attendee) {
-                array_push($data, [
-                    'attendee_id' => $attendee->id,
-                    'salutation' => $attendee->salutation,
-                    'first_name' => $attendee->first_name,
-                    'middle_name' => $attendee->middle_name,
-                    'last_name' => $attendee->last_name,
-                    'job_title' => $attendee->job_title,
-                    'company_name' => $attendee->company_name,
-                    'registration_type' => $attendee->registration_type,
-                    'pfp' => $attendee->pfp->file_url ?? null,
-                ]);
+                if ($attendee->id != $attendeeId) {
+                    $recipientAttendeeId = $attendee->id;
+                    $conversationId = null;
+
+                    $conversation = SingleConversation::where(function ($query) use ($eventId, $attendeeId, $recipientAttendeeId) {
+                        $query->where('event_id', $eventId)
+                            ->where('created_by_attendee_id', $attendeeId)
+                            ->where('recipient_attendee_id', $recipientAttendeeId);
+                    })->orWhere(function ($query) use ($eventId, $attendeeId, $recipientAttendeeId) {
+                        $query->where('event_id', $eventId)
+                            ->where('created_by_attendee_id', $recipientAttendeeId)
+                            ->where('recipient_attendee_id', $attendeeId);
+                    })->first();
+
+                    if($conversation){
+                        $conversationId = $conversation->id;
+                    }
+                    
+                    array_push($data, [
+                        'attendee_id' => $attendee->id,
+                        'salutation' => $attendee->salutation,
+                        'first_name' => $attendee->first_name,
+                        'middle_name' => $attendee->middle_name,
+                        'last_name' => $attendee->last_name,
+                        'job_title' => $attendee->job_title,
+                        'company_name' => $attendee->company_name,
+                        'registration_type' => $attendee->registration_type,
+                        'pfp' => $attendee->pfp->file_url ?? null,
+                        'conversationId' => $conversationId,
+                    ]);
+                }
             }
             return $this->success($data, "Attendees list", 200);
         } catch (\Exception $e) {
