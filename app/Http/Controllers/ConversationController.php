@@ -102,43 +102,37 @@ class ConversationController extends Controller
             'attendee_id' => 'required',
             'recipient_attendee_id' => 'required',
             'message' => 'required',
+            'conversation_id' => 'nullable',
         ]);
-
+        
         if ($validator->fails()) {
             return $this->errorValidation($validator->errors());
         }
 
         try {
-            $conversation = SingleConversation::where(function ($query) use ($eventId, $request) {
-                $query->where('event_id', $eventId)
-                    ->where('created_by_attendee_id', $request->attendee_id)
-                    ->where('recipient_attendee_id', $request->recipient_attendee_id);
-            })->orWhere(function ($query) use ($eventId, $request) {
-                $query->where('event_id', $eventId)
-                    ->where('created_by_attendee_id', $request->recipient_attendee_id)
-                    ->where('recipient_attendee_id', $request->attendee_id);
-            })->first();
-
-            if (!$conversation) {
+            if ($request->conversation_id == null) {
                 $conversation = SingleConversation::create([
                     'event_id' => $eventId,
                     'created_by_attendee_id' => $request->attendee_id,
                     'recipient_attendee_id' => $request->recipient_attendee_id,
                 ]);
+
+                $finalConversationId = $conversation->id;
             } else {
-                SingleConversation::where('id', $conversation->id)->update([
+                SingleConversation::where('id', $request->conversation_id)->update([
                     'updated_at' => Carbon::now(),
                 ]);
+                $finalConversationId = $request->conversation_id;
             }
 
             $message = SingleConversationMessage::create([
-                'single_conversation_id' => $conversation->id,
+                'single_conversation_id' => $finalConversationId,
                 'attendee_id' => $request->attendee_id,
                 'message' => $request->message,
             ]);
 
             $data = [
-                'single_conversation_id' => $conversation->id,
+                'single_conversation_id' => intval($finalConversationId),
                 'message_id' => $message->id,
                 'message_by_attendee_id' => $message->id,
                 'message' => $message->message,
@@ -148,7 +142,7 @@ class ConversationController extends Controller
 
             broadcast(new MessageSent($data))->toOthers();
 
-            return $this->success(null, "Message sent successfully", 200);
+            return $this->success($data, "Message sent successfully", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while sending a message", 500);
         }
