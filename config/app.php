@@ -470,4 +470,23 @@ return [
         'default' => ['jhoanna@gpca.org.ae', 'wesam@gpca.org.ae', 'aj@gpca.org.ae'],
         'error' => ['aj@gpca.org.ae'],
     ],
+
+    'notificationTypes' => [
+        'SPKL',
+        'SPKD',
+        'SSL',
+        'SSD',
+        'SPSL',
+        'SPSD',
+        'EXHL',
+        'EXHD',
+        'MRPL',
+        'MRPD',
+        'MPL',
+        'MPD',
+        'FPD',
+        'DF',
+        'AL',
+        'APD',
+    ]
 ];

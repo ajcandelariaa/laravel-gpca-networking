@@ -56,6 +56,11 @@
         </div>
 
         <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Timezone:</p>
+            <p>{{ $eventData['eventDetails']['timezone'] }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Full link:</p>
             <p>{{ $eventData['eventDetails']['event_full_link'] }}</p>
         </div>

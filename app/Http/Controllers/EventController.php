@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\MediaEntityTypes;
 use App\Models\Attendee;
+use App\Models\AttendeeNotification;
 use App\Models\Event;
 use App\Models\Exhibitor;
 use App\Models\Feature;
@@ -102,6 +103,8 @@ class EventController extends Controller
 
                     'event_start_date' => $event->event_start_date,
                     'event_end_date' => $event->event_end_date,
+
+                    'timezone' => $event->timezone,
 
                     'finalEventStartDate' => $finalEventStartDate,
                     'finalEventEndDate' => $finalEventEndDate,
@@ -258,7 +261,7 @@ class EventController extends Controller
                     'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
                     'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
                 ],
-                'notifications' => null,
+                'notifications' => $this->apiGetNotifications($eventCategory, $eventId, $attendeeId),
             ];
             return $this->success($data, "Event Homepage details", 200);
         } catch (\Exception $e) {
@@ -590,6 +593,44 @@ class EventController extends Controller
                 'logo' => $mediaPartner->logo->file_url ?? null,
             ]);
         }
+        return $data;
+    }
+
+    public function apiGetNotifications($eventCategory, $eventId, $attendeeId)
+    {
+        $attendeeNotifications = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->orderBy('sent_datetime', 'DESC')->get();
+        
+        if($attendeeNotifications->isEmpty()){
+            return null;
+        }
+        
+        $data = array();
+        foreach($attendeeNotifications as $attendeeNotification){
+            if($attendeeNotification->notification_id != null){
+                array_push($data, [
+                    'id' => $attendeeNotification->id,
+                    'type' => $attendeeNotification->notification->type,
+                    'title' => $attendeeNotification->notification->title,
+                    'subtitle' => $attendeeNotification->notification->subtitle,
+                    'message' => $attendeeNotification->notification->message,
+                    'sent_datetime' => Carbon::parse($attendeeNotification->sent_datetime)->format('M j, Y g:i A'),
+                    'is_seen' => $attendeeNotification->is_seen ? true : false,
+                    'seen_datetime' => $attendeeNotification->seen_datetime,
+                ]);
+            } else {
+                array_push($data, [
+                    'id' => $attendeeNotification->id,
+                    'type' => $attendeeNotification->type,
+                    'title' => $attendeeNotification->title,
+                    'subtitle' => $attendeeNotification->subtitle,
+                    'message' => $attendeeNotification->message,
+                    'sent_datetime' => Carbon::parse($attendeeNotification->sent_datetime)->format('M j, Y g:i A'),
+                    'is_seen' => $attendeeNotification->is_seen ? true : false,
+                    'seen_datetime' => $attendeeNotification->seen_datetime,
+                ]);
+            }
+        }
+
         return $data;
     }
 }

@@ -7,6 +7,7 @@ use App\Enums\MediaUsageUpdateTypes;
 use App\Models\Event as Events;
 use App\Models\Media as Medias;
 use Carbon\Carbon;
+use DateTimeZone;
 use Livewire\Component;
 
 class EventDetails extends Component
@@ -14,7 +15,7 @@ class EventDetails extends Component
     public $eventData, $eventCategories;
 
     // EDIT DETAILS
-    public $full_name, $short_name, $category, $edition, $location, $event_full_link, $event_short_link, $event_start_date, $event_end_date;
+    public $full_name, $short_name, $category, $edition, $location, $event_full_link, $event_short_link, $event_start_date, $event_end_date, $timezone, $timezoneChoices;
     public $editEventDetailsForm;
 
     // EDIT COLORS
@@ -78,6 +79,7 @@ class EventDetails extends Component
     // EDIT EVENT DETAILS
     public function showEditEventDetails()
     {
+        $this->timezoneChoices = DateTimeZone::listIdentifiers();
         $this->full_name = $this->eventData['eventDetails']['full_name'];
         $this->short_name = $this->eventData['eventDetails']['short_name'];
         $this->category = $this->eventData['eventDetails']['category'];
@@ -89,6 +91,8 @@ class EventDetails extends Component
 
         $this->event_start_date = $this->eventData['eventDetails']['event_start_date'];
         $this->event_end_date = $this->eventData['eventDetails']['event_end_date'];
+
+        $this->timezone = $this->eventData['eventDetails']['timezone'];
 
         $this->editEventDetailsForm = true;
     }
@@ -108,6 +112,9 @@ class EventDetails extends Component
 
         $this->event_start_date = null;
         $this->event_end_date = null;
+
+        $this->timezone = null;
+        $this->timezoneChoices = null;
     }
 
     public function editEventDetailsConfirmation()
@@ -122,6 +129,7 @@ class EventDetails extends Component
             'event_short_link' => 'required',
             'event_start_date' => 'required|date',
             'event_end_date' => 'required|date',
+            'timezone' => 'required',
         ]);
 
 
@@ -148,6 +156,7 @@ class EventDetails extends Component
             'event_short_link' => $this->event_short_link,
             'event_start_date' => $this->event_start_date,
             'event_end_date' => $this->event_end_date,
+            'timezone' => $this->timezone,
             'year' => $currentYear,
         ]);
 
@@ -162,6 +171,7 @@ class EventDetails extends Component
         $this->eventData['eventDetails']['event_short_link'] = $this->event_short_link;
         $this->eventData['eventDetails']['event_start_date'] = $this->event_start_date;
         $this->eventData['eventDetails']['event_end_date'] = $this->event_end_date;
+        $this->eventData['eventDetails']['timezone'] = $this->timezone;
         $this->eventData['eventDetails']['finalEventStartDate'] = Carbon::parse($this->event_start_date)->format('d M Y');
         $this->eventData['eventDetails']['finalEventEndDate'] = Carbon::parse($this->event_end_date)->format('d M Y');
         $this->eventData['eventDetails']['year'] = $currentYear;
@@ -467,7 +477,6 @@ class EventDetails extends Component
                 'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_LOGO->value, $this->eventData['eventId']),
                 'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
             ];
-
         } else if ($this->assetType == 'Event Logo inverted') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_logo_inverted_media_id' => $this->image_media_id,
@@ -496,7 +505,6 @@ class EventDetails extends Component
                 'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_LOGO_INVERTED->value, $this->eventData['eventId']),
                 'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
             ];
-
         } else if ($this->assetType == 'App Sponsor logo') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_logo_media_id' => $this->image_media_id,
@@ -525,7 +533,6 @@ class EventDetails extends Component
                 'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_APP_SPONSOR_LOGO->value, $this->eventData['eventId']),
                 'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
             ];
-
         } else if ($this->assetType == 'Event Banner') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_banner_media_id' => $this->image_media_id,
@@ -554,7 +561,6 @@ class EventDetails extends Component
                 'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_BANNER->value, $this->eventData['eventId']),
                 'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
             ];
-
         } else if ($this->assetType == 'App Sponsor banner') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_banner_media_id' => $this->image_media_id,
@@ -583,7 +589,6 @@ class EventDetails extends Component
                 'media_usage_id' => getMediaUsageId($this->image_media_id, MediaEntityTypes::EVENT_APP_SPONSOR_BANNER->value, $this->eventData['eventId']),
                 'url' => Medias::where('id', $this->image_media_id)->value('file_url'),
             ];
-
         } else {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_splash_screen_media_id' => $this->image_media_id,
@@ -657,7 +662,8 @@ class EventDetails extends Component
     }
 
 
-    public function deleteEventAsset($deleteAssetType){
+    public function deleteEventAsset($deleteAssetType)
+    {
         if ($deleteAssetType == "Event Logo") {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_logo_media_id' => null,
@@ -676,7 +682,6 @@ class EventDetails extends Component
                 'media_usage_id' => null,
                 'url' => null,
             ];
-
         } else if ($deleteAssetType == 'Event Logo inverted') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_logo_inverted_media_id' => null,
@@ -695,7 +700,6 @@ class EventDetails extends Component
                 'media_usage_id' => null,
                 'url' => null,
             ];
-
         } else if ($deleteAssetType == 'App Sponsor logo') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_logo_media_id' => null,
@@ -714,7 +718,6 @@ class EventDetails extends Component
                 'media_usage_id' => null,
                 'url' => null,
             ];
-
         } else if ($deleteAssetType == 'Event Banner') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_banner_media_id' => null,
@@ -733,7 +736,6 @@ class EventDetails extends Component
                 'media_usage_id' => null,
                 'url' => null,
             ];
-
         } else if ($deleteAssetType == 'App Sponsor banner') {
             Events::where('id', $this->eventData['eventId'])->update([
                 'app_sponsor_banner_media_id' => null,
@@ -752,7 +754,6 @@ class EventDetails extends Component
                 'media_usage_id' => null,
                 'url' => null,
             ];
-
         } else {
             Events::where('id', $this->eventData['eventId'])->update([
                 'event_splash_screen_media_id' => null,

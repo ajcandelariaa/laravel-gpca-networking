@@ -7,6 +7,7 @@ use App\Enums\MediaUsageUpdateTypes;
 use App\Models\Event as Events;
 use App\Models\Media as Medias;
 use Carbon\Carbon;
+use DateTimeZone;
 use Livewire\Component;
 
 class AddEvent extends Component
@@ -15,6 +16,7 @@ class AddEvent extends Component
 
     public $category, $full_name, $short_name, $edition, $location, $event_full_link, $event_short_link, $event_start_date, $event_end_date, $event_logo_media_id, $event_logo_placeholder_text;
     public $primary_bg_color, $secondary_bg_color, $primary_text_color, $secondary_text_color;
+    public $timezone, $timezoneChoices;
 
     public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
@@ -25,6 +27,7 @@ class AddEvent extends Component
         $this->eventCategories = config('app.eventCategories');
         $this->mediaFileList = array();
         $this->chooseImageModal = false;
+        $this->timezoneChoices = DateTimeZone::listIdentifiers();
     }
 
     public function render()
@@ -44,6 +47,8 @@ class AddEvent extends Component
             'event_short_link' => 'required',
             'event_start_date' => 'required|date',
             'event_end_date' => 'required|date',
+
+            'timezone' => 'required',
 
             'event_logo_placeholder_text' => 'required',
 
@@ -74,6 +79,8 @@ class AddEvent extends Component
             'event_short_link' => $this->event_short_link,
             'event_start_date' => $this->event_start_date,
             'event_end_date' => $this->event_end_date,
+
+            'timezone' => $this->timezone,
 
             'event_logo_media_id' => $this->event_logo_media_id,
 

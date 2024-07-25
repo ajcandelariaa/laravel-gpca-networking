@@ -33,32 +33,6 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                 Route::post('/forgot-password/verify-otp', [AttendeesController::class, 'apiForgotPasswordVerifyOtp']);
                 Route::post('/forgot-password/reset', [AttendeesController::class, 'apiForgotPasswordReset']);
 
-                Route::get('/test-send-whats-app', function () {
-                    $recipient = "+18777804236";
-                    $message = "Test from my api to virtual phone";
-
-                    $result = sendWhatsAppMessage($recipient, $message);
-                
-                    if ($result === true) {
-                        return response()->json(['message' => 'WhatsApp message sent successfully']);
-                    } else {
-                        return response()->json(['error' => 'Failed to send WhatsApp message', 'details' => $result->getMessage()], 500);
-                    }
-                });
-
-                Route::get('/test-sms-country', function () {
-                    $recipient = "+971568309165";
-                    $message = "Test from my api";
-
-                    $result = sendMessageUsingSMSCountry($recipient, $message);
-                
-                    if ($result === true) {
-                        return response()->json(['message' => 'WhatsApp message sent successfully']);
-                    } else {
-                        return response()->json(['error' => 'Failed to send WhatsApp message', 'details' => $result], 500);
-                    }
-                });
-
                 Route::middleware("auth:sanctum")->group(function () {
                     Route::group(['middleware' => 'api.check.attendee.exists'], function () {
                         Route::prefix('attendee/{attendeeId}')->group(function () {

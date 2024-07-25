@@ -52,14 +52,15 @@
                             </div>
                         </div>
 
-                        
+
                         <div class="space-y-2 col-span-2 grid grid-cols-2 gap-5 items-start">
                             <div class="col-span-2 mt-2">
                                 <div class="text-primaryColor">
                                     Event Full Name <span class="text-red-500">*</span>
                                 </div>
                                 <div class="mt-2">
-                                    <input placeholder="14th GPCA Supply Chain" type="text" wire:model.lazy="full_name"
+                                    <input placeholder="14th GPCA Supply Chain" type="text"
+                                        wire:model.lazy="full_name"
                                         class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                                     @error('full_name')
                                         <div class="text-red-500 text-xs italic mt-1">
@@ -172,6 +173,26 @@
                                         </div>
                                     @enderror
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <div class="text-primaryColor">
+                                Timezone <span class="text-red-500">*</span>
+                            </div>
+                            <div class="mt-2">
+                                <select wire:model.lazy="timezone"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                                    @foreach ($timezoneChoices as $timezoneChoice)
+                                        <option value="{{ $timezoneChoice }}">{{ $timezoneChoice }}</option>
+                                    @endforeach
+                                </select>
+
+                                @error('timezone')
+                                    <div class="text-red-500 text-xs italic mt-1">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
 

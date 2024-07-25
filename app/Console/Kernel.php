@@ -2,6 +2,10 @@
 
 namespace App\Console;
 
+use App\Models\Attendee;
+use App\Models\AttendeeNotification;
+use App\Models\Notification;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,7 +19,41 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $eventId = 1;
+
+            $notifications = Notification::with('event')->where('event_id', $eventId)->where('is_sent', false)->get();
+
+            if ($notifications->isNotEmpty()) {
+                foreach ($notifications as $notification) {
+                    $now = Carbon::now()->setTimezone($notification->event->timezone);
+                    $sendTime = $notification->send_datetime;
+                    if ($now->greaterThanOrEqualTo($sendTime)) {
+
+                        // ADD ATTENDEENOTIFICATION
+                        $attendees = Attendee::where('event_id', $notification->event->id)->where('is_active', true)->get();
+                        if($attendees->isNotEmpty()){
+                            foreach($attendees as $attendee){
+                                // PUSH NOTIFICATION
+                                
+
+                                AttendeeNotification::create([
+                                    'event_id' => $notification->event->id,
+                                    'attendee_id' => $attendee->id,
+                                    'notification_id' => $notification->id,
+                                    'sent_datetime' => Carbon::now(),
+                                ]);
+                            }
+                        }
+
+                        // UPDATE NOTIFICATION
+                        Notification::where('id', $notification->id)->update([
+                            'is_sent' => true,
+                        ]);
+                    }
+                }
+            }
+        })->everyMinute();
     }
 
     /**
@@ -25,7 +63,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

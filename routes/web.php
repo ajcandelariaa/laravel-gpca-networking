@@ -9,6 +9,7 @@ use App\Http\Controllers\FloorPlanController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\MeetingRoomPartnerController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SpeakerController;
 use App\Http\Controllers\SponsorController;
@@ -74,6 +75,10 @@ Route::prefix('admin')->group(function () {
                 Route::prefix('/media-partner')->group(function () {
                     Route::get('/', [MediaPartnerController::class, 'eventMediaPartnersView'])->name('admin.event.media-partners.view');
                     Route::get('/{mediaPartnerId}', [MediaPartnerController::class, 'eventMediaPartnerView'])->name('admin.event.media-partner.view');
+                });
+
+                Route::prefix('/notification')->group(function () {
+                    Route::get('/', [NotificationController::class, 'eventNotificationsView'])->name('admin.event.notifications.view');
                 });
 
                 Route::prefix('/feature')->group(function () {

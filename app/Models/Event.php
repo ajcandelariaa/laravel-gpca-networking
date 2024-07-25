@@ -21,6 +21,8 @@ class Event extends Model
         'event_start_date',
         'event_end_date',
 
+        'timezone',
+
         'event_logo_media_id',
         'event_logo_inverted_media_id',
         'app_sponsor_logo_media_id',
