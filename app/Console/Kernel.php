@@ -8,6 +8,7 @@ use App\Models\Notification;
 use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -20,6 +21,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
+            Log::info('Scheduler is running.');
             $eventId = 1;
 
             $notifications = Notification::with('event')->where('event_id', $eventId)->where('is_sent', false)->get();
@@ -35,7 +37,7 @@ class Kernel extends ConsoleKernel
                         if($attendees->isNotEmpty()){
                             foreach($attendees as $attendee){
                                 // PUSH NOTIFICATION
-                                
+
 
                                 AttendeeNotification::create([
                                     'event_id' => $notification->event->id,
