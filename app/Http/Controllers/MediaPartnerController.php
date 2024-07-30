@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\MediaEntityTypes;
 use App\Models\AttendeeFavoriteMp;
 use App\Models\Event;
-use App\Models\Media;
 use App\Models\MediaPartner;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;

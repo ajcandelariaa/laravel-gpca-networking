@@ -6,6 +6,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
 use App\Http\Controllers\MediaPartnerController;
 use App\Http\Controllers\MeetingRoomPartnerController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SpeakerController;
 use App\Http\Controllers\SponsorController;
@@ -86,6 +87,8 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                                 Route::get('/{mediaPartnerId}', [MediaPartnerController::class, 'apiEventMediaPartnerDetail']);
                                 Route::post('/mark-as-favorite', [MediaPartnerController::class, 'apiEventMediaPartnerMarkAsFavorite']);
                             });
+
+                            Route::post('/notification/mark-as-read', [NotificationController::class, 'apiEventNotificationMarkAsRead']);
                         });
                     });
                 });
