@@ -35,7 +35,7 @@ class NotificationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'attendee_id' => 'required|exists:attendees,id',
-            'atendee_notification_id' => 'required|exists:attendee_notifications,id',
+            'attendee_notification_id' => 'required|exists:attendee_notifications,id',
         ]);
 
         if ($validator->fails()) {
@@ -43,7 +43,7 @@ class NotificationController extends Controller
         }
 
         try {
-            AttendeeNotification::where('id', $request->atendee_notification_id)->update([
+            AttendeeNotification::where('id', $request->attendee_notification_id)->update([
                 'is_seen' => true,
                 'seen_datetime' => Carbon::now(),
             ]);
