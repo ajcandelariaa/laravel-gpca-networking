@@ -191,7 +191,7 @@ class AttendeesController extends Controller
                 'attendee_id' => $attendee->id,
                 'email_address' => $request->email_address,
                 'otp' => Hash::make($otp),
-                'expires_at' => Carbon::now()->addMinutes(10),
+                'expires_at' => Carbon::now()->addMinutes(30),
             ]);
 
             $details = [
