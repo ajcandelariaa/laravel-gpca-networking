@@ -164,28 +164,31 @@ if (!function_exists('generateOTP')) {
 
 
 
-if (!function_exists('pushNotification')) {
-    function pushNotification($to, $notification, $data)
+if (!function_exists('sendPushNotification')) {
+    function sendPushNotification($deviceToken, $title, $message, $data)
     {
         $server_key = env('FIREBASE_SERVER_KEY');
 
-        $url = "https://fcm.googleapis.com/fcm/send";
-        $fields = json_encode(array(
-            'to' => $to,
-            'notification' => $notification,
+        $url = 'https://fcm.googleapis.com/fcm/send';
+        $fields = [
+            'to' => $deviceToken,
+            'notification' => [
+                'title' => $title,
+                'body' => $message,
+            ],
             'data' => $data,
-        ));
+        ];
+
+        $headers = [
+            'Authorization: key =' . $server_key,
+            'Content-Type: application/json',
+        ];
 
         $ch = curl_init();
-
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, ($fields));
-
-        $headers = array();
-        $headers[] = 'Authorization: key =' . $server_key;
-        $headers[] = 'Content-type: application/json';
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $result = curl_exec($ch);

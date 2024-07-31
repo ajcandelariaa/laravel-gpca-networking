@@ -72,4 +72,8 @@ class Attendee extends Model
     public function passwordResets(){
         return $this->hasMany(AttendeePasswordReset::class, 'attendee_id');
     }
+
+    public function deviceTokens(){
+        return $this->hasMany(AttendeeDeviceToken::class, 'attendee_id');
+    }
 }

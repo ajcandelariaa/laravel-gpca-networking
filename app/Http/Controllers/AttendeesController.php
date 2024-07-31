@@ -11,6 +11,7 @@ use App\Mail\EmailChanged;
 use App\Mail\ForgotPasswordOtp;
 use App\Mail\UsernameChanged;
 use App\Models\Attendee;
+use App\Models\AttendeeDeviceToken;
 use App\Models\AttendeeFavoriteExhibitor;
 use App\Models\AttendeeFavoriteMp;
 use App\Models\AttendeeFavoriteMrp;
@@ -138,6 +139,7 @@ class AttendeesController extends Controller
         $validator = Validator::make($request->all(), [
             'username' => 'required',
             'password' => 'required',
+            'device_token' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -154,6 +156,12 @@ class AttendeesController extends Controller
             if (!Hash::check($request->password, $attendee->password)) {
                 return $this->error(null, "Invalid credentials", 401);
             }
+
+            AttendeeDeviceToken::create([
+                'event_id' => $eventId,
+                'attendee_id' => $attendee->id,
+                'device_token' => $request->device_token,
+            ]);
 
             $tokenResult = $attendee->createToken('api token of ' . $attendee->id);
 
@@ -298,8 +306,24 @@ class AttendeesController extends Controller
 
     public function apiAttendeeLogout(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
+        $validator = Validator::make($request->all(), [
+            'attendee_id' => 'required',
+            'device_token' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
         try {
             $request->user()->currentAccessToken()->delete();
+
+            $attendeeDevice = AttendeeDeviceToken::where('event_id', $eventId)->where('attendee_id', $request->attendee_id)->where('device_token', $request->device_token)->first();
+
+            if($attendeeDevice){
+                $attendeeDevice->delete();
+            }
+
             return $this->success(null, "Logged out successfully", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while logging out", 500);

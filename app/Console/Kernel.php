@@ -33,11 +33,22 @@ class Kernel extends ConsoleKernel
                     if ($now->greaterThanOrEqualTo($sendTime)) {
 
                         // ADD ATTENDEENOTIFICATION
-                        $attendees = Attendee::where('event_id', $notification->event->id)->where('is_active', true)->get();
+                        $attendees = Attendee::with('deviceTokens')->where('event_id', $notification->event->id)->where('is_active', true)->get();
                         if($attendees->isNotEmpty()){
                             foreach($attendees as $attendee){
                                 // PUSH NOTIFICATION
-
+                                try {
+                                    if($attendee->deviceTokens->isNotEmpty()){
+                                        foreach($attendee->deviceTokens as $deviceToken){
+                                            $data = [
+                                                'event_id' => $notification->event->id,
+                                                'notification_type' => $notification->type,
+                                                'entity_id' => null,
+                                            ];
+                                            sendPushNotification($deviceToken, $notification->title, $notification->message, $data);
+                                        }
+                                    }
+                                } catch (\Exception $e){}
 
                                 AttendeeNotification::create([
                                     'event_id' => $notification->event->id,

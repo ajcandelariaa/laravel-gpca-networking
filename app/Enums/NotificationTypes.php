@@ -29,4 +29,7 @@ enum NotificationTypes: string
     case ATTENDEES_LIST = "AL";
 
     case ATTENDEE_PROFILE_DETAILS = "APD";
+
+    case ATTENDEE_CHATS = "ACHS";
+    case ATTENDEE_CHAT = "ACH";
 }

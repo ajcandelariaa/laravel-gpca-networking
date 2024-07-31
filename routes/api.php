@@ -37,7 +37,7 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                 Route::middleware("auth:sanctum")->group(function () {
                     Route::group(['middleware' => 'api.check.attendee.exists'], function () {
                         Route::prefix('attendee/{attendeeId}')->group(function () {
-                            Route::get('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
+                            Route::post('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
                             Route::get('/homepage', [EventController::class, 'apiEventHomepage']);
 
                             Route::prefix('profile')->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NotificationTypes;
 use App\Events\MessageSent;
 use App\Models\Attendee;
 use App\Models\SingleConversation;
@@ -139,6 +140,19 @@ class ConversationController extends Controller
                 'date' => Carbon::parse($message->updated_at)->format('F d, Y'),
                 'time' => Carbon::parse($message->updated_at)->toTimeString(),
             ];
+
+            $attendee = Attendee::with('deviceTokens')->where('id', $request->recipient_attendee_id)->first();
+            if($attendee->deviceTokens->isNotEmpty()){
+                foreach($attendee->deviceTokens as $deviceToken){
+                    $data = [
+                        'event_id' => $eventId,
+                        'notification_type' => NotificationTypes::ATTENDEE_CHATS->value,
+                        'entity_id' => null,
+                    ];
+
+                    sendPushNotification($deviceToken, "New message", $message->message, $data);
+                }
+            }
 
             broadcast(new MessageSent($data))->toOthers();
 
