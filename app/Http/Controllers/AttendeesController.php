@@ -157,11 +157,15 @@ class AttendeesController extends Controller
                 return $this->error(null, "Invalid credentials", 401);
             }
 
-            AttendeeDeviceToken::create([
-                'event_id' => $eventId,
-                'attendee_id' => $attendee->id,
-                'device_token' => $request->device_token,
-            ]);
+            $attendeeDeviceToken = AttendeeDeviceToken::where('event_id', $eventId)->where('attendee_id', $attendee->id)->where('device_token', $request->device_token)->first();
+
+            if(!$attendeeDeviceToken){
+                AttendeeDeviceToken::create([
+                    'event_id' => $eventId,
+                    'attendee_id' => $attendee->id,
+                    'device_token' => $request->device_token,
+                ]);
+            }
 
             $tokenResult = $attendee->createToken('api token of ' . $attendee->id);
 
