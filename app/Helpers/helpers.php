@@ -167,34 +167,40 @@ if (!function_exists('generateOTP')) {
 if (!function_exists('sendPushNotification')) {
     function sendPushNotification($deviceToken, $title, $message, $data)
     {
-        $server_key = env('FIREBASE_SERVER_KEY');
+        try {
 
-        $url = 'https://fcm.googleapis.com/fcm/send';
-        $fields = [
-            'to' => $deviceToken,
-            'notification' => [
-                'title' => $title,
-                'body' => $message,
-            ],
-            'data' => $data,
-        ];
+            $server_key = env('FIREBASE_SERVER_KEY');
 
-        $headers = [
-            'Authorization: key =' . $server_key,
-            'Content-Type: application/json',
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, ($fields));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Error: ' . curl_error($ch);
+            $url = 'https://fcm.googleapis.com/fcm/send';
+            $fields = [
+                'to' => $deviceToken,
+                'notification' => [
+                    'title' => $title,
+                    'body' => $message,
+                ],
+                'data' => $data,
+            ];
+    
+            $headers = [
+                'Authorization: key =' . $server_key,
+                'Content-Type: application/json',
+            ];
+    
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, ($fields));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                echo 'Error: ' . curl_error($ch);
+            }
+            curl_close($ch);
+            return $result;
+        } catch (\Exception $e){
+            return $e;
         }
-        curl_close($ch);
     }
 }
