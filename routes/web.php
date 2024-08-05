@@ -92,3 +92,5 @@ Route::prefix('admin')->group(function () {
     Route::get('/login', [AdminController::class, 'loginView'])->name('admin.login.view');
     Route::post('/login', [AdminController::class, 'login'])->name('admin.login.post');
 });
+
+Route::get('/test-push-notification', [NotificationController::class, 'testPushNotification'])->name('test-notif');
