@@ -55,7 +55,7 @@ class NotificationController extends Controller
     }
 
     public function testPushNotification(){
-        $deviceToken = 'dao5nP2ZR12OPKQ0r9L6Zl:APA91bHzqTH1bVpH2afvhdP8PKGT7D3r2vA4Y4oxbB7lhULB0T5ut8mYxyfJ61eJnn82ZRLN0OT7MksBWrPeYckn7ngkuXonFIrwNqII2TDfFpO437pXHvehCYZAK0YTVzvko2bl1lg6';
-        sendPushNotification2($deviceToken, 'Test title', 'Test message', null);
+        $deviceToken = 'dtU46xoOQaKemJ8_4oIyXF:APA91bETtxzes8RRUZbY1Vy9DOcyleJXopKOBU920T3cTBZ0tP22J0yVG-dg_l6hDc26ITqFsjPo2lYHGT8GuPy5kGVyVV7FHfKQENkVxFVmn8oJwemn3hxEUTJwLeEUOyFL-trJYJKW';
+        sendPushNotification($deviceToken, 'Test title5', 'Test message5', null);
     }
 }

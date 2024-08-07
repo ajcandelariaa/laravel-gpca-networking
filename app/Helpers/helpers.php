@@ -162,57 +162,12 @@ if (!function_exists('generateOTP')) {
     }
 }
 
-
-
 if (!function_exists('sendPushNotification')) {
     function sendPushNotification($deviceToken, $title, $message, $data)
     {
-        try {
-
-            $server_key = env('FIREBASE_SERVER_KEY');
-
-            $url = 'https://fcm.googleapis.com/fcm/send';
-            $fields = [
-                'to' => $deviceToken,
-                'notification' => [
-                    'title' => $title,
-                    'body' => $message,
-                ],
-                'data' => $data,
-            ];
-    
-            $headers = [
-                'Authorization: key =' . $server_key,
-                'Content-Type: application/json',
-            ];
-    
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, ($fields));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    
-            $result = curl_exec($ch);
-            if (curl_errno($ch)) {
-                echo 'Error: ' . curl_error($ch);
-            }
-            curl_close($ch);
-            return $result;
-        } catch (\Exception $e){
-            return $e;
-        }
-    }
-}
-
-
-
-if (!function_exists('sendPushNotification2')) {
-    function sendPushNotification2($deviceToken, $title, $message, $data)
-    {
         $clientEmail = env('FIREBASE_CLIENT_EMAIL');
         $privateKey = env('FIREBASE_PRIVATE_KEY');
-
+        
         // Define JWT header and payload
         $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT' ]);
         $now = time();
@@ -249,11 +204,18 @@ if (!function_exists('sendPushNotification2')) {
         ]));
 
         $response = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error: ' . curl_error($ch);
+            return;
+        }
         curl_close($ch);
 
         $responseData = json_decode($response, true);
         $accessToken = $responseData['access_token'];
 
+
+
+        // SENDING NOTIFICATION
         $notification = [
             'message' => [
                 'token' => $deviceToken,
@@ -261,7 +223,7 @@ if (!function_exists('sendPushNotification2')) {
                     'title' => $title,
                     'body' => $message,
                 ],
-                'data' => $data,
+                // 'data' => $data,
             ],
         ];
 
@@ -270,7 +232,7 @@ if (!function_exists('sendPushNotification2')) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $accessToken,
+            'Authorization: Bearer ' . $accessToken,    
             'Content-Type: application/json; UTF-8',
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($notification));
