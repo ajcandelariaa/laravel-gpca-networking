@@ -150,7 +150,7 @@ class ConversationController extends Controller
                         'entity_id' => null,
                     ];
 
-                    sendPushNotification($deviceToken, "New message", $message->message, $data2);
+                    // sendPushNotification($deviceToken, "New message", $message->message, $data2);
                 }
             }
 
