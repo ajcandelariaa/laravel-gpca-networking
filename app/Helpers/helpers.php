@@ -223,7 +223,11 @@ if (!function_exists('sendPushNotification')) {
                     'title' => $title,
                     'body' => $message,
                 ],
-                // 'data' => $data,
+                'data' => [
+                    'event_id' => $data['event_id'],
+                    'notification_type' => $data['notification_type'],
+                    'entity_id' => $data['entity_id'],
+                ],
             ],
         ];
 
