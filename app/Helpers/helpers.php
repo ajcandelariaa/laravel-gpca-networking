@@ -242,6 +242,6 @@ if (!function_exists('sendPushNotification')) {
         }
         curl_close($ch);
 
-        echo $response;
+        // echo $response;
     }
 }
