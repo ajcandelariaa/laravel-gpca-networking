@@ -150,11 +150,13 @@ class ConversationController extends Controller
                         'entity_id' => null,
                     ];
 
-                    // sendPushNotification($deviceToken, "New message", $message->message, $data2);
+                    try {
+                        sendPushNotification($deviceToken, "New message", $message->message, $data2);
+                    } catch (\Exception $e){}
                 }
             }
 
-            // broadcast(new MessageSent($data))->toOthers();
+            broadcast(new MessageSent($data))->toOthers();
 
             return $this->success($data, "Message sent successfully", 200);
         } catch (\Exception $e) {
