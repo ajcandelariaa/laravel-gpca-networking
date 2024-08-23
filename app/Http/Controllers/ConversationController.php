@@ -144,13 +144,13 @@ class ConversationController extends Controller
             $attendee = Attendee::with('deviceTokens')->where('id', $request->recipient_attendee_id)->first();
             if($attendee->deviceTokens->isNotEmpty()){
                 foreach($attendee->deviceTokens as $deviceToken){
-                    $data = [
+                    $data2 = [
                         'event_id' => $eventId,
                         'notification_type' => NotificationTypes::ATTENDEE_CHATS->value,
                         'entity_id' => null,
                     ];
 
-                    sendPushNotification($deviceToken, "New message", $message->message, $data);
+                    sendPushNotification($deviceToken, "New message", $message->message, $data2);
                 }
             }
 
