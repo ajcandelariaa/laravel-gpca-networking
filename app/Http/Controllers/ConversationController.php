@@ -156,7 +156,7 @@ class ConversationController extends Controller
 
             broadcast(new MessageSent($data))->toOthers();
 
-            return $this->success($data, "Message sent successfully", 200);
+            return $this->success(null, "Message sent successfully", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while sending a message", 500);
         }
