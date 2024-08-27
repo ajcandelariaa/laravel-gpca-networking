@@ -7,8 +7,18 @@
         </div>
     @else
         <p class="mt-5">Total confirmed attendees: {{ count($attendeesFromApi) }}</p>
-        <p class="mt-5">Total added attendees: {{ $totalCountAdded }}</p>
-        <p class="mt-5">Total not added attendees: {{ $totalCountNotAdded }}</p>
+        <p>Total added attendees: {{ $totalCountAdded }}</p>
+        <p>Total not added attendees: {{ $totalCountNotAdded }}</p>
+
+        <div class="mt-5">
+            @if ($totalCountNotAdded == 0)
+                <button class="cursor-not-allowed bg-gray-400 py-1 px-6 rounded-md" disabled>Add remaining
+                    attendees</button>
+            @else
+                <button class="cursor-pointer bg-primaryColor text-white py-1 px-6 rounded-md"
+                    wire:click.prevent="addRemainingAttendeesConfirmation">Add remaining attendees</button>
+            @endif
+        </div>
 
         <div class="shadow-lg my-5 bg-white rounded-md">
             <div
@@ -29,18 +39,22 @@
                     class="grid grid-cols-12 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
                     <div class="col-span-1 break-words">{{ $attendeeFromApi['delegateTransactionId'] }}</div>
                     <div class="col-span-1 break-words">{{ $attendeeFromApi['delegateInvoiceNumber'] }}</div>
-                    <div class="col-span-3 break-words">{{ $attendeeFromApi['delegateSalutation'] }} {{ $attendeeFromApi['delegateFName'] }} {{ $attendeeFromApi['delegateMName'] }}  {{ $attendeeFromApi['delegateLName'] }}</div>
+                    <div class="col-span-3 break-words">{{ $attendeeFromApi['delegateSalutation'] }}
+                        {{ $attendeeFromApi['delegateFName'] }} {{ $attendeeFromApi['delegateMName'] }}
+                        {{ $attendeeFromApi['delegateLName'] }}</div>
                     <div class="col-span-1 break-words">{{ $attendeeFromApi['delegatePassType'] }}</div>
                     <div class="col-span-1 break-words">{{ $attendeeFromApi['delegateCompany'] }}</div>
                     <div class="col-span-1 break-words">{{ $attendeeFromApi['delegateJobTitle'] }}</div>
                     <div class="col-span-1 break-words">{{ $attendeeFromApi['delegateEmailAddress'] }}</div>
                     <div class="col-span-1 break-words">{{ $attendeeFromApi['delegateBadgeType'] }}</div>
-                    <div class="col-span-1 break-words">{{ $attendeeFromApi['delegateIsAdded'] ? 'Added' : 'Not yet added' }}</div>
                     <div class="col-span-1 break-words">
-                        @if($attendeeFromApi['delegateIsAdded'])
+                        {{ $attendeeFromApi['delegateIsAdded'] ? 'Added' : 'Not yet added' }}</div>
+                    <div class="col-span-1 break-words">
+                        @if ($attendeeFromApi['delegateIsAdded'])
                             <button class="cursor-not-allowed bg-gray-400 py-1 px-6 rounded-md" disabled>Added</button>
-                        @else 
-                            <button class="cursor-pointer bg-primaryColor text-white py-1 px-6 rounded-md" wire:click.prevent="{{ "addAttendeeConfirmation($index)" }}">Add</button>
+                        @else
+                            <button class="cursor-pointer bg-primaryColor text-white py-1 px-6 rounded-md"
+                                wire:click.prevent="{{ "addAttendeeConfirmation($index)" }}">Add</button>
                         @endif
                     </div>
                 </div>

@@ -17,22 +17,22 @@ class AddAttendeeFromApi extends Component
     public $totalCountAdded = 0;
     public $totalCountNotAdded = 0;
 
-    protected $listeners = ['addAttendeeConfirmed' => 'addAttendee'];
+    protected $listeners = ['addAttendeeConfirmed' => 'addAttendee', 'addRemaniningAttendeesConfirmed' => 'addRemainingAttendees'];
 
     public function mount($eventId, $eventCategory)
     {
         $this->attendeesFromApi = array();
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
 
-        $url = env('API_ENDPOINT') . '/event/' . $eventCategory . '/' . $this->event->year .'/attendees';
+        $url = env('API_ENDPOINT') . '/event/' . $eventCategory . '/' . $this->event->year . '/attendees';
         $response = Http::get($url)->json();
 
         if ($response['status'] == '200') {
-            foreach($response['data'] as $apiAttendee){
+            foreach ($response['data'] as $apiAttendee) {
                 $attendee = Attendees::where('event_id', $eventId)->where('email_address', $apiAttendee['delegateEmailAddress'])->first();
-                
+
                 $is_added = false;
-                if($attendee){
+                if ($attendee) {
                     $is_added = true;
                     $this->totalCountAdded++;
                 } else {
@@ -67,7 +67,94 @@ class AddAttendeeFromApi extends Component
         return view('livewire.event.attendees.add-attendee-from-api');
     }
 
-    public function addAttendeeConfirmation($index){
+    public function addRemainingAttendeesConfirmation()
+    {
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure you want to add the remaining attendees?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, add it!",
+            'livewireEmit' => "addRemaniningAttendeesConfirmed",
+        ]);
+    }
+
+    public function addRemainingAttendees()
+    {
+        $getEventcode = null;
+
+        foreach (config('app.eventCategories') as $eventCategoryC => $code) {
+            if ($this->event->category == $eventCategoryC) {
+                $getEventcode = $code;
+            }
+        }
+
+        foreach ($this->attendeesFromApi as $index => $attendeeFromApi) {
+            $selectedAttendee = $attendeeFromApi;
+            
+            if (!$selectedAttendee['delegateIsAdded']) {
+                $newAttendee = Attendees::create([
+                    'event_id' => $this->event->id,
+
+                    'badge_number' => 'temp',
+                    'registration_type' => $selectedAttendee['delegateBadgeType'],
+
+                    'pass_type' => $selectedAttendee['delegatePassType'],
+                    'company_name' => $selectedAttendee['delegateCompany'],
+                    'company_country' => $selectedAttendee['delegateCompanyCountry'],
+                    'company_phone_number' => $selectedAttendee['delegateCompanyMobileNumber'],
+
+                    'username' => $selectedAttendee['delegateFName'],
+                    'password' => 'temp',
+
+                    'salutation' => $selectedAttendee['delegateSalutation'],
+                    'first_name' => $selectedAttendee['delegateFName'],
+                    'middle_name' => $selectedAttendee['delegateMName'],
+                    'last_name' => $selectedAttendee['delegateLName'],
+
+                    'job_title' => $selectedAttendee['delegateJobTitle'],
+                    'email_address' => $selectedAttendee['delegateEmailAddress'],
+
+                    'mobile_number' => $selectedAttendee['delegateMobileNumber'],
+                    'country' => $selectedAttendee['delegateCountry'],
+                    'nationality' => $selectedAttendee['delegateNationality'],
+
+                    'joined_date_time' => Carbon::now(),
+                ]);
+
+                $lastDigit = 1000 + intval($newAttendee->id);
+                $badgeNumber = $this->event->year . "$getEventcode" . "$lastDigit";
+
+                $currentDate = Carbon::now();
+                $day = $currentDate->format('d');
+                $month = $currentDate->format('m');
+                $year = $currentDate->format('y');
+                $randomString = Str::random(4);
+
+                $randomPassword = $this->event->category . '@' . $newAttendee->id . $randomString . $day . $month . $year;
+                $hashRandomPass = Hash::make($randomPassword);
+
+                Attendees::find($newAttendee->id)->fill(
+                    [
+                        'password' => $hashRandomPass,
+                        'badge_number' => $badgeNumber,
+                    ],
+                )->save();
+
+                $this->attendeesFromApi[$index]['delegateIsAdded'] = true;
+                $this->totalCountAdded++;
+                $this->totalCountNotAdded--;
+            }
+        }
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'All remaining attendees added successfully!',
+            'text' => ''
+        ]);
+    }
+
+    public function addAttendeeConfirmation($index)
+    {
         $this->activeSelectedIndex = $index;
         $this->dispatchBrowserEvent('swal:confirmation', [
             'type' => 'warning',
@@ -86,7 +173,7 @@ class AddAttendeeFromApi extends Component
 
             'badge_number' => 'temp',
             'registration_type' => $selectedAttendee['delegateBadgeType'],
-            
+
             'pass_type' => $selectedAttendee['delegatePassType'],
             'company_name' => $selectedAttendee['delegateCompany'],
             'company_country' => $selectedAttendee['delegateCompanyCountry'],
@@ -137,7 +224,7 @@ class AddAttendeeFromApi extends Component
         )->save();
 
         // $eventFormattedDate = Carbon::parse($this->event->event_start_date)->format('d') . '-' . Carbon::parse($this->event->event_end_date)->format('d M Y');
-        
+
         // $details = [
         //     'subject' => 'Welcome to ' . $this->event->full_name . ' - Your Access Details for GPCA Networking',
         //     'eventCategory' => $this->event->category,
