@@ -7,6 +7,8 @@
         </div>
     @else
         <p class="mt-5">Total confirmed attendees: {{ count($attendeesFromApi) }}</p>
+        <p class="mt-5">Total added attendees: {{ $totalCountAdded }}</p>
+        <p class="mt-5">Total not added attendees: {{ $totalCountNotAdded }}</p>
 
         <div class="shadow-lg my-5 bg-white rounded-md">
             <div

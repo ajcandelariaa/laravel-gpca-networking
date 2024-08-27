@@ -14,6 +14,8 @@ class AddAttendeeFromApi extends Component
 {
     public $event, $attendeesFromApi;
     public $activeSelectedIndex;
+    public $totalCountAdded = 0;
+    public $totalCountNotAdded = 0;
 
     protected $listeners = ['addAttendeeConfirmed' => 'addAttendee'];
 
@@ -32,6 +34,9 @@ class AddAttendeeFromApi extends Component
                 $is_added = false;
                 if($attendee){
                     $is_added = true;
+                    $this->totalCountAdded++;
+                } else {
+                    $this->totalCountNotAdded++;
                 }
 
                 array_push($this->attendeesFromApi, [
@@ -149,6 +154,8 @@ class AddAttendeeFromApi extends Component
         // Mail::to($this->email_address)->send(new NewAttendee($details));
 
         $this->attendeesFromApi[$this->activeSelectedIndex]['delegateIsAdded'] = true;
+        $this->totalCountAdded++;
+        $this->totalCountNotAdded--;
         $this->activeSelectedIndex = null;
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
