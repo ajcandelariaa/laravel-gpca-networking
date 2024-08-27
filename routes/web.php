@@ -42,6 +42,7 @@ Route::prefix('admin')->group(function () {
                 Route::prefix('attendee')->group(function () {
                     Route::get('/', [AttendeesController::class, 'eventAttendeesView'])->name('admin.event.attendees.view');
                     Route::get('/{attendeeId}', [AttendeesController::class, 'eventAttendeeView'])->name('admin.event.attendee.view');
+                    Route::get('/add/from-api', [AttendeesController::class, 'eventAddAttendeeFromApiView'])->name('admin.event.add.attendee.from.api.view');
                 });
 
                 Route::prefix('/speaker')->group(function () {

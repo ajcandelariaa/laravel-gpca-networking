@@ -127,6 +127,18 @@ class AttendeesController extends Controller
     }
 
 
+    public function eventAddAttendeeFromApiView($eventCategory, $eventId)
+    {
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
+
+        return view('admin.event.attendees.add_attendee_from_api', [
+            "pageTitle" => "Add Attendee from API",
+            "eventName" => $eventName,
+            "eventCategory" => $eventCategory,
+            "eventId" => $eventId,
+        ]);
+    }
+
 
 
 
@@ -159,7 +171,7 @@ class AttendeesController extends Controller
 
             $attendeeDeviceToken = AttendeeDeviceToken::where('event_id', $eventId)->where('attendee_id', $attendee->id)->where('device_token', $request->device_token)->first();
 
-            if(!$attendeeDeviceToken){
+            if (!$attendeeDeviceToken) {
                 AttendeeDeviceToken::create([
                     'event_id' => $eventId,
                     'attendee_id' => $attendee->id,
@@ -324,7 +336,7 @@ class AttendeesController extends Controller
 
             $attendeeDevice = AttendeeDeviceToken::where('event_id', $eventId)->where('attendee_id', $request->attendee_id)->where('device_token', $request->device_token)->first();
 
-            if($attendeeDevice){
+            if ($attendeeDevice) {
                 $attendeeDevice->delete();
             }
 
@@ -782,10 +794,10 @@ class AttendeesController extends Controller
                             ->where('recipient_attendee_id', $attendeeId);
                     })->first();
 
-                    if($conversation){
+                    if ($conversation) {
                         $conversationId = $conversation->id;
                     }
-                    
+
                     array_push($data, [
                         'attendee_id' => $attendee->id,
                         'salutation' => $attendee->salutation,

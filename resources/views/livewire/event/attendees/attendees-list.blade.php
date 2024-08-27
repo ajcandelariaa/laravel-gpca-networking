@@ -5,6 +5,10 @@
             <button type="button" wire:click.prevent="showAddAttendee" wire:key="showAddAttendee"
                 class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Add
                 attendee</button>
+            <a href="{{ route('admin.event.add.attendee.from.api.view', ['eventCategory' => $event->category, 'eventId' => $event->id]) }}"
+                class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10 inline-flex items-center justify-center"
+                target="_blank">Add
+                attendee from API</a>
             <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Import
                 attendees</button>
             <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Export
@@ -64,7 +68,7 @@
         </div>
     @endif
 
-    
+
     @if ($addAttendeeForm)
         @include('livewire.event.attendees.add_attendee')
     @endif
