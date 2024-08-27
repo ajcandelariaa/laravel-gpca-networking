@@ -39,12 +39,17 @@ class AddAttendeeFromApi extends Component
                     'delegateInvoiceNumber' => $apiAttendee['delegateInvoiceNumber'],
                     'delegatePassType' => $apiAttendee['delegatePassType'],
                     'delegateCompany' => $apiAttendee['delegateCompany'],
+                    'delegateCompanyCountry' => $apiAttendee['delegateCompanyCountry'],
+                    'delegateCompanyMobileNumber' => $apiAttendee['delegateCompanyMobileNumber'],
                     'delegateJobTitle' => $apiAttendee['delegateJobTitle'],
                     'delegateSalutation' => $apiAttendee['delegateSalutation'],
                     'delegateFName' => $apiAttendee['delegateFName'],
                     'delegateMName' => $apiAttendee['delegateMName'],
                     'delegateLName' => $apiAttendee['delegateLName'],
                     'delegateEmailAddress' => $apiAttendee['delegateEmailAddress'],
+                    'delegateMobileNumber' => $apiAttendee['delegateMobileNumber'],
+                    'delegateNationality' => $apiAttendee['delegateNationality'],
+                    'delegateCountry' => $apiAttendee['delegateCountry'],
                     'delegateBadgeType' => $apiAttendee['delegateBadgeType'],
                     'delegateIsAdded' => $is_added,
                 ]);
@@ -79,6 +84,8 @@ class AddAttendeeFromApi extends Component
             
             'pass_type' => $selectedAttendee['delegatePassType'],
             'company_name' => $selectedAttendee['delegateCompany'],
+            'company_country' => $selectedAttendee['delegateCompanyCountry'],
+            'company_phone_number' => $selectedAttendee['delegateCompanyMobileNumber'],
 
             'username' => $selectedAttendee['delegateFName'],
             'password' => 'temp',
@@ -90,6 +97,10 @@ class AddAttendeeFromApi extends Component
 
             'job_title' => $selectedAttendee['delegateJobTitle'],
             'email_address' => $selectedAttendee['delegateEmailAddress'],
+
+            'mobile_number' => $selectedAttendee['delegateMobileNumber'],
+            'country' => $selectedAttendee['delegateCountry'],
+            'nationality' => $selectedAttendee['delegateNationality'],
 
             'joined_date_time' => Carbon::now(),
         ]);
