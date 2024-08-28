@@ -484,10 +484,14 @@ class EventController extends Controller
                 $startDate = Carbon::parse($feature->start_date);
                 $endDate = Carbon::parse($feature->end_date);
 
-                if ($startDate->format('F') === $endDate->format('F')) {
-                    $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
+                if($startDate == $endDate){
+                    $formattedDate = $startDate->format('F d Y');
                 } else {
-                    $formattedDate = $startDate->format('F d') . '-' . $endDate->format('F d Y');
+                    if ($startDate->format('F') === $endDate->format('F')) {
+                        $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
+                    } else {
+                        $formattedDate = $startDate->format('F d') . '-' . $endDate->format('F d Y');
+                    }
                 }
 
                 if (count($categorizedSessionsByDate) > 0) {
