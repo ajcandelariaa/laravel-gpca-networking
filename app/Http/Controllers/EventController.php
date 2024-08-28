@@ -313,7 +313,7 @@ class EventController extends Controller
         foreach ($features as $feature) {
             $categorizedSpeakers = array();
 
-            foreach ($speakers as $speakers) {
+            foreach ($speakers as $speaker) {
                 if ($speaker->feature_id == $feature->id) {
                     array_push($categorizedSpeakers, [
                         'id' => $speaker->id,
