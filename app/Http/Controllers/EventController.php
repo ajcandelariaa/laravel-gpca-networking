@@ -473,6 +473,10 @@ class EventController extends Controller
                         }
                     }
 
+                    usort($sessionsTemp, function ($a, $b) {
+                        return strtotime($a['start_time']) - strtotime($b['start_time']);
+                    });
+
                     $dateTemp = Carbon::parse($uniqueDate);
                     $formattedDate = $dateTemp->format('D d M');
                     array_push($categorizedSessionsByDate, [
