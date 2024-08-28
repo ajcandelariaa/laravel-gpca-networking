@@ -481,8 +481,8 @@ class EventController extends Controller
                     ]);
                 }
 
-                $startDate = Carbon::parse($event->event_start_date);
-                $endDate = Carbon::parse($event->event_end_date);
+                $startDate = Carbon::parse($feature->start_date);
+                $endDate = Carbon::parse($feature->end_date);
 
                 if ($startDate->format('F') === $endDate->format('F')) {
                     $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
