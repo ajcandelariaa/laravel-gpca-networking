@@ -16,7 +16,10 @@ class SessionSpeakerTypeList extends Component
 
     public $name, $description, $text_color, $background_color, $editState, $editId, $editArrayIndex;
     
-    public $speakerTypeId, $speakerTypeDateTime, $speakerTypeArrayIndex, $editSpeakerTypeDateTimeForm;
+    // EDIT DATE TIME
+    public $speakerTypeId, $speakerTypeDateTime, $speakerTypeArrayIndex;
+    public $inputNameVariableDateTime, $btnUpdateNameMethodDateTime, $btnCancelNameMethodDateTime;
+    public $editSpeakerTypeDateTimeForm;
 
     protected $listeners = ['addSpeakerTypeConfirmed' => 'addSpeakerType'];
 
@@ -41,6 +44,11 @@ class SessionSpeakerTypeList extends Component
             $this->finalListOfSpeakerTypesConst = $this->finalListOfSpeakerTypes;
         }
 
+        $this->inputNameVariableDateTime = "speakerTypeDateTime";
+        $this->btnUpdateNameMethodDateTime = "editSpeakerTypeDateTime";
+        $this->btnCancelNameMethodDateTime = "resetEditSpeakerTypeDateTimeFields";
+
+        $this->editSpeakerTypeDateTimeForm = false;
         $this->editState = false;
     }
 
@@ -98,53 +106,6 @@ class SessionSpeakerTypeList extends Component
     }
 
 
-    // EDIT DATETIME
-    public function showEditSpeakerTypeDateTime($speakerTypeId, $speakerTypeArrayIndex)
-    {
-        $speakerTypeDateTime = SessionSpeakerTypes::where('id', $speakerTypeId)->value('datetime_added');
-
-        $this->speakerTypeId = $speakerTypeId;
-        $this->speakerTypeDateTime = $speakerTypeDateTime;
-        $this->speakerTypeArrayIndex = $speakerTypeArrayIndex;
-        $this->editSpeakerTypeDateTimeForm = true;
-    }
-
-    public function cancelEditSpeakerTypeDateTime()
-    {
-        $this->resetEditSpeakerTypeDateTimeFields();
-    }
-
-    public function resetEditSpeakerTypeDateTimeFields()
-    {
-        $this->editSpeakerTypeDateTimeForm = false;
-        $this->speakerTypeId = null;
-        $this->speakerTypeDateTime = null;
-        $this->speakerTypeArrayIndex = null;
-    }
-    
-    public function editSpeakerTypeDateTime()
-    {
-        $this->validate([
-            'speakerTypeDateTime' => 'required',
-        ]);
-
-        SessionSpeakerTypes::where('id', $this->speakerTypeId)->update([
-            'datetime_added' => $this->speakerTypeDateTime,
-        ]);
-
-        $this->finalListOfSpeakerTypes[$this->speakerTypeArrayIndex]['datetime_added'] = Carbon::parse($this->speakerTypeDateTime)->format('M j, Y g:i A');
-        $this->finalListOfSpeakerTypesConst[$this->speakerTypeArrayIndex]['datetime_added'] = Carbon::parse($this->speakerTypeDateTime)->format('M j, Y g:i A');
-
-        $this->resetEditSpeakerTypeDateTimeFields();
-
-        $this->dispatchBrowserEvent('swal:success', [
-            'type' => 'success',
-            'message' => 'Feature Datetime updated successfully!',
-            'text' => ''
-        ]);
-    }
-
-
     // EDIT PART
     public function showEditForm($arrayIndex){
         $this->name = $this->finalListOfSpeakerTypes[$arrayIndex]['name'];
@@ -193,6 +154,48 @@ class SessionSpeakerTypeList extends Component
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'Speaker type updated successfully!',
+            'text' => ''
+        ]);
+    }
+
+
+
+    // EDIT DATETIME
+    public function showEditSpeakerTypeDateTime($speakerTypeId, $speakerTypeArrayIndex)
+    {
+        $speakerTypeDateTime = SessionSpeakerTypes::where('id', $speakerTypeId)->value('datetime_added');
+
+        $this->speakerTypeId = $speakerTypeId;
+        $this->speakerTypeDateTime = $speakerTypeDateTime;
+        $this->speakerTypeArrayIndex = $speakerTypeArrayIndex;
+        $this->editSpeakerTypeDateTimeForm = true;
+    }
+
+    public function resetEditSpeakerTypeDateTimeFields()
+    {
+        $this->editSpeakerTypeDateTimeForm = false;
+        $this->speakerTypeId = null;
+        $this->speakerTypeDateTime = null;
+        $this->speakerTypeArrayIndex = null;
+    }
+    
+    public function editSpeakerTypeDateTime()
+    {
+        $this->validate([
+            'speakerTypeDateTime' => 'required',
+        ]);
+
+        SessionSpeakerTypes::where('id', $this->speakerTypeId)->update([
+            'datetime_added' => $this->speakerTypeDateTime,
+        ]);
+
+        $this->finalListOfSpeakerTypes[$this->speakerTypeArrayIndex]['datetime_added'] = Carbon::parse($this->speakerTypeDateTime)->format('M j, Y g:i A');
+
+        $this->resetEditSpeakerTypeDateTimeFields();
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Speaker type Datetime updated successfully!',
             'text' => ''
         ]);
     }
