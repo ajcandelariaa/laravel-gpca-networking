@@ -224,8 +224,8 @@ class SessionController extends Controller
                         if (count($categorizedSpeakers) > 0) {
                             array_push($sessionSpeakerCategorized, [
                                 'speaker_type_name' => $sessionSpeakerType->name,
-                                'text_color' => $sessionSpeakerType->text_color,
-                                'background_color' => $sessionSpeakerType->background_color,
+                                'text_color' => $sessionSpeakerType->text_color ?? "#ffffff",
+                                'background_color' => $sessionSpeakerType->background_color ?? "#000000",
                                 'speakers' => $categorizedSpeakers,
                             ]);
                         }
