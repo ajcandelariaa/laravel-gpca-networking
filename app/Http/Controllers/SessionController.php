@@ -169,7 +169,7 @@ class SessionController extends Controller
         if ($session) {
             return view('admin.event.sessions.session_speaker_types', [
                 "pageTitle" => "Session speaker types",
-                "eventName" => $event->name,
+                "eventName" => $event->full_name,
                 "eventCategory" => $eventCategory,
                 "eventId" => $eventId,
                 "sessionId" => $sessionId,
