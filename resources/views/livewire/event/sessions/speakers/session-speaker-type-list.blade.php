@@ -136,6 +136,6 @@
 
 
     @if ($editSpeakerTypeDateTimeForm)
-        @include('livewire.event.speakers.type.edit_datetime')
+        @include('livewire.common.edit_datetime_form')
     @endif
 </div>
