@@ -41,7 +41,7 @@ class SessionList extends Component
     public function mount($eventId, $eventCategory)
     {
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
-        $sessions = Sessions::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
+        $sessions = Sessions::where('event_id', $eventId)->orderBy('session_date', 'ASC')->get();
 
         if ($sessions->isNotEmpty()) {
             foreach ($sessions as $session) {
