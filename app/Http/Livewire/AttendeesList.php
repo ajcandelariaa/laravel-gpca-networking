@@ -286,8 +286,6 @@ class AttendeesList extends Component
             $is_sent_successfully = false;
         }
 
-        $this->finalListOfAttendees[$this->activeSelectedIndex]['is_password_resetted'] = true;
-        $this->finalListOfAttendeesConst[$this->activeSelectedIndex]['is_password_resetted'] = true;
         $this->activeSelectedIndex = null;
 
         if($is_sent_successfully){
