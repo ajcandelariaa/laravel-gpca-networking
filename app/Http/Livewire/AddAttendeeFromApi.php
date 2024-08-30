@@ -211,9 +211,8 @@ class AddAttendeeFromApi extends Component
         $day = $currentDate->format('d');
         $month = $currentDate->format('m');
         $year = $currentDate->format('y');
-        $randomString = Str::random(4);
 
-        $randomPassword = $this->event->category . '@' . $newAttendee->id . $randomString . $day . $month . $year;
+        $randomPassword = $this->event->category . '@' . $newAttendee->id . $day . $month . $year;
         $hashRandomPass = Hash::make($randomPassword);
 
         Attendees::find($newAttendee->id)->fill(

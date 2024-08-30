@@ -25,7 +25,9 @@ class AttendeesList extends Component
     public $emailExistingError, $usernameExistingError;
     public $addAttendeeForm;
 
-    protected $listeners = ['addAttendeeConfirmed' => 'addAttendee'];
+    public $activeSelectedIndex;
+
+    protected $listeners = ['addAttendeeConfirmed' => 'addAttendee', 'sendWelcomeEmailNotificationConfirmed' => 'sendWelcomeEmailNotification'];
 
     public function mount($eventId, $eventCategory)
     {
@@ -35,17 +37,28 @@ class AttendeesList extends Component
         $this->event = Events::where('id', $eventId)->where('category', $eventCategory)->first();
         $this->addAttendeeForm = false;
 
-        $attendees = Attendees::where('event_id', $eventId)->get();
+        $attendees = Attendees::with('passwordResets')->where('event_id', $eventId)->get();
         if ($attendees->isNotEmpty()) {
             foreach ($attendees as $attendee) {
+                $is_password_resetted = true;
+
+                if($attendee->passwordResets->isEmpty()){
+                    $is_password_resetted = false;
+                }
+
                 array_push($this->finalListOfAttendees, [
                     'id' => $attendee->id,
                     'badge_number' => $attendee->badge_number,
-                    'name' => $attendee->salutation . ' ' . $attendee->first_name . ' ' . $attendee->middle_name . ' ' . $attendee->last_name,
+                    'username' => $attendee->username,
+                    'name' => $attendee->first_name . ' ' . $attendee->last_name,
+                    'first_name' => $attendee->first_name,
+                    'last_name' => $attendee->last_name,
                     'job_title' => $attendee->job_title,
                     'email_address' => $attendee->email_address,
                     'company_name' => $attendee->company_name,
                     'registration_type' => $attendee->registration_type,
+                    'is_password_resetted' => $is_password_resetted,
+                    'joined_date_time' => $attendee->joined_date_time,
                 ]);
             }
             $this->finalListOfAttendeesConst = $this->finalListOfAttendees;
@@ -175,9 +188,8 @@ class AttendeesList extends Component
         $day = $currentDate->format('d');
         $month = $currentDate->format('m');
         $year = $currentDate->format('y');
-        $randomString = Str::random(4);
 
-        $randomPassword = $this->event->category . '@' . $newAttendee->id . $randomString . $day . $month . $year;
+        $randomPassword = $this->event->category . '@' . $newAttendee->id . $day . $month . $year;
         $hashRandomPass = Hash::make($randomPassword);
 
         Attendees::find($newAttendee->id)->fill(
@@ -206,12 +218,17 @@ class AttendeesList extends Component
 
         array_push($this->finalListOfAttendees, [
             'id' => $newAttendee->id,
+            'username' => $this->username,
             'badge_number' => $badgeNumber,
             'name' => $this->first_name . ' ' . $this->last_name,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
             'job_title' => $this->job_title,
             'email_address' => $this->email_address,
             'company_name' => $this->company_name,
             'registration_type' => $this->registration_type,
+            'is_password_resetted' => false,
+            'joined_date_time' => $currentDate,
         ]);
 
         $this->finalListOfAttendeesConst = $this->finalListOfAttendees;
@@ -222,5 +239,69 @@ class AttendeesList extends Component
             'message' => 'Attendee added successfully!',
             'text' => ''
         ]);
+    }
+
+    public function sendWelcomeEmailConfirmation($index){
+        $this->activeSelectedIndex = $index;
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, send it!",
+            'livewireEmit' => "sendWelcomeEmailNotificationConfirmed",
+        ]);
+    }
+
+    public function sendWelcomeEmailNotification(){
+        $currentAttendee = $this->finalListOfAttendees[$this->activeSelectedIndex];
+        $eventFormattedDate = Carbon::parse($this->event->event_start_date)->format('d') . '-' . Carbon::parse($this->event->event_end_date)->format('d M Y');
+
+        $currentDate = Carbon::parse($currentAttendee['joined_date_time']);
+        $day = $currentDate->format('d');
+        $month = $currentDate->format('m');
+        $year = $currentDate->format('y');
+
+        $randomPassword = $this->event->category . '@' . $currentAttendee['id'] . $day . $month . $year;
+        
+        $details = [
+            'subject' => 'Welcome to ' . $this->event->full_name . ' - Your Access Details for GPCA Networking',
+            'eventCategory' => $this->event->category,
+            'eventYear' => $this->event->year,
+
+            'name' => $currentAttendee['first_name'] . ' ' . $currentAttendee['last_name'],
+            'eventName' => $this->event->full_name,
+            'eventDate' => $eventFormattedDate,
+            'eventLocation' => $this->event->location,
+            'username' => $currentAttendee['username'],
+            'password' => $randomPassword,
+        ];
+
+        $is_sent_successfully = false;
+        $error = '';
+        try {
+            Mail::to($currentAttendee['email_address'])->send(new NewAttendee($details));
+            $is_sent_successfully = true;
+        } catch (\Throwable $th) {
+            $error = $th->getMessage();
+            $is_sent_successfully = false;
+        }
+
+        $this->finalListOfAttendees[$this->activeSelectedIndex]['is_password_resetted'] = true;
+        $this->finalListOfAttendeesConst[$this->activeSelectedIndex]['is_password_resetted'] = true;
+        $this->activeSelectedIndex = null;
+
+        if($is_sent_successfully){
+            $this->dispatchBrowserEvent('swal:success', [
+                'type' => 'success',
+                'message' => 'Welcome email sent successfully!',
+                'text' => ''
+            ]);
+        } else {
+            $this->dispatchBrowserEvent('swal:success', [
+                'type' => 'error',
+                'message' => 'An error occured while sending the email!',
+                'text' => $error,
+            ]);
+        }
     }
 }

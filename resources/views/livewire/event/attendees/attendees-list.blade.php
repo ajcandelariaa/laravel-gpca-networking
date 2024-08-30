@@ -57,11 +57,19 @@
                     <div class="col-span-1">{{ $finalListOfAttendee['email_address'] }}</div>
                     <div class="col-span-1">{{ $finalListOfAttendee['company_name'] }}</div>
                     <div class="col-span-1">{{ $finalListOfAttendee['registration_type'] }}</div>
-                    <div class="col-span-1">
+                    <div class="col-span-1 flex gap-3">
                         <a href="{{ route('admin.event.attendee.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'attendeeId' => $finalListOfAttendee['id']]) }}"
                             class="cursor-pointer hover:text-gray-600 text-gray-500">
                             <i class="fa-solid fa-eye"></i> View
                         </a>
+                        <div class="col-span-1 break-words">
+                            @if ($finalListOfAttendee['is_password_resetted'])
+                                <button class="cursor-not-allowed bg-gray-400 py-1 px-6 rounded-md" disabled>Email sent</button>
+                            @else
+                                <button class="cursor-pointer bg-primaryColor hover:bg-primaryColorHover text-white py-1 px-6 rounded-md"
+                                    wire:click.prevent="{{ "sendWelcomeEmailConfirmation($index)" }}">Send email</button>
+                            @endif
+                        </div>
                     </div>
                 </div>
             @endforeach
