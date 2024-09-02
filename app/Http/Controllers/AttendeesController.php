@@ -599,9 +599,13 @@ class AttendeesController extends Controller
         }
 
         try {
-            if (!$request->hasFile('pfp') || !$request->file('pfp')->isValid()) {
+            if (!$request->hasFile('pfp')) {
                 return $this->error(null, "Invalid file upload", 400);
             }
+
+            // if (!$request->hasFile('pfp') || !$request->file('pfp')->isValid()) {
+            //     return $this->error(null, "Invalid file upload", 400);
+            // }
 
             $filename = pathinfo($request->pfp->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $request->pfp->getClientOriginalExtension();
