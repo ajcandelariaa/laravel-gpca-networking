@@ -591,7 +591,7 @@ class AttendeesController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'attendee_id' => 'required',
-            'pfp' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10000',
+            'pfp' => 'required|image|max:10000',
         ]);
 
         if ($validator->fails()) {
