@@ -235,7 +235,7 @@ class EventController extends Controller
                 'event_logo_inverted' => $event->eventLogoInverted->file_url ?? null,
                 'event_banner' => $event->eventBanner->file_url ?? null,
                 'attendee_details' => [
-                    'pfp' => $attendee->pfp->file_url ?? null,
+                    'pfp' => $attendee->pfp->file_url ?? asset('assets/images/feature-image-placeholder.jpg'),
                     'salutation' => $attendee->salutation,
                     'first_name' => $attendee->first_name,
                     'middle_name' => $attendee->middle_name,
