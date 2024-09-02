@@ -595,16 +595,16 @@ class AttendeesController extends Controller
             'pfp' => 'required|image|max:10000',
         ]);
 
-        Log::info("Image file upload running");
-        
+        Log::warning("Image file upload running");
+
         if ($validator->fails()) {
-            Log::info("Image error validation");
+            Log::warning("Image error validation");
             return $this->errorValidation($validator->errors());
         }
 
         try {
             if (!$request->hasFile('pfp') || !$request->file('pfp')->isValid()) {
-                Log::info("Image invalid file upload");
+                Log::warning("Image invalid file upload");
                 return $this->error(null, "Invalid file upload", 400);
             }
 
@@ -653,7 +653,7 @@ class AttendeesController extends Controller
 
             return $this->success(null, "Attendee PFP updated successfully", 200);
         } catch (\Exception $e) {
-            Log::info("An error occurred while updating attendee profile");
+            Log::warning("An error occurred while updating attendee profile");
             return $this->error($e, "An error occurred while updating attendee profile", 500);
         }
     }
