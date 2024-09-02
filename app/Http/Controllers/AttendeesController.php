@@ -595,6 +595,8 @@ class AttendeesController extends Controller
             'pfp' => 'required|image|max:10000',
         ]);
 
+        Log::info("Image file upload running");
+        
         if ($validator->fails()) {
             Log::info("Image error validation");
             return $this->errorValidation($validator->errors());
