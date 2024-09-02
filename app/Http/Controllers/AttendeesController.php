@@ -27,6 +27,7 @@ use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -595,17 +596,15 @@ class AttendeesController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::info("Image error validation");
             return $this->errorValidation($validator->errors());
         }
 
         try {
-            if (!$request->hasFile('pfp')) {
+            if (!$request->hasFile('pfp') || !$request->file('pfp')->isValid()) {
+                Log::info("Image invalid file upload");
                 return $this->error(null, "Invalid file upload", 400);
             }
-
-            // if (!$request->hasFile('pfp') || !$request->file('pfp')->isValid()) {
-            //     return $this->error(null, "Invalid file upload", 400);
-            // }
 
             $filename = pathinfo($request->pfp->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $request->pfp->getClientOriginalExtension();
@@ -652,6 +651,7 @@ class AttendeesController extends Controller
 
             return $this->success(null, "Attendee PFP updated successfully", 200);
         } catch (\Exception $e) {
+            Log::info("An error occurred while updating attendee profile");
             return $this->error($e, "An error occurred while updating attendee profile", 500);
         }
     }
