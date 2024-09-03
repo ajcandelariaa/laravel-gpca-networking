@@ -170,9 +170,10 @@ class AttendeesController extends Controller
             foreach($attendees as $attendee){
                 if(Hash::check($request->password, $attendee->password)){
                     $attendee = $attendee;
+                    break;
                 }
             }
-            
+
             if ($attendee == null) {
                 return $this->error(null, "Invalid credentials", 401);
             }
