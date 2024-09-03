@@ -501,7 +501,7 @@ class EventController extends Controller
 
                 if (count($categorizedSessionsByDate) > 0) {
                     array_push($data, [
-                        'program_name' => $feature->full_name,
+                        'program_name' => $feature->short_name,
                         'program_banner' => Media::where('id', $feature->banner_media_id)->value('file_url'),
                         'program_date' => $formattedDate,
                         'startDate' => $startDate,
