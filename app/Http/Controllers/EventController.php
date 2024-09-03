@@ -409,8 +409,8 @@ class EventController extends Controller
         }
 
         $startDate = Carbon::parse($uniqueDates[0]);
-        $endDate = Carbon::parse(count($uniqueDates) - 1);
-
+        $endDate = Carbon::parse((count($uniqueDates) - 1));
+        
         if ($startDate->format('F') === $endDate->format('F')) {
             $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
         } else {
@@ -486,7 +486,7 @@ class EventController extends Controller
                 }
 
                 $startDate = Carbon::parse($uniqueDates[0]);
-                $endDate = Carbon::parse(count($uniqueDates) - 1);
+                $endDate = Carbon::parse((count($uniqueDates) - 1));
 
                 if($startDate == $endDate){
                     $formattedDate = $startDate->format('F d Y');
