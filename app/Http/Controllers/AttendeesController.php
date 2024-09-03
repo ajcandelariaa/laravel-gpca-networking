@@ -167,9 +167,9 @@ class AttendeesController extends Controller
             }
 
             $attendee = null;
-            foreach($attendees as $attendee){
-                if(Hash::check($request->password, $attendee->password)){
-                    $attendee = $attendee;
+            foreach($attendees as $attendeeTemp){
+                if(Hash::check($request->password, $attendeeTemp->password)){
+                    $attendee = $attendeeTemp;
                     break;
                 }
             }
