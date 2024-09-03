@@ -407,8 +407,8 @@ class EventController extends Controller
             ]);
         }
 
-        $startDate = Carbon::parse($event->event_start_date);
-        $endDate = Carbon::parse($event->event_end_date);
+        $startDate = Carbon::parse($uniqueDates[0]);
+        $endDate = Carbon::parse(end($uniqueDates));
 
         if ($startDate->format('F') === $endDate->format('F')) {
             $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
@@ -420,6 +420,8 @@ class EventController extends Controller
             'program_name' => $event->short_name,
             'program_banner' => Media::where('id', $event->event_banner_media_id)->value('file_url'),
             'program_date' => $formattedDate,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
             'session_dates' => $categorizedSessionsByDate,
         ]);
 
@@ -484,8 +486,8 @@ class EventController extends Controller
                     ]);
                 }
 
-                $startDate = Carbon::parse($feature->start_date);
-                $endDate = Carbon::parse($feature->end_date);
+                $startDate = Carbon::parse($uniqueDates[0]);
+                $endDate = Carbon::parse(end($uniqueDates));
 
                 if($startDate == $endDate){
                     $formattedDate = $startDate->format('F d Y');
@@ -502,11 +504,18 @@ class EventController extends Controller
                         'program_name' => $feature->full_name,
                         'program_banner' => Media::where('id', $feature->banner_media_id)->value('file_url'),
                         'program_date' => $formattedDate,
+                        'startDate' => $startDate,
+                        'endDate' => $endDate,
                         'session_dates' => $categorizedSessionsByDate,
                     ]);
                 }
             }
         }
+
+        usort($data, function ($a, $b) {
+            return strtotime($a['startDate']) - strtotime($b['startDate']);
+        });
+
         return $data;
     }
 
