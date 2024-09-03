@@ -408,9 +408,9 @@ class EventController extends Controller
             ]);
         }
 
-        $startDate = Carbon::parse($uniqueDates[0]);
-        $endDate = Carbon::parse((count($uniqueDates) - 1));
-        
+        $startDate = Carbon::parse($event->event_start_date);
+        $endDate = Carbon::parse($event->event_end_date);
+
         if ($startDate->format('F') === $endDate->format('F')) {
             $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
         } else {
@@ -485,8 +485,8 @@ class EventController extends Controller
                     ]);
                 }
 
-                $startDate = Carbon::parse($uniqueDates[0]);
-                $endDate = Carbon::parse((count($uniqueDates) - 1));
+                $startDate = Carbon::parse($feature->start_date);
+                $endDate = Carbon::parse($feature->end_date);
 
                 if($startDate == $endDate){
                     $formattedDate = $startDate->format('F d Y');
@@ -508,11 +508,6 @@ class EventController extends Controller
                 }
             }
         }
-
-        usort($data, function ($a, $b) {
-            return strtotime($a['program_date']) - strtotime($b['program_date']);
-        });
-
         return $data;
     }
 
