@@ -366,7 +366,7 @@ class EventController extends Controller
             }
         }
         $uniqueDates = array_keys($storeDatesCategoryTemp);
-
+        dd($uniqueDates);
 
         foreach ($uniqueDates as $uniqueDate) {
             $sessionsTemp = array();
