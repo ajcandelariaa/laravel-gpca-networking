@@ -160,13 +160,20 @@ class AttendeesController extends Controller
         }
 
         try {
-            $attendee = Attendee::where('email_address', $request->username)->orWhere('username', $request->username)->where('is_active', true)->first();
+            $attendees = Attendee::where('email_address', $request->username)->orWhere('username', $request->username)->where('is_active', true)->get();
 
-            if (!$attendee) {
+            if ($attendees->isEmpty()) {
                 return $this->error(null, "User not found", 404);
             }
 
-            if (!Hash::check($request->password, $attendee->password)) {
+            $attendee = null;
+            foreach($attendees as $attendee){
+                if(Hash::check($request->password, $attendee->password)){
+                    $attendee = $attendee;
+                }
+            }
+            
+            if ($attendee == null) {
                 return $this->error(null, "Invalid credentials", 401);
             }
 
