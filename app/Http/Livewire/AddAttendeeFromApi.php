@@ -103,7 +103,7 @@ class AddAttendeeFromApi extends Component
                     'company_country' => $selectedAttendee['delegateCompanyCountry'],
                     'company_phone_number' => $selectedAttendee['delegateCompanyMobileNumber'],
 
-                    'username' => $selectedAttendee['delegateFName'],
+                    'username' => $selectedAttendee['delegateEmailAddress'],
                     'password' => 'temp',
 
                     'salutation' => $selectedAttendee['delegateSalutation'],
