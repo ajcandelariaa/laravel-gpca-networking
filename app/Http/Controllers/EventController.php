@@ -386,7 +386,7 @@ class EventController extends Controller
                         array_push($sessionsTemp, [
                             'session_id' => $session->id,
                             'start_time' => $session->start_time,
-                            'end_time' => $session->end_time,
+                            'end_time' => $session->end_time ?? null,
                             'title' => $session->title,
                             'speakers_mini_headshot' => $getSpeakersHeadshot,
                             'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
