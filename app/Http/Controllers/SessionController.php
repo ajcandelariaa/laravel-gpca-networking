@@ -233,12 +233,18 @@ class SessionController extends Controller
                 }
             }
 
+            if($session->end_time == "none"){
+                $sessionEndTime = null;
+            } else {
+                $sessionEndTime = $session->end_time;
+            }
+
             $data = [
                 'session_id' => $session->id,
                 'title' => $session->title,
                 'description_html_text' => $session->description_html_text,
                 'start_time' => $session->start_time,
-                'end_time' => $session->end_time ?? null,
+                'end_time' => $sessionEndTime,
                 'location' => $session->location,
                 'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
                 'session_week_day' => Carbon::parse($session->session_date)->format('l'),

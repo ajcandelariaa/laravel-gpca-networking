@@ -383,10 +383,16 @@ class EventController extends Controller
                             }
                         }
 
+                        if($session->end_time == "none"){
+                            $sessionEndTime = null;
+                        } else {
+                            $sessionEndTime = $session->end_time;
+                        }
+
                         array_push($sessionsTemp, [
                             'session_id' => $session->id,
                             'start_time' => $session->start_time,
-                            'end_time' => $session->end_time ?? null,
+                            'end_time' => $sessionEndTime,
                             'title' => $session->title,
                             'speakers_mini_headshot' => $getSpeakersHeadshot,
                             'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
