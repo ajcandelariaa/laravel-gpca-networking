@@ -132,7 +132,7 @@ class SessionController extends Controller
                 "sessionDay" => $session->session_day,
                 "sessionType" => $session->session_type,
                 "sessionTitle" => $session->title,
-                "sessionDescription" => $session->description,
+                "sessionDescription" => $session->description_html_text,
                 "sessionStartTime" => $session->start_time,
                 "sessionEndTime" => $finalEndTime,
                 "sessionLocation" => $session->location,
