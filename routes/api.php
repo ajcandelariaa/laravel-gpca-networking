@@ -40,6 +40,10 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                             Route::post('/logout', [AttendeesController::class, 'apiAttendeeLogout']);
                             Route::get('/homepage', [EventController::class, 'apiEventHomepage']);
 
+                            Route::get('test-notification', function(){
+                                sendPushNotification("egakDbayU0HukXIwHhvzCs:APA91bGEZt5o00Jt70oysl82EGeHOyufyU8R9YKUwHB1C9em04elUTelrLwKWY9ulEMGsDJSVL5e_RhvFl-F7DCHyaUSObSoBVX9B62-GNO4TNFeqZNcNnEQhiPJwoMbWM9xAiRNu4ao", "Test title", "Test message", null);
+                            });
+
                             Route::prefix('profile')->group(function () {
                                 Route::get('/', [AttendeesController::class, 'apiAttendeeProfile']);
                                 Route::post('/edit-details', [AttendeesController::class, 'apiAttendeeEditProfileDetails']);
