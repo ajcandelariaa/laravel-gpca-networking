@@ -7,6 +7,7 @@ use App\Models\MediaUsage;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;
 
 if (!function_exists('mediaUsageUpdate')) {
@@ -238,10 +239,9 @@ if (!function_exists('sendPushNotification')) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($notification));
         $response = curl_exec($ch);
         if (curl_errno($ch)) {
-            echo 'Error: ' . curl_error($ch);
+            Log::error('Error: ' . curl_error($ch));
         }
         curl_close($ch);
-
-        echo $response;
+        Log::info($response);
     }
 }
