@@ -224,7 +224,7 @@ if (!function_exists('sendPushNotification')) {
                     'title' => $title,
                     'body' => $message,
                 ],
-                // 'data' => $data,
+                'data' => $data,
             ],
         ];
 
