@@ -222,7 +222,7 @@ if (!function_exists('sendPushNotification')) {
                 'token' => $deviceToken,
                 'notification' => [
                     'title' => $title,
-                    'body' => $message,
+                    'body' => $message  ?? "",
                 ],
                 'data' => $data,
             ],
