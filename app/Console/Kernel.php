@@ -41,8 +41,9 @@ class Kernel extends ConsoleKernel
                                 try {
                                     if($attendee->deviceTokens->isNotEmpty()){
                                         foreach($attendee->deviceTokens as $attendeeDeviceToken){
+                                            $finalNotifId = $notification->event->id;
                                             $data = [
-                                                'event_id' => $notification->event->id,
+                                                'event_id' => "$finalNotifId",
                                                 'notification_type' => $notification->type,
                                                 'entity_id' => null,
                                             ];
