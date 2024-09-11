@@ -40,13 +40,13 @@ class Kernel extends ConsoleKernel
                                 try {
                                     if($attendee->deviceTokens->isNotEmpty()){
                                         foreach($attendee->deviceTokens as $deviceToken){
+                                            $finalNotifId = $notification->event->id;
                                             $data = [
-                                                'event_id' => $notification->event->id,
+                                                'event_id' => "$finalNotifId",
                                                 'notification_type' => $notification->type,
                                                 'entity_id' => null,
                                             ];
-                                            
-                                            sendPushNotification($deviceToken, $notification->title, $notification->message ?? null, null);
+                                            sendPushNotification($deviceToken, $notification->title, $notification->message, $data);
                                         }
                                     }
                                 } catch (\Exception $e){
