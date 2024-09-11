@@ -168,9 +168,9 @@ if (!function_exists('sendPushNotification')) {
     {
         $clientEmail = env('FIREBASE_CLIENT_EMAIL');
         $privateKey = env('FIREBASE_PRIVATE_KEY');
-        
+
         // Define JWT header and payload
-        $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT' ]);
+        $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT']);
         $now = time();
         $expiration = $now + 3600; // 1 hour expiration
         $payload = json_encode([
@@ -182,13 +182,13 @@ if (!function_exists('sendPushNotification')) {
         ]);
 
         // Encode to base64
-        $base64UrlHeader = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($header));
-        $base64UrlPayload = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($payload));
+        $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
 
         // Create the signature
         $signatureInput = $base64UrlHeader . "." . $base64UrlPayload;
         openssl_sign($signatureInput, $signature, $privateKey, 'sha256');
-        $base64UrlSignature = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($signature));
+        $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
 
         // Create the JWT
         $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
@@ -224,7 +224,11 @@ if (!function_exists('sendPushNotification')) {
                     'title' => $title,
                     'body' => $message,
                 ],
-                'data' => $data,
+                'data' => [
+                    'event_id' => 1,
+                    'notification_type' => "SPKL",
+                    'entity_id' => null,
+                ],
             ],
         ];
 
@@ -233,7 +237,7 @@ if (!function_exists('sendPushNotification')) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $accessToken,    
+            'Authorization: Bearer ' . $accessToken,
             'Content-Type: application/json; UTF-8',
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($notification));
