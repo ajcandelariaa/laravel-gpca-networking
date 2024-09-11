@@ -45,7 +45,8 @@ class Kernel extends ConsoleKernel
                                                 'notification_type' => $notification->type,
                                                 'entity_id' => null,
                                             ];
-                                            sendPushNotification($deviceToken, $notification->title, $notification->message, $data);
+                                            
+                                            sendPushNotification($deviceToken, $notification->title, $notification->message ?? null, null);
                                         }
                                     }
                                 } catch (\Exception $e){
