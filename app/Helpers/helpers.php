@@ -225,7 +225,7 @@ if (!function_exists('sendPushNotification')) {
                     'body' => $message,
                 ],
                 'data' => [
-                    'event_id' => 1,
+                    'event_id' => "1",
                     'notification_type' => "SPKL",
                     'entity_id' => null,
                 ],
