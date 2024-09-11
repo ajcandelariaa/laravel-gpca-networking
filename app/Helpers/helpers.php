@@ -224,9 +224,11 @@ if (!function_exists('sendPushNotification')) {
                     'title' => $title,
                     'body' => $message,
                 ],
-                'data' => $data,
+                'data' => (array)$data,
             ],
         ];
+
+        Log::info(json_encode($notification));
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/gpca-networking-app-91813/messages:send');
