@@ -48,7 +48,9 @@ class Kernel extends ConsoleKernel
                                             sendPushNotification($deviceToken, $notification->title, $notification->message, $data);
                                         }
                                     }
-                                } catch (\Exception $e){}
+                                } catch (\Exception $e){
+                                    Log::info('Error: ' . $e);
+                                }
 
                                 AttendeeNotification::create([
                                     'event_id' => $notification->event->id,
