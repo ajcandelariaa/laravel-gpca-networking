@@ -36,13 +36,13 @@ class Kernel extends ConsoleKernel
                         $attendees = Attendee::with('deviceTokens')->where('id', 1)->where('event_id', $notification->event->id)->where('is_active', true)->get();
                         if($attendees->isNotEmpty()){
                             foreach($attendees as $attendee){
+                                
                                 // PUSH NOTIFICATION
                                 try {
                                     if($attendee->deviceTokens->isNotEmpty()){
                                         foreach($attendee->deviceTokens as $attendeeDeviceToken){
-                                            $finalNotifId = $notification->event->id;
                                             $data = [
-                                                'event_id' => "$finalNotifId",
+                                                'event_id' => $notification->event->id,
                                                 'notification_type' => $notification->type,
                                                 'entity_id' => null,
                                             ];
