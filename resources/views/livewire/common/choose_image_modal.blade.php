@@ -1,7 +1,7 @@
 <div class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center px-5 z-50">
     <div class="bg-white rounded-lg shadow-lg w-full grid grid-cols-12">
 
-        <div class="col-span-9 p-4 overflow-scroll">
+        <div class="col-span-9 h-5/6 p-4 overflow-scroll">
             @if (count($mediaFileList) == 0)
                 <div class="bg-red-400 text-white text-center py-3 mt-5 rounded-md">
                     There are no files yet.
