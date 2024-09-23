@@ -45,8 +45,22 @@ class SponsorDetails extends Component
     // EDIT SPONSOR DETAILS
     public function showEditSponsorDetails()
     {
-        $sponsorTypes = SponsorTypes::where('event_id', $this->event->id)->get();
+        array_push($this->categoryChoices, [
+            'value' => $this->event->short_name,
+            'id' => 0,
+        ]);
 
+        $features = Features::where('event_id', $this->event->id)->get();
+        if($features->isNotEmpty()){
+            foreach($features as $feature){
+                array_push($this->categoryChoices, [
+                    'value' => $feature->short_name,
+                    'id' => $feature->id,
+                ]);
+            }
+        }
+        
+        $sponsorTypes = SponsorTypes::where('event_id', $this->event->id)->get();
         if($sponsorTypes->isNotEmpty()){
             foreach($sponsorTypes as $sponsorType){
                 array_push($this->typeChoices, [
@@ -56,21 +70,6 @@ class SponsorDetails extends Component
             }
         }
 
-        $features = Features::where('event_id', $this->event->id)->get();
-        if($features->isNotEmpty()){
-
-            array_push($this->categoryChoices, [
-                'value' => $this->event->short_name,
-                'id' => 0,
-            ]);
-
-            foreach($features as $feature){
-                array_push($this->categoryChoices, [
-                    'value' => $feature->short_name,
-                    'id' => $feature->id,
-                ]);
-            }
-        }
         $this->feature_id = $this->sponsorData['feature_id'];
         $this->sponsor_type_id = $this->sponsorData['sponsor_type_id'];
 
