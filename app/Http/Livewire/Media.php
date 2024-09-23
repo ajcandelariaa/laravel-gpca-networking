@@ -113,7 +113,7 @@ class Media extends Component
             'date_uploaded' => $dateUploaded,
         ]);
 
-        array_push($this->mediaFileList, $media);
+        array_unshift($this->mediaFileList, $media);
         $this->addMediaForm = false;
         $this->mediaFile = null;
 
