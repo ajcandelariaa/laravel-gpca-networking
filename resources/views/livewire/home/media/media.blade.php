@@ -13,7 +13,7 @@
             There are no files yet.
         </div>
     @else
-        <div class="grid grid-cols-10 mt-5">
+        <div class="grid grid-cols-10 gap-y-10 mt-5">
             @foreach ($mediaFileList as $mediaFileIndex => $mediaFile)
                 @if (str_starts_with($mediaFile['file_type'], 'image/'))
                     <div class="col-span-1 w-36 h-36 flex items-center justify-center border border-gray-300 bg-gray-100 cursor-pointer hover:border-1 hover:border-primaryColor" wire:click.prevent="showMediaFileDetails({{ $mediaFileIndex }})" wire:key="showMediaFileDetails">
