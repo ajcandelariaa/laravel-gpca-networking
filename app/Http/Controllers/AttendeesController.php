@@ -160,7 +160,7 @@ class AttendeesController extends Controller
         }
 
         try {
-            $attendees = Attendee::where('email_address', $request->username)->orWhere('username', $request->username)->where('is_active', true)->get();
+            $attendees = Attendee::where('event_id', $eventId)->where('email_address', $request->username)->orWhere('username', $request->username)->where('is_active', true)->get();
 
             if ($attendees->isEmpty()) {
                 return $this->error(null, "User not found", 404);
