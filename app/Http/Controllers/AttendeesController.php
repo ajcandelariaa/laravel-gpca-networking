@@ -165,6 +165,9 @@ class AttendeesController extends Controller
                         ->orWhere('username', $request->username);
             })->where('is_active', true)->first();
             
+            $attendee = Attendee::where('event_id', $eventId)->first();
+            return $this->error($attendee, "Invalid credentials", 401);
+
             if (!$attendee) {
                 return $this->error(null, "Invalid credentials", 401);
             }
