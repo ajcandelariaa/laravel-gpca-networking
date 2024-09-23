@@ -13,6 +13,8 @@ use App\Models\MediaPartner;
 use App\Models\MeetingRoomPartner;
 use App\Models\Session;
 use App\Models\SessionSpeaker;
+use App\Models\SingleConversation;
+use App\Models\SingleConversationMessage;
 use App\Models\Speaker;
 use App\Models\Sponsor;
 use App\Models\SponsorType;
@@ -68,11 +70,13 @@ class EventController extends Controller
     public function eventDashboardView($eventCategory, $eventId)
     {
         $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
+        $finalData = $this->eventDashboardData($eventId);
         return view('admin.event.dashboard.dashboard', [
             "pageTitle" => "Dashboard",
             "eventName" => $eventName,
             "eventCategory" => $eventCategory,
             "eventId" => $eventId,
+            "finalData" => $finalData,
         ]);
     }
 
@@ -172,6 +176,51 @@ class EventController extends Controller
                 ],
             ],
         ]);
+    }
+
+    public function eventDashboardData($eventId)
+    {
+        $totalAttendees = 0;
+        $totalSpeakers = 0;
+        $totalSessions = 0;
+        $totalSponsors = 0;
+        $totalExhibitors = 0;
+        $totalMrps = 0;
+        $totalMps = 0;
+        $totalConversations = 0;
+        $totalChats = 0;
+
+
+        $totalAttendees = Attendee::where('event_id', $eventId)->count();
+        $totalSpeakers = Speaker::where('event_id', $eventId)->count();
+        $totalSessions = Session::where('event_id', $eventId)->count();
+        $totalSponsors = Sponsor::where('event_id', $eventId)->count();
+        $totalExhibitors = Exhibitor::where('event_id', $eventId)->count();
+        $totalMrps = MeetingRoomPartner::where('event_id', $eventId)->count();
+        $totalMps = MediaPartner::where('event_id', $eventId)->count();
+
+        $singleConversations = SingleConversation::where('event_id', $eventId)->get();
+
+        if ($singleConversations->isNotEmpty()) {
+            foreach ($singleConversations as $singleConversation) {
+                $totalConversations++;
+                $totalChats = $totalChats + SingleConversationMessage::where('single_conversation_id', $singleConversation->id)->count();
+            }
+        }
+
+        $finalData = [
+            'totalAttendees' => $totalAttendees,
+            'totalSpeakers' => $totalSpeakers,
+            'totalSessions' => $totalSessions,
+            'totalSponsors' => $totalSponsors,
+            'totalExhibitors' => $totalExhibitors,
+            'totalMrps' => $totalMrps,
+            'totalMps' => $totalMps,
+            'totalConversations' => $totalConversations,
+            'totalChats' => $totalChats,
+        ];
+
+        return $finalData;
     }
 
 
@@ -383,7 +432,7 @@ class EventController extends Controller
                             }
                         }
 
-                        if($session->end_time == "none"){
+                        if ($session->end_time == "none") {
                             $sessionEndTime = "";
                         } else {
                             $sessionEndTime = $session->end_time;
@@ -495,7 +544,7 @@ class EventController extends Controller
                 $startDate = Carbon::parse($uniqueDates[0]);
                 $endDate = Carbon::parse(end($uniqueDates));
 
-                if($startDate == $endDate){
+                if ($startDate == $endDate) {
                     $formattedDate = $startDate->format('F d Y');
                 } else {
                     if ($startDate->format('F') === $endDate->format('F')) {
@@ -625,14 +674,14 @@ class EventController extends Controller
     public function apiGetNotifications($eventCategory, $eventId, $attendeeId)
     {
         $attendeeNotifications = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->orderBy('sent_datetime', 'DESC')->get();
-        
-        if($attendeeNotifications->isEmpty()){
+
+        if ($attendeeNotifications->isEmpty()) {
             return null;
         }
-        
+
         $data = array();
-        foreach($attendeeNotifications as $attendeeNotification){
-            if($attendeeNotification->notification_id != null){
+        foreach ($attendeeNotifications as $attendeeNotification) {
+            if ($attendeeNotification->notification_id != null) {
                 array_push($data, [
                     'id' => $attendeeNotification->id,
                     'type' => $attendeeNotification->notification->type,
