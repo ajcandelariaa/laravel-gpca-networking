@@ -17,7 +17,7 @@
             @foreach ($mediaFileList as $mediaFileIndex => $mediaFile)
                 @if (str_starts_with($mediaFile['file_type'], 'image/'))
                     <div class="col-span-1 w-36 h-36 flex items-center justify-center border border-gray-300 bg-gray-100 cursor-pointer hover:border-1 hover:border-primaryColor" wire:click.prevent="showMediaFileDetails({{ $mediaFileIndex }})" wire:key="showMediaFileDetails">
-                        <img src="{{ $mediaFile['file_url'] }}" class="bg-cover p-2">
+                        <img src="{{ $mediaFile['file_url'] }}" class="w-full h-full object-scale-down">
                     </div>
                 @else
                     <div class="col-span-1 w-36 h-36 border border-gray-300 bg-gray-100 relative cursor-pointer hover:border-1 hover:border-primaryColor" wire:click.prevent="showMediaFileDetails({{ $mediaFileIndex }})" wire:key="showMediaFileDetails">
