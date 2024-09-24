@@ -9,10 +9,10 @@
                 class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10 inline-flex items-center justify-center"
                 target="_blank">Add
                 attendee from API</a>
-            <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Import
+            {{-- <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Import
                 attendees</button>
             <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Export
-                data</button>
+                data</button> --}}
         </div>
         <div class="flex items-center gap-2">
             <div class="relative">

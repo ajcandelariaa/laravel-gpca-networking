@@ -189,6 +189,7 @@ class SessionController extends Controller
     {
         try {
             $session = Session::with(['feature', 'sponsor.logo'])->where('id', $sessionId)->where('event_id', $eventId)->where('is_active', true)->first();
+            $defaultBgColor = Event::where('id', $eventId)->value('primary_bg_color');
 
             if (!$session) {
                 return $this->error(null, "Session doesn't exist", 404);
@@ -225,7 +226,7 @@ class SessionController extends Controller
                             array_push($sessionSpeakerCategorized, [
                                 'speaker_type_name' => $sessionSpeakerType->name,
                                 'text_color' => $sessionSpeakerType->text_color ?? "#ffffff",
-                                'background_color' => $sessionSpeakerType->background_color ?? "#000000",
+                                'background_color' => $sessionSpeakerType->background_color ?? $defaultBgColor,
                                 'speakers' => $categorizedSpeakers,
                             ]);
                         }
