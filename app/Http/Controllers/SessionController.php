@@ -235,7 +235,7 @@ class SessionController extends Controller
             }
 
             if($session->end_time == "none"){
-                $sessionEndTime = "";
+                $sessionEndTime = "onwards";
             } else {
                 $sessionEndTime = $session->end_time;
             }
