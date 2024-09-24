@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\MediaEntityTypes;
 use App\Models\Attendee;
+use App\Models\AttendeeDeviceToken;
 use App\Models\AttendeeNotification;
 use App\Models\Event;
 use App\Models\Exhibitor;
@@ -189,6 +190,7 @@ class EventController extends Controller
         $totalMps = 0;
         $totalConversations = 0;
         $totalChats = 0;
+        $totalLogins = 0;
 
 
         $totalAttendees = Attendee::where('event_id', $eventId)->count();
@@ -207,6 +209,7 @@ class EventController extends Controller
                 $totalChats = $totalChats + SingleConversationMessage::where('single_conversation_id', $singleConversation->id)->count();
             }
         }
+        $totalLogins = AttendeeDeviceToken::where('event_id', $eventId)->distinct('attendee_id')->count('attendee_id');
 
         $finalData = [
             'totalAttendees' => $totalAttendees,
@@ -218,6 +221,7 @@ class EventController extends Controller
             'totalMps' => $totalMps,
             'totalConversations' => $totalConversations,
             'totalChats' => $totalChats,
+            'totalLogins' => $totalLogins,
         ];
 
         return $finalData;
