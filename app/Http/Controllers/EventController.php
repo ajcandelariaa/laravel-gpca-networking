@@ -464,11 +464,15 @@ class EventController extends Controller
 
         $startDate = Carbon::parse($uniqueDates[0]);
         $endDate = Carbon::parse(end($uniqueDates));
-
-        if ($startDate->format('F') === $endDate->format('F')) {
-            $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
+        
+        if ($startDate == $endDate) {
+            $formattedDate = $startDate->format('d F Y');
         } else {
-            $formattedDate = $startDate->format('F d') . '-' . $endDate->format('F d Y');
+            if ($startDate->format('F') === $endDate->format('F')) {
+                $formattedDate = $startDate->format('d') . '-' . $endDate->format('d F Y');
+            } else {
+                $formattedDate = $startDate->format('d F') . '-' . $endDate->format('d F Y');
+            }
         }
 
         array_push($data, [
@@ -545,12 +549,12 @@ class EventController extends Controller
                 $endDate = Carbon::parse(end($uniqueDates));
 
                 if ($startDate == $endDate) {
-                    $formattedDate = $startDate->format('F d Y');
+                    $formattedDate = $startDate->format('d F Y');
                 } else {
                     if ($startDate->format('F') === $endDate->format('F')) {
-                        $formattedDate = $startDate->format('F d') . '-' . $endDate->format('d Y');
+                        $formattedDate = $startDate->format('d') . '-' . $endDate->format('d F Y');
                     } else {
-                        $formattedDate = $startDate->format('F d') . '-' . $endDate->format('F d Y');
+                        $formattedDate = $startDate->format('d F') . '-' . $endDate->format('d F Y');
                     }
                 }
 
