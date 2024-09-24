@@ -433,7 +433,7 @@ class EventController extends Controller
                         }
 
                         if ($session->end_time == "none") {
-                            $sessionEndTime = "";
+                            $sessionEndTime = "onwards";
                         } else {
                             $sessionEndTime = $session->end_time;
                         }
@@ -521,10 +521,16 @@ class EventController extends Controller
                                     }
                                 }
 
+                                if ($session->end_time == "none") {
+                                    $sessionEndTime = "onwards";
+                                } else {
+                                    $sessionEndTime = $session->end_time;
+                                }
+
                                 array_push($sessionsTemp, [
                                     'session_id' => $session->id,
                                     'start_time' => $session->start_time,
-                                    'end_time' => $session->end_time,
+                                    'end_time' => $sessionEndTime,
                                     'title' => $session->title,
                                     'speakers_mini_headshot' => $getSpeakersHeadshot,
                                     'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
