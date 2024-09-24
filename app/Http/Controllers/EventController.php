@@ -392,7 +392,7 @@ class EventController extends Controller
 
     public function apiGetProgramsList($eventCategory, $eventId)
     {
-        $sessions = Session::with(['feature', 'sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->get();
+        $sessions = Session::with(['feature', 'sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('datetime_added', 'ASC')->get();
         $features = Feature::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
 
