@@ -141,6 +141,17 @@ class AttendeesController extends Controller
         ]);
     }
 
+    public function eventManageWelcomeEmailNotificationView($eventCategory, $eventId)
+    {
+        $eventName = Event::where('id', $eventId)->where('category', $eventCategory)->value('full_name');
+        return view('admin.event.attendees.manage_welcome_email_notification', [
+            "pageTitle" => "Manage Welcome Email Notification",
+            "eventName" => $eventName,
+            "eventCategory" => $eventCategory,
+            "eventId" => $eventId,
+        ]);
+    }
+
 
 
 

@@ -73,6 +73,14 @@ class Attendee extends Model
         return $this->hasMany(AttendeePasswordReset::class, 'attendee_id');
     }
 
+    public function logins(){
+        return $this->hasMany(AttendeeLoginActivity::class, 'attendee_id');
+    }
+
+    public function welcomeEmailNotifications(){
+        return $this->hasMany(WelcomeEmailNotifActivity::class, 'attendee_id');
+    }
+
     public function deviceTokens(){
         return $this->hasMany(AttendeeDeviceToken::class, 'attendee_id');
     }

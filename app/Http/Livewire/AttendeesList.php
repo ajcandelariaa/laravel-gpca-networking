@@ -5,11 +5,11 @@ namespace App\Http\Livewire;
 use App\Mail\NewAttendee;
 use App\Models\Event as Events;
 use App\Models\Attendee as Attendees;
+use App\Models\WelcomeEmailNotifActivity;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 
 class AttendeesList extends Component
 {
@@ -27,7 +27,7 @@ class AttendeesList extends Component
 
     public $activeSelectedIndex;
 
-    protected $listeners = ['addAttendeeConfirmed' => 'addAttendee', 'sendWelcomeEmailNotificationConfirmed' => 'sendWelcomeEmailNotification'];
+    protected $listeners = ['addAttendeeConfirmed' => 'addAttendee'];
 
     public function mount($eventId, $eventCategory)
     {
@@ -214,7 +214,18 @@ class AttendeesList extends Component
             'password' => $randomPassword,
         ];
 
-        Mail::to($this->email_address)->send(new NewAttendee($details));
+        try {
+            Mail::to($this->email_address)->send(new NewAttendee($details));
+            
+            WelcomeEmailNotifActivity::create([
+                'event_id' => $this->event->id,
+                'attendee_id' => $newAttendee->id,
+                'sent_datetime' => Carbon::now(),
+            ]);
+            $error = '';
+        } catch (\Throwable $th) {
+            $error = 'Email error: '. $th->getMessage();
+        }
 
         array_push($this->finalListOfAttendees, [
             'id' => $newAttendee->id,
@@ -234,72 +245,11 @@ class AttendeesList extends Component
         $this->finalListOfAttendeesConst = $this->finalListOfAttendees;
 
         $this->resetAddAttendeeFields();
+
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'Attendee added successfully!',
-            'text' => ''
+            'text' => $error,
         ]);
-    }
-
-    public function sendWelcomeEmailConfirmation($index){
-        $this->activeSelectedIndex = $index;
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, send it!",
-            'livewireEmit' => "sendWelcomeEmailNotificationConfirmed",
-        ]);
-    }
-
-    public function sendWelcomeEmailNotification(){
-        $currentAttendee = $this->finalListOfAttendees[$this->activeSelectedIndex];
-        $eventFormattedDate = Carbon::parse($this->event->event_start_date)->format('d') . '-' . Carbon::parse($this->event->event_end_date)->format('d M Y');
-
-        $currentDate = Carbon::parse($currentAttendee['joined_date_time']);
-        $day = $currentDate->format('d');
-        $month = $currentDate->format('m');
-        $year = $currentDate->format('y');
-
-        $randomPassword = $this->event->category . '@' . $currentAttendee['id'] . $day . $month . $year;
-        
-        $details = [
-            'subject' => 'Welcome to ' . $this->event->full_name . ' - Your Access Details for GPCA Networking',
-            'eventCategory' => $this->event->category,
-            'eventYear' => $this->event->year,
-
-            'name' => $currentAttendee['first_name'] . ' ' . $currentAttendee['last_name'],
-            'eventName' => $this->event->full_name,
-            'eventDate' => $eventFormattedDate,
-            'eventLocation' => $this->event->location,
-            'username' => $currentAttendee['username'],
-            'password' => $randomPassword,
-        ];
-
-        $is_sent_successfully = false;
-        $error = '';
-        try {
-            Mail::to($currentAttendee['email_address'])->send(new NewAttendee($details));
-            $is_sent_successfully = true;
-        } catch (\Throwable $th) {
-            $error = $th->getMessage();
-            $is_sent_successfully = false;
-        }
-
-        $this->activeSelectedIndex = null;
-
-        if($is_sent_successfully){
-            $this->dispatchBrowserEvent('swal:success', [
-                'type' => 'success',
-                'message' => 'Welcome email sent successfully!',
-                'text' => ''
-            ]);
-        } else {
-            $this->dispatchBrowserEvent('swal:success', [
-                'type' => 'error',
-                'message' => 'An error occured while sending the email!',
-                'text' => $error,
-            ]);
-        }
     }
 }

@@ -9,6 +9,9 @@
                 class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10 inline-flex items-center justify-center"
                 target="_blank">Add
                 attendee from API</a>
+            <a href="{{ route('admin.event.manage.welcome.email.notif.view', ['eventCategory' => $event->category, 'eventId' => $event->id]) }}"
+                class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-64 h-10 inline-flex items-center justify-center">Manage
+                welcome email notification</a>
             {{-- <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Import
                 attendees</button>
             <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Export
@@ -57,19 +60,11 @@
                     <div class="col-span-1">{{ $finalListOfAttendee['email_address'] }}</div>
                     <div class="col-span-1">{{ $finalListOfAttendee['company_name'] }}</div>
                     <div class="col-span-1">{{ $finalListOfAttendee['registration_type'] }}</div>
-                    <div class="col-span-1 flex gap-3">
+                    <div class="col-span-1">
                         <a href="{{ route('admin.event.attendee.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'attendeeId' => $finalListOfAttendee['id']]) }}"
                             class="cursor-pointer hover:text-gray-600 text-gray-500">
                             <i class="fa-solid fa-eye"></i> View
                         </a>
-                        <div class="col-span-1 break-words">
-                            @if ($finalListOfAttendee['is_password_resetted'])
-                                <button class="cursor-not-allowed bg-gray-400 py-1 px-6 rounded-md" disabled>Email sent</button>
-                            @else
-                                <button class="cursor-pointer bg-primaryColor hover:bg-primaryColorHover text-white py-1 px-6 rounded-md"
-                                    wire:click.prevent="{{ "sendWelcomeEmailConfirmation($index)" }}">Send email</button>
-                            @endif
-                        </div>
                     </div>
                 </div>
             @endforeach
