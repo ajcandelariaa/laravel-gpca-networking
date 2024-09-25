@@ -18,6 +18,7 @@ use App\Models\AttendeeFavoriteMrp;
 use App\Models\AttendeeFavoriteSession;
 use App\Models\AttendeeFavoriteSpeaker;
 use App\Models\AttendeeFavoriteSponsor;
+use App\Models\AttendeeLoginActivity;
 use App\Models\AttendeePasswordReset;
 use App\Models\Event;
 use App\Models\ForgotPasswordReset;
@@ -188,6 +189,13 @@ class AttendeesController extends Controller
             $expiresAt = now()->addDay();
             $token->expires_at = $expiresAt;
             $token->save();
+
+            AttendeeLoginActivity::create([
+                'event_id' => $eventId,
+                'attendee_id' => $attendee->id,
+                'logged_in_datetime' => now(),
+                'expires_at_datetime' => $expiresAt,
+            ]);
 
             return $this->success(['token' => $tokenResult->plainTextToken, 'expires_at' => $expiresAt, 'attendeeId' => $attendee->id], "Logged in successfully", 200);
         } catch (\Exception $e) {
