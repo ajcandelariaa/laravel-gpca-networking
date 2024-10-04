@@ -86,6 +86,12 @@ class ConversationController extends Controller
                     'time' => Carbon::parse($message->updated_at)->toTimeString(),
                 ]);
             }
+
+            if(!$message->is_seen){
+                SingleConversationMessage::where('id', $message->id)->update([
+                    'is_seen' => true,
+                ]);
+            }
         }
 
         $data = [
