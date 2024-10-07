@@ -41,7 +41,7 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                             Route::get('/homepage', [EventController::class, 'apiEventHomepage']);
 
                             Route::get('test-notification', function(){
-                                sendPushNotification("cGmzqICFSNiy1D3Qfn9dsW:APA91bFSNrpxDTwvaoZr-hkwxdcm4MPhwUs4-saU8OsXGX21wD34ghkwAJn15tv21B62F0jfUnYKLtXljgfXTSpp7w8pfYNUojv-Uuzlb3s5c39YAQjqGW0ICoOIhOfxxPBISj6w1Lr0", "Test message", "GPCA events", null);
+                                sendPushNotification("dVBMR1aRMk19u0knEM_OSZ:APA91bGYK7iPJExgCG8GxKrBlmGtzkbhxNFi3kT5J3FgKXXSCPG1ThkA9h0Nye9PpuVjRWgQVzRDUrWhS9EJrgnsevaw1jpfA6L5Z3ecBgMCx6kGnoIh5FOs33kTI8aYUP7fQ-clWDLK", "Test message", "GPCA events", null);
                             });
 
                             Route::prefix('profile')->group(function () {
