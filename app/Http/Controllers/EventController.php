@@ -281,12 +281,13 @@ class EventController extends Controller
     public function apiEventHomepage($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         try {
-            $event = Event::with(['eventLogoInverted', 'eventBanner'])->where('id', $eventId)->where('category', $eventCategory)->first();
+            $event = Event::with(['eventLogoInverted', 'eventBanner, appSponsorLogo'])->where('id', $eventId)->where('category', $eventCategory)->first();
             $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
 
             $data = [
                 'event_logo_inverted' => $event->eventLogoInverted->file_url ?? null,
                 'event_banner' => $event->eventBanner->file_url ?? null,
+                'app_sponsor_logo' => $event->appSponsorLogo->file_url ?? null,
                 'attendee_details' => [
                     'pfp' => $attendee->pfp->file_url ?? asset('assets/images/feature-image-placeholder.jpg'),
                     'salutation' => $attendee->salutation,
