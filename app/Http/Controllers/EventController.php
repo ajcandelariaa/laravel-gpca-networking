@@ -281,7 +281,7 @@ class EventController extends Controller
     public function apiEventHomepage($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         try {
-            $event = Event::with(['eventLogoInverted', 'eventBanner, appSponsorLogo'])->where('id', $eventId)->where('category', $eventCategory)->first();
+            $event = Event::with(['eventLogoInverted', 'eventBanner', 'appSponsorLogo'])->where('id', $eventId)->where('category', $eventCategory)->first();
             $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
 
             $data = [
