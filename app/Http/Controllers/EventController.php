@@ -295,12 +295,12 @@ class EventController extends Controller
                     'last_name' => $attendee->last_name,
                     'email_address' => $attendee->email_address,
                 ],
-                // 'speakers' => $this->apiGetSpeakersList($eventCategory, $eventId),
-                // 'programs' => $this->apiGetProgramsList($eventCategory, $eventId),
-                // 'sponsors' => $this->apiGetSponsorsList($eventCategory, $eventId),
-                // 'exhibitors' => $this->apiGetExhibitorsList($eventCategory, $eventId),
-                // 'meeting_room_partners' => $this->apiGetMrpsList($eventCategory, $eventId),
-                // 'media_partners' => $this->apiGetMpsList($eventCategory, $eventId),
+                'speakers' => $this->apiGetSpeakersList($eventCategory, $eventId),
+                'programs' => $this->apiGetProgramsList($eventCategory, $eventId),
+                'sponsors' => $this->apiGetSponsorsList($eventCategory, $eventId),
+                'exhibitors' => $this->apiGetExhibitorsList($eventCategory, $eventId),
+                'meeting_room_partners' => $this->apiGetMrpsList($eventCategory, $eventId),
+                'media_partners' => $this->apiGetMpsList($eventCategory, $eventId),
 
                 'webview' => [
                     'delegate_feedback_survey_link' => $event->delegate_feedback_survey_link,
