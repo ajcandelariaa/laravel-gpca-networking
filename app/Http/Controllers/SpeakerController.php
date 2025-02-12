@@ -119,6 +119,79 @@ class SpeakerController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
+    public function apiEventSpeakers($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $speakers = Speaker::with(['pfp', 'speakerType'])->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+            $features = Feature::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+            $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
+
+            if ($speakers->isEmpty()) {
+                return null;
+            }
+
+            $data = array();
+            $mainConferenceSpeakers = array();
+
+            foreach ($speakers as $speaker) {
+                if ($speaker->feature_id == 0) {
+                    array_push($mainConferenceSpeakers, [
+                        'id' => $speaker->id,
+                        'salutation' => $speaker->salutation,
+                        'first_name' => $speaker->first_name,
+                        'middle_name' => $speaker->middle_name,
+                        'last_name' => $speaker->last_name,
+                        'company_name' => $speaker->company_name,
+                        'job_title' => $speaker->job_title,
+                        'speaker_type_name' => $speaker->speakerType->name,
+                        'pfp' => $speaker->pfp->file_url ?? null,
+                    ]);
+                }
+            }
+
+            if (count($mainConferenceSpeakers) > 0) {
+                array_push($data, [
+                    'speakerCategoryName' => "Main Conference",
+                    'speakerCategoryTextColor' => $event->primary_text_color,
+                    'speakerCategoryBackgroundColor' => $event->primary_bg_color,
+                    'speakers' => $mainConferenceSpeakers,
+                ]);
+            }
+
+            foreach ($features as $feature) {
+                $categorizedSpeakers = array();
+
+                foreach ($speakers as $speaker) {
+                    if ($speaker->feature_id == $feature->id) {
+                        array_push($categorizedSpeakers, [
+                            'id' => $speaker->id,
+                            'salutation' => $speaker->salutation,
+                            'first_name' => $speaker->first_name,
+                            'middle_name' => $speaker->middle_name,
+                            'last_name' => $speaker->last_name,
+                            'company_name' => $speaker->company_name,
+                            'job_title' => $speaker->job_title,
+                            'speaker_type_name' => $speaker->speakerType->name,
+                            'pfp' => $speaker->pfp->file_url ?? null,
+                        ]);
+                    }
+                }
+
+                if (count($categorizedSpeakers) > 0) {
+                    array_push($data, [
+                        'speakerCategoryName' => $feature->short_name,
+                        'speakerCategoryTextColor' => $feature->primary_text_color,
+                        'speakerCategoryBackgroundColor' => $feature->primary_bg_color,
+                        'speakers' => $categorizedSpeakers,
+                    ]);
+                }
+            }
+            return $this->success($data, "Speakers list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the speaker list", 500);
+        }
+    }
+
     public function apiEventSpeakerDetail($apiCode, $eventCategory, $eventId, $attendeeId, $speakerId)
     {
         try {
@@ -127,7 +200,7 @@ class SpeakerController extends Controller
             if (!$speaker) {
                 return $this->error(null, "Speaker doesn't exist", 404);
             }
-            
+
             $speakerSessions = array();
             $sessionSpeakers = SessionSpeaker::where('event_id', $eventId)->where('speaker_id', $speakerId)->get();
 

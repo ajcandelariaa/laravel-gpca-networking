@@ -6,6 +6,7 @@ use App\Enums\MediaEntityTypes;
 use App\Models\AttendeeFavoriteSponsor;
 use App\Models\Event;
 use App\Models\Sponsor;
+use App\Models\SponsorType;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -116,6 +117,46 @@ class SponsorController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
+    public function apiEventSponsors($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $sponsors = Sponsor::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+            $sponsorTypes = SponsorType::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
+
+            if ($sponsors->isEmpty()) {
+                return null;
+            }
+
+            $data = array();
+
+            foreach ($sponsorTypes as $sponsorType) {
+                $categorizedSponsors = array();
+                foreach ($sponsors as $sponsor) {
+                    if ($sponsorType->id == $sponsor->sponsor_type_id) {
+                        array_push($categorizedSponsors, [
+                            'id' => $sponsor->id,
+                            'name' => $sponsor->name,
+                            'website' => $sponsor->website,
+                            'logo' => $sponsor->logo->file_url ?? null,
+                        ]);
+                    }
+                }
+
+                if (count($categorizedSponsors) > 0) {
+                    array_push($data, [
+                        'sponsorTypeName' => $sponsorType->name,
+                        'sponsorTypeTextColor' => $sponsorType->text_color,
+                        'sponsorTypeBackgroundColor' => $sponsorType->background_color,
+                        'sponsors' => $categorizedSponsors,
+                    ]);
+                }
+            }
+            return $this->success($data, "Sponsors list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the sponsor list", 500);
+        }
+    }
+
     public function apiEventSponsorDetail($apiCode, $eventCategory, $eventId, $attendeeId, $sponsorId)
     {
         try {

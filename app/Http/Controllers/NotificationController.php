@@ -31,6 +31,47 @@ class NotificationController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
+    public function apiEventNofications($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $attendeeNotifications = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->orderBy('sent_datetime', 'DESC')->get();
+
+            if ($attendeeNotifications->isEmpty()) {
+                return null;
+            }
+
+            $data = array();
+            foreach ($attendeeNotifications as $attendeeNotification) {
+                if ($attendeeNotification->notification_id != null) {
+                    array_push($data, [
+                        'id' => $attendeeNotification->id,
+                        'type' => $attendeeNotification->notification->type,
+                        'title' => $attendeeNotification->notification->title,
+                        'subtitle' => $attendeeNotification->notification->subtitle,
+                        'message' => $attendeeNotification->notification->message,
+                        'sent_datetime' => Carbon::parse($attendeeNotification->sent_datetime)->format('M j, Y g:i A'),
+                        'is_seen' => $attendeeNotification->is_seen ? true : false,
+                        'seen_datetime' => $attendeeNotification->seen_datetime,
+                    ]);
+                } else {
+                    array_push($data, [
+                        'id' => $attendeeNotification->id,
+                        'type' => $attendeeNotification->type,
+                        'title' => $attendeeNotification->title,
+                        'subtitle' => $attendeeNotification->subtitle,
+                        'message' => $attendeeNotification->message,
+                        'sent_datetime' => Carbon::parse($attendeeNotification->sent_datetime)->format('M j, Y g:i A'),
+                        'is_seen' => $attendeeNotification->is_seen ? true : false,
+                        'seen_datetime' => $attendeeNotification->seen_datetime,
+                    ]);
+                }
+            }
+            return $this->success($data, "Notification list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the notification list", 500);
+        }
+    }
+
     public function apiEventNotificationMarkAsRead(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
         $validator = Validator::make($request->all(), [
@@ -54,7 +95,8 @@ class NotificationController extends Controller
         }
     }
 
-    public function testPushNotification(){
+    public function testPushNotification()
+    {
         $deviceToken = 'dtU46xoOQaKemJ8_4oIyXF:APA91bETtxzes8RRUZbY1Vy9DOcyleJXopKOBU920T3cTBZ0tP22J0yVG-dg_l6hDc26ITqFsjPo2lYHGT8GuPy5kGVyVV7FHfKQENkVxFVmn8oJwemn3hxEUTJwLeEUOyFL-trJYJKW';
         sendPushNotification($deviceToken, 'Test title5', 'Test message5', null);
     }

@@ -84,6 +84,30 @@ class MeetingRoomPartnerController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
+    public function apiEventMeetingRoomPartners($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $meetingRoomPartners = MeetingRoomPartner::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+
+            if ($meetingRoomPartners->isEmpty()) {
+                return null;
+            }
+
+            $data = array();
+            foreach ($meetingRoomPartners as $meetingRoomPartner) {
+                array_push($data, [
+                    'id' => $meetingRoomPartner->id,
+                    'name' => $meetingRoomPartner->name,
+                    'location' => $meetingRoomPartner->location,
+                    'logo' => $meetingRoomPartner->logo->file_url ?? null,
+                ]);
+            }
+            return $this->success($data, "Meeting room partner list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the meeting room partner list", 500);
+        }
+    }
+
     public function apiEventMeetingRoomPartnerDetail($apiCode, $eventCategory, $eventId, $attendeeId, $meetingRoomPartnerId)
     {
         try {

@@ -108,7 +108,7 @@ class SessionController extends Controller
 
             if ($session->sponsor_id) {
                 $sponsor = Sponsor::with(['sponsorType', 'logo'])->where('id', $session->sponsor_id)->where('event_id', $eventId)->where('is_active', true)->first();
-                if($sponsor){
+                if ($sponsor) {
                     $sponsorTypeName = $sponsor->sponsorType->name ?? null;
                     $sponsorName = $sponsor->name . ' - ' . $sponsorTypeName;
                     $sessionSponsorLogo = $sponsor->logo->file_url ?? null;
@@ -185,6 +185,204 @@ class SessionController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
+    public function apiEventSessions($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $sessions = Session::with(['feature', 'sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('datetime_added', 'ASC')->get();
+            $features = Feature::where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+            $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
+
+            if ($sessions->isEmpty()) {
+                return null;
+            }
+
+            $data = array();
+            $categorizedSessionsByDate = array();
+            $storeDatesCategoryTemp = [];
+
+            // GET THE DATES FIRST
+            $storeDatesCategoryTemp = [];
+            foreach ($sessions as $session) {
+                if ($session->feature_id == 0) {
+                    $date = $session->session_date;
+                    if (!isset($storeDatesCategoryTemp[$date])) {
+                        $storeDatesCategoryTemp[$date] = true;
+                    }
+                }
+            }
+            $uniqueDates = array_keys($storeDatesCategoryTemp);
+
+            foreach ($uniqueDates as $uniqueDate) {
+                $sessionsTemp = array();
+                foreach ($sessions as $session) {
+                    if ($session->feature_id == 0) {
+                        if ($session->session_date == $uniqueDate) {
+                            $getSpeakersHeadshot = [];
+
+                            $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
+
+                            if ($sessionSpeakersTemp->isNotEmpty()) {
+                                foreach ($sessionSpeakersTemp as $sessionSpeakerTemp) {
+                                    $speaker = Speaker::with('pfp')->where('event_id', $eventId)->where('id', $sessionSpeakerTemp->speaker_id)->first();
+                                    $getSpeakersHeadshot[] = $speaker->pfp->file_url ?? null;
+                                }
+                            }
+
+                            if ($session->end_time == "none") {
+                                $sessionEndTime = "onwards";
+                            } else {
+                                $sessionEndTime = $session->end_time;
+                            }
+
+                            array_push($sessionsTemp, [
+                                'session_id' => $session->id,
+                                'start_time' => $session->start_time,
+                                'end_time' => $sessionEndTime,
+                                'title' => $session->title,
+                                'speakers_mini_headshot' => $getSpeakersHeadshot,
+                                'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
+                            ]);
+                        }
+                    }
+                }
+
+                usort($sessionsTemp, function ($a, $b) {
+                    return strtotime($a['start_time']) - strtotime($b['start_time']);
+                });
+
+                $dateTemp = Carbon::parse($uniqueDate);
+                $formattedDate = $dateTemp->format('D d M');
+                array_push($categorizedSessionsByDate, [
+                    'sessions_date' => $formattedDate,
+                    'sessions' => $sessionsTemp,
+                ]);
+            }
+
+            $startDate = Carbon::parse($uniqueDates[0]);
+            $endDate = Carbon::parse(end($uniqueDates));
+
+            if ($startDate == $endDate) {
+                $formattedDate = $startDate->format('d F Y');
+            } else {
+                if ($startDate->format('F') === $endDate->format('F')) {
+                    $formattedDate = $startDate->format('d') . '-' . $endDate->format('d F Y');
+                } else {
+                    $formattedDate = $startDate->format('d F') . '-' . $endDate->format('d F Y');
+                }
+            }
+
+            array_push($data, [
+                'program_name' => $event->short_name,
+                'program_banner' => Media::where('id', $event->event_banner_media_id)->value('file_url'),
+                'program_date' => $formattedDate,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'session_dates' => $categorizedSessionsByDate,
+            ]);
+
+
+
+            if ($features->isNotEmpty()) {
+                foreach ($features as $feature) {
+                    $categorizedSessionsByDate = array();
+                    $storeDatesCategoryTemp = [];
+
+
+                    // GET THE DATES FIRST
+                    $storeDatesCategoryTemp = [];
+                    foreach ($sessions as $session) {
+                        if ($session->feature_id == $feature->id) {
+                            $date = $session->session_date;
+                            if (!isset($storeDatesCategoryTemp[$date])) {
+                                $storeDatesCategoryTemp[$date] = true;
+                            }
+                        }
+                    }
+                    $uniqueDates = array_keys($storeDatesCategoryTemp);
+
+
+                    foreach ($uniqueDates as $uniqueDate) {
+                        $sessionsTemp = [];
+                        foreach ($sessions as $session) {
+                            if ($session->feature_id == $feature->id) {
+                                if ($session->session_date == $uniqueDate) {
+                                    $getSpeakersHeadshot = [];
+
+                                    $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
+
+                                    if ($sessionSpeakersTemp->isNotEmpty()) {
+                                        foreach ($sessionSpeakersTemp as $sessionSpeakerTemp) {
+                                            $speaker = Speaker::with('pfp')->where('event_id', $eventId)->where('id', $sessionSpeakerTemp->speaker_id)->first();
+                                            $getSpeakersHeadshot[] = $speaker->pfp->file_url ?? null;
+                                        }
+                                    }
+
+                                    if ($session->end_time == "none") {
+                                        $sessionEndTime = "onwards";
+                                    } else {
+                                        $sessionEndTime = $session->end_time;
+                                    }
+
+                                    array_push($sessionsTemp, [
+                                        'session_id' => $session->id,
+                                        'start_time' => $session->start_time,
+                                        'end_time' => $sessionEndTime,
+                                        'title' => $session->title,
+                                        'speakers_mini_headshot' => $getSpeakersHeadshot,
+                                        'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
+                                    ]);
+                                }
+                            }
+                        }
+
+                        usort($sessionsTemp, function ($a, $b) {
+                            return strtotime($a['start_time']) - strtotime($b['start_time']);
+                        });
+
+                        $dateTemp = Carbon::parse($uniqueDate);
+                        $formattedDate = $dateTemp->format('D d M');
+                        array_push($categorizedSessionsByDate, [
+                            'sessions_date' => $formattedDate,
+                            'sessions' => $sessionsTemp,
+                        ]);
+                    }
+
+                    $startDate = Carbon::parse($uniqueDates[0]);
+                    $endDate = Carbon::parse(end($uniqueDates));
+
+                    if ($startDate == $endDate) {
+                        $formattedDate = $startDate->format('d F Y');
+                    } else {
+                        if ($startDate->format('F') === $endDate->format('F')) {
+                            $formattedDate = $startDate->format('d') . '-' . $endDate->format('d F Y');
+                        } else {
+                            $formattedDate = $startDate->format('d F') . '-' . $endDate->format('d F Y');
+                        }
+                    }
+
+                    if (count($categorizedSessionsByDate) > 0) {
+                        array_push($data, [
+                            'program_name' => $feature->short_name,
+                            'program_banner' => Media::where('id', $feature->banner_media_id)->value('file_url'),
+                            'program_date' => $formattedDate,
+                            'startDate' => $startDate,
+                            'endDate' => $endDate,
+                            'session_dates' => $categorizedSessionsByDate,
+                        ]);
+                    }
+                }
+            }
+
+            usort($data, function ($a, $b) {
+                return strtotime($a['startDate']) - strtotime($b['startDate']);
+            });
+
+            return $this->success($data, "Sessions list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the session list", 500);
+        }
+    }
+
     public function apiEventSessionDetail($apiCode, $eventCategory, $eventId, $attendeeId, $sessionId)
     {
         try {
@@ -234,7 +432,7 @@ class SessionController extends Controller
                 }
             }
 
-            if($session->end_time == "none"){
+            if ($session->end_time == "none") {
                 $sessionEndTime = "onwards";
             } else {
                 $sessionEndTime = $session->end_time;

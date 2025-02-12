@@ -63,36 +63,45 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                             Route::get('/favorites', [AttendeesController::class, 'apiAttendeeFavorites']);
 
                             Route::prefix('speaker')->group(function () {
+                                Route::get('/', [SpeakerController::class, 'apiEventSpeakers']);
                                 Route::get('/{speakerId}', [SpeakerController::class, 'apiEventSpeakerDetail']);
                                 Route::post('/mark-as-favorite', [SpeakerController::class, 'apiEventSpeakerMarkAsFavorite']);
                             });
 
                             Route::prefix('session')->group(function () {
+                                Route::get('/', [SessionController::class, 'apiEventSessions']);
                                 Route::get('/{sessionId}', [SessionController::class, 'apiEventSessionDetail']);
                                 Route::post('/mark-as-favorite', [SessionController::class, 'apiEventSessionMarkAsFavorite']);
                             });
 
                             Route::prefix('sponsor')->group(function () {
+                                Route::get('/', [SponsorController::class, 'apiEventSponsors']);
                                 Route::get('/{sponsorId}', [SponsorController::class, 'apiEventSponsorDetail']);
                                 Route::post('/mark-as-favorite', [SponsorController::class, 'apiEventSponsorMarkAsFavorite']);
                             });
 
                             Route::prefix('exhibitor')->group(function () {
+                                Route::get('/', [ExhibitorController::class, 'apiEventExhibitors']);
                                 Route::get('/{exhibitorId}', [ExhibitorController::class, 'apiEventExhibitorDetail']);
                                 Route::post('/mark-as-favorite', [ExhibitorController::class, 'apiEventExhibitorMarkAsFavorite']);
                             });
 
                             Route::prefix('meeting-room-partner')->group(function () {
+                                Route::get('/', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartners']);
                                 Route::get('/{meetingRoomPartnerId}', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartnerDetail']);
                                 Route::post('/mark-as-favorite', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartnerMarkAsFavorite']);
                             });
 
                             Route::prefix('media-partner')->group(function () {
+                                Route::get('/', [MediaPartnerController::class, 'apiEventMediaPartners']);
                                 Route::get('/{mediaPartnerId}', [MediaPartnerController::class, 'apiEventMediaPartnerDetail']);
                                 Route::post('/mark-as-favorite', [MediaPartnerController::class, 'apiEventMediaPartnerMarkAsFavorite']);
                             });
 
-                            Route::post('/notification/mark-as-read', [NotificationController::class, 'apiEventNotificationMarkAsRead']);
+                            Route::prefix('notification')->group(function () {
+                                Route::get('/', [NotificationController::class, 'apiEventNofications']);
+                                Route::post('/mark-as-read', [NotificationController::class, 'apiEventNotificationMarkAsRead']);
+                            });
                         });
                     });
                 });

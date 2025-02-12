@@ -81,6 +81,30 @@ class MediaPartnerController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
+    public function apiEventMediaPartners($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $mediaPartners = MediaPartner::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+
+            if ($mediaPartners->isEmpty()) {
+                return null;
+            }
+
+            $data = array();
+            foreach ($mediaPartners as $mediaPartner) {
+                array_push($data, [
+                    'id' => $mediaPartner->id,
+                    'name' => $mediaPartner->name,
+                    'website' => $mediaPartner->website,
+                    'logo' => $mediaPartner->logo->file_url ?? null,
+                ]);
+            }
+            return $this->success($data, "Media partner list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the media partner list", 500);
+        }
+    }
+
     public function apiEventMediaPartnerDetail($apiCode, $eventCategory, $eventId, $attendeeId, $mediaPartnerId)
     {
         try {

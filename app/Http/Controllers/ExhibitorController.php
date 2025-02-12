@@ -83,6 +83,30 @@ class ExhibitorController extends Controller
     // =========================================================
     //                       API FUNCTIONS
     // =========================================================
+    public function apiEventExhibitors($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $exhibitors = Exhibitor::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+
+            if ($exhibitors->isEmpty()) {
+                return null;
+            }
+
+            $data = array();
+            foreach ($exhibitors as $exhibitor) {
+                array_push($data, [
+                    'id' => $exhibitor->id,
+                    'name' => $exhibitor->name,
+                    'stand_number' => $exhibitor->stand_number,
+                    'logo' => $exhibitor->logo->file_url ?? null,
+                ]);
+            }
+            return $this->success($data, "Exhibitors list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the exhibitor list", 500);
+        }
+    }
+
     public function apiEventExhibitorDetail($apiCode, $eventCategory, $eventId, $attendeeId, $exhibitorId)
     {
         try {
