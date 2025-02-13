@@ -137,7 +137,7 @@ class SpeakerController extends Controller
                 if ($speaker->feature_id == 0) {
                     array_push($mainConferenceSpeakers, [
                         'id' => $speaker->id,
-                        'full_name' => trim($speaker->salutation + ' ' + $speaker->middle_name + ' ' + $speaker->middle_name + ' ' + $speaker->last_name),
+                        'full_name' => trim($speaker->salutation . ' ' . $speaker->middle_name . ' ' . $speaker->middle_name . ' ' . $speaker->last_name),
                         'company_name' => $speaker->company_name,
                         'job_title' => $speaker->job_title,
                         'speaker_type_name' => $speaker->speakerType->name,
@@ -162,7 +162,7 @@ class SpeakerController extends Controller
                     if ($speaker->feature_id == $feature->id) {
                         array_push($categorizedSpeakers, [
                             'id' => $speaker->id,
-                            'full_name' => trim($speaker->salutation + ' ' + $speaker->middle_name + ' ' + $speaker->middle_name + ' ' + $speaker->last_name),
+                            'full_name' => trim($speaker->salutation . ' ' . $speaker->middle_name . ' ' . $speaker->middle_name . ' ' . $speaker->last_name),
                             'company_name' => $speaker->company_name,
                             'job_title' => $speaker->job_title,
                             'speaker_type_name' => $speaker->speakerType->name,
