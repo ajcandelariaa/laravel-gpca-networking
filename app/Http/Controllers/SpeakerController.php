@@ -211,14 +211,13 @@ class SpeakerController extends Controller
             if ($sessionSpeakers->isNotEmpty()) {
                 foreach ($sessionSpeakers as $sessionSpeaker) {
                     $session = Session::where('id', $sessionSpeaker->session_id)->where('event_id', $eventId)->where('is_active', true)->first();
+                    $finalTime = $session->start_time . ' - ' . $session->end_time;
+                    $finalDay = Carbon::parse($session->session_date)->format('F d, Y') . ' | ' . Carbon::parse($session->session_date)->format('l') . " | " . $session->session_day;
                     array_push($speakerSessions, [
                         'session_id' => $session->id,
                         'title' => $session->title,
-                        'start_time' => $session->start_time,
-                        'end_time' => $session->end_time,
-                        'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
-                        'session_week_day' => Carbon::parse($session->session_date)->format('l'),
-                        'session_day' => $session->session_day,
+                        'final_time' => $finalTime,
+                        'final_day' => $finalDay,
                     ]);
                 }
             }
