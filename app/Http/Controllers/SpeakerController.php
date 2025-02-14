@@ -225,10 +225,12 @@ class SpeakerController extends Controller
 
             $data = [
                 'speaker_id' => $speaker->id,
-                'salutation' => $speaker->salutation,
-                'first_name' => $speaker->first_name,
-                'middle_name' => $speaker->middle_name,
-                'last_name' => $speaker->last_name,
+                'full_name'  => trim(implode(' ', array_filter([
+                    $speaker->salutation,
+                    $speaker->first_name,
+                    $speaker->middle_name,
+                    $speaker->last_name
+                ]))),
 
                 'company_name' => $speaker->company_name,
                 'job_title' => $speaker->job_title,
