@@ -249,7 +249,7 @@ class SessionController extends Controller
             }
             return $this->success($data, "Sessions list", 200);
         } catch (\Exception $e) {
-            return $this->error($e, "An error occurred while getting the session list", 500);
+            return $this->error($e, "An error occurred while getting the session list, $e", 500);
         }
     }
     // public function apiEventSessions($apiCode, $eventCategory, $eventId, $attendeeId)
