@@ -208,8 +208,7 @@ class SessionController extends Controller
 
             foreach ($uniqueDates as $uniqueDate) {
                 $sessionsTemp = array();
-                var_dump($sessions[3]->sessionSpeakers);
-                return $sessions[3]->sessionSpeakers;
+                return $sessions[4]->sessionSpeakers;
                 foreach ($sessions as $session) {
                     if ($session->session_date == $uniqueDate) {
                         $getSpeakersHeadshot = [];
