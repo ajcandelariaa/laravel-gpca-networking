@@ -188,7 +188,7 @@ class SessionController extends Controller
     public function apiEventSessions($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         try {
-            $sessions = Session::with(['sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
+            $sessions = Session::with(['feature', 'sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
             
             if ($sessions->isEmpty()) {
                 return null;
@@ -232,6 +232,8 @@ class SessionController extends Controller
                             'start_time' => $session->start_time,
                             'end_time' => $sessionEndTime,
                             'title' => $session->title,
+                            'category' => $session->feature->short_name,
+                            'type' => $session->session_type,
                             'speakers_mini_headshot' => $getSpeakersHeadshot,
                             'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
                         ]);
