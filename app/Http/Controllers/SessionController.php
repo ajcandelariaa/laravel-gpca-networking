@@ -189,7 +189,7 @@ class SessionController extends Controller
     {
         try {
             $sessions = Session::with(['sponsor.logo', 'sessionSpeakers'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
-
+            
             if ($sessions->isEmpty()) {
                 return null;
             }
@@ -209,6 +209,7 @@ class SessionController extends Controller
             foreach ($uniqueDates as $uniqueDate) {
                 $sessionsTemp = array();
                 foreach ($sessions as $session) {
+                    dd($session->sessionSpeakers);
                     if ($session->session_date == $uniqueDate) {
                         $getSpeakersHeadshot = [];
 
