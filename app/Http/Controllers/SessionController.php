@@ -208,23 +208,24 @@ class SessionController extends Controller
 
             foreach ($uniqueDates as $uniqueDate) {
                 $sessionsTemp = array();
-                return $sessions[4]->sessionSpeakers;
                 foreach ($sessions as $session) {
                     if ($session->session_date == $uniqueDate) {
                         $getSpeakersHeadshot = [];
-                        // $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
+                        
+                        $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
 
-                        // if ($sessionSpeakersTemp->isNotEmpty()) {
-                        //     foreach ($sessionSpeakersTemp as $sessionSpeakerTemp) {
-                        //         $speaker = Speaker::with('pfp')->where('event_id', $eventId)->where('id', $sessionSpeakerTemp->speaker_id)->first();
-                        //         $getSpeakersHeadshot[] = $speaker->pfp->file_url ?? null;
-                        //     }
-                        // }
-                        if($session->sessionSpeakers->isNotEmpty()){
-                            foreach ($session->sessionSpeaker as $sessionSpeaker) {
-                                $getSpeakersHeadshot[] = $sessionSpeaker->speaker->pfp->file_url ?? null;
+                        if ($sessionSpeakersTemp->isNotEmpty()) {
+                            foreach ($sessionSpeakersTemp as $sessionSpeakerTemp) {
+                                $speaker = Speaker::with('pfp')->where('event_id', $eventId)->where('id', $sessionSpeakerTemp->speaker_id)->first();
+                                $getSpeakersHeadshot[] = $speaker->pfp->file_url ?? null;
                             }
                         }
+
+                        // if($session->sessionSpeakers->isNotEmpty()){
+                        //     foreach ($session->sessionSpeaker as $sessionSpeaker) {
+                        //         $getSpeakersHeadshot[] = $sessionSpeaker->speaker->pfp->file_url ?? null;
+                        //     }
+                        // }
 
                         if ($session->end_time == "none") {
                             $sessionEndTime = "onwards";
