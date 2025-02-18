@@ -209,7 +209,7 @@ class SessionController extends Controller
             foreach ($uniqueDates as $uniqueDate) {
                 $sessionsTemp = array();
                 foreach ($sessions as $session) {
-                    return $session->sessionSpeakers;
+                    // return $session->sessionSpeakers;
                     if ($session->session_date == $uniqueDate) {
                         $getSpeakersHeadshot = [];
                         // $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
