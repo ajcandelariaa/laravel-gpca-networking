@@ -46,6 +46,6 @@ class Session extends Model
 
     public function sessionSpeakers()
     {
-        return $this->belongsTo(SessionSpeaker::class, 'session_id');
+        return $this->hasMany(SessionSpeaker::class, 'session_id');
     }
 }
