@@ -121,7 +121,6 @@ class SponsorController extends Controller
     {
         try {
             $sponsors = Sponsor::with(['logo', 'feature', 'sponsorType'])->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
-            $sponsorTypes = SponsorType::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
 
             if ($sponsors->isEmpty()) {
                 return null;
