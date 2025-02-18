@@ -41,11 +41,11 @@ class Session extends Model
 
     public function sponsor()
     {
-        return $this->hasOne(Sponsor::class, 'sponsor_id');
+        return $this->belongsTo(Sponsor::class, 'sponsor_id');
     }
 
     public function sessionSpeakers()
     {
-        return $this->hasMany(SessionSpeaker::class, 'session_id');
+        return $this->belongsTo(SessionSpeaker::class, 'session_id');
     }
 }
