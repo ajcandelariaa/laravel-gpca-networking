@@ -43,9 +43,4 @@ class Session extends Model
     {
         return $this->belongsTo(Sponsor::class, 'sponsor_id');
     }
-
-    public function sessionSpeakers()
-    {
-        return $this->belongsTo(SessionSpeaker::class, 'session_id');
-    }
 }
