@@ -188,63 +188,80 @@ class SessionController extends Controller
     public function apiEventSessions($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         try {
-            $sessions = Session::with(['event', 'feature', 'sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
+            $sessions = Session::with(['feature', 'sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
 
             if ($sessions->isEmpty()) {
                 return null;
             }
 
-            $groupedSessions = $sessions->groupBy('session_date');
-
             $data = array();
 
-            foreach ($groupedSessions as $date => $sessionsForDate) {
-                $sessionsTemp = [];
-
-                foreach ($sessionsForDate as $session) {
-                    $getSpeakersHeadshot = SessionSpeaker::where('event_id', $eventId)
-                        ->where('session_id', $session->id)
-                        ->with('speaker.pfp')
-                        ->get()
-                        ->pluck('speaker.pfp.file_url')
-                        ->filter()
-                        ->toArray();
-
-                    $sessionEndTime = ($session->end_time == "none") ? "onwards" : $session->end_time;
-
-                    $finalCategory = "";
-                    if ($session->feature_id == 0) {
-                        $finalCategory = $session->event->short_name;
-                    } else {
-                        $finalCategory = $session->feature->short_name;
-                    }
-
-                    array_push($sessionsTemp, [
-                        'session_id' => $session->id,
-                        'start_time' => $session->start_time,
-                        'end_time' => $sessionEndTime,
-                        'title' => $session->title,
-                        'category' => $finalCategory,
-                        'location' => $session->location,
-                        'speakers_mini_headshot' => $getSpeakersHeadshot,
-                        'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
-                    ]);
-
-                    usort($sessionsTemp, function ($a, $b) {
-                        return strtotime($a['start_time']) - strtotime($b['start_time']);
-                    });
-
-                    $formattedDate = Carbon::parse($date)->format('D d M');
-
-                    array_push($data, [
-                        'sessions_date' => $formattedDate,
-                        'sessions' => $sessionsTemp,
-                    ]);
+            // GET THE DATES FIRST
+            $storeDatesCategoryTemp = [];
+            foreach ($sessions as $session) {
+                $date = $session->session_date;
+                if (!isset($storeDatesCategoryTemp[$date])) {
+                    $storeDatesCategoryTemp[$date] = true;
                 }
+            }
+            $uniqueDates = array_keys($storeDatesCategoryTemp);
+
+            foreach ($uniqueDates as $uniqueDate) {
+                $sessionsTemp = array();
+                foreach ($sessions as $session) {
+                    if ($session->session_date == $uniqueDate) {
+                        $getSpeakersHeadshot = [];
+
+                        $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
+
+                        if ($sessionSpeakersTemp->isNotEmpty()) {
+                            foreach ($sessionSpeakersTemp as $sessionSpeakerTemp) {
+                                $speaker = Speaker::with('pfp')->where('event_id', $eventId)->where('id', $sessionSpeakerTemp->speaker_id)->first();
+                                $getSpeakersHeadshot[] = $speaker->pfp->file_url ?? null;
+                            }
+                        }
+
+                        if ($session->end_time == "none") {
+                            $sessionEndTime = "onwards";
+                        } else {
+                            $sessionEndTime = $session->end_time;
+                        }
+
+                        $finalCategory = "";
+                        if ($session->feature_id == 0) {
+                            $finalCategory = $session->event->short_name;
+                        } else {
+                            $finalCategory = $session->feature->short_name;
+                        }
+
+                        array_push($sessionsTemp, [
+                            'session_id' => $session->id,
+                            'start_time' => $session->start_time,
+                            'end_time' => $sessionEndTime,
+                            'title' => $session->title,
+                            'category' => $finalCategory,
+                            'location' => $session->location,
+                            'speakers_mini_headshot' => $getSpeakersHeadshot,
+                            'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
+                        ]);
+                    }
+                }
+
+                usort($sessionsTemp, function ($a, $b) {
+                    return strtotime($a['start_time']) - strtotime($b['start_time']);
+                });
+
+                $dateTemp = Carbon::parse($uniqueDate);
+                $formattedDate = $dateTemp->format('D d M');
+
+                array_push($data, [
+                    'sessions_date' => $formattedDate,
+                    'sessions' => $sessionsTemp,
+                ]);
             }
             return $this->success($data, "Sessions list", 200);
         } catch (\Exception $e) {
-            return $this->error($e, "An error occurred while getting the session list", 500);
+            return $this->error($e, "An error occurred while getting the session list, $e", 500);
         }
     }
     // public function apiEventSessions($apiCode, $eventCategory, $eventId, $attendeeId)
