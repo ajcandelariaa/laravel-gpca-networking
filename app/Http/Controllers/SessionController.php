@@ -188,7 +188,7 @@ class SessionController extends Controller
     public function apiEventSessions($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         try {
-            $sessions = Session::with(['sponsor.logo', 'sessionSpeakers'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
+            $sessions = Session::with(['sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
             
             if ($sessions->isEmpty()) {
                 return null;
@@ -211,7 +211,7 @@ class SessionController extends Controller
                 foreach ($sessions as $session) {
                     if ($session->session_date == $uniqueDate) {
                         $getSpeakersHeadshot = [];
-                        
+
                         $sessionSpeakersTemp = SessionSpeaker::where('event_id', $eventId)->where('session_id', $session->id)->get();
 
                         if ($sessionSpeakersTemp->isNotEmpty()) {
@@ -220,12 +220,6 @@ class SessionController extends Controller
                                 $getSpeakersHeadshot[] = $speaker->pfp->file_url ?? null;
                             }
                         }
-
-                        // if($session->sessionSpeakers->isNotEmpty()){
-                        //     foreach ($session->sessionSpeaker as $sessionSpeaker) {
-                        //         $getSpeakersHeadshot[] = $sessionSpeaker->speaker->pfp->file_url ?? null;
-                        //     }
-                        // }
 
                         if ($session->end_time == "none") {
                             $sessionEndTime = "onwards";
