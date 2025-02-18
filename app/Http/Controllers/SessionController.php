@@ -232,7 +232,7 @@ class SessionController extends Controller
                             'start_time' => $session->start_time,
                             'end_time' => $sessionEndTime,
                             'title' => $session->title,
-                            'category' => $session->feature,
+                            'category' => $session->feature->full_name,
                             'type' => $session->session_type,
                             'speakers_mini_headshot' => $getSpeakersHeadshot,
                             'sponsor_mini_logo' => $session->sponsor->logo->file_url ?? null,
