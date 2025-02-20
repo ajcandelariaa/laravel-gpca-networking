@@ -519,16 +519,15 @@ class SessionController extends Controller
                 $sessionEndTime = $session->end_time;
             }
 
+            $finalSessionDate = Carbon::parse($session->session_date)->format('F d, Y') . ' | ' . Carbon::parse($session->session_date)->format('l') . ' | ' . $session->session_day;
+
             $data = [
                 'session_id' => $session->id,
                 'title' => $session->title,
                 'description_html_text' => $session->description_html_text,
-                'start_time' => $session->start_time,
-                'end_time' => $sessionEndTime,
+                'session_time' => $session->start_time . ' - ' . $sessionEndTime,
                 'location' => $session->location,
-                'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
-                'session_week_day' => Carbon::parse($session->session_date)->format('l'),
-                'session_day' => $session->session_day,
+                'session_date' => $finalSessionDate,
                 'session_type' => $session->session_type,
                 'sponsored_by' => $session->sponsor->logo->file_url ?? null,
                 'is_favorite' => AttendeeFavoriteSession::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('session_id', $sessionId)->exists(),
