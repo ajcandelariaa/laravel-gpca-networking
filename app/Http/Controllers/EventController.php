@@ -283,7 +283,7 @@ class EventController extends Controller
         try {
             $event = Event::with(['eventLogoInverted', 'eventBanner', 'appSponsorLogo'])->where('id', $eventId)->where('category', $eventCategory)->first();
             $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
-            $attendeeNotificationsCount = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('is_seen', true)->count();
+            $attendeeNotificationsCount = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('is_seen', false)->count();
 
 
 
@@ -305,6 +305,7 @@ class EventController extends Controller
                 'exhibitors' => $this->apiGetExhibitorsList($eventCategory, $eventId),
                 'meeting_room_partners' => $this->apiGetMrpsList($eventCategory, $eventId),
                 'media_partners' => $this->apiGetMpsList($eventCategory, $eventId),
+                
                 'notification_count' => $attendeeNotificationsCount,
 
                 'webview' => [
