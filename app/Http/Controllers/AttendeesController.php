@@ -673,7 +673,7 @@ class AttendeesController extends Controller
                 'pfp_media_id' => $media->id,
             ]);
 
-            return $this->success($media->file_url, "Attendee PFP updated successfully", 200);
+            return $this->success(['new_pfp_url' => $media->file_url], "Attendee PFP updated successfully", 200);
         } catch (\Exception $e) {
             Log::warning("An error occurred while updating attendee profile");
             return $this->error($e, "An error occurred while updating attendee profile", 500);
