@@ -853,4 +853,38 @@ class AttendeesController extends Controller
             return $this->error($e, "An error occurred while getting the attendees list", 500);
         }
     }
+
+
+    public function apiAttendeesListv2($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $attendees = Attendee::with('pfp')->where('event_id', $eventId)->orderBy('first_name', 'ASC')->where('is_active', true)->get();
+
+            if ($attendees->isEmpty()) {
+                return $this->error(null, "There are no attendees yet", 404);
+            }
+
+            $data = array();
+            foreach ($attendees as $attendee) {
+                if ($attendee->id != $attendeeId) {
+                    array_push($data, [
+                        'attendee_id' => $attendee->id,
+                        'full_name'  => trim(implode(' ', array_filter([
+                            $attendee->salutation,
+                            $attendee->first_name,
+                            $attendee->middle_name,
+                            $attendee->last_name
+                        ]))),
+                        'job_title' => $attendee->job_title,
+                        'company_name' => $attendee->company_name,
+                        'registration_type' => $attendee->registration_type,
+                        'pfp' => $attendee->pfp->file_url ?? null,
+                    ]);
+                }
+            }
+            return $this->success($data, "Attendees list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the attendees list", 500);
+        }
+    }
 }

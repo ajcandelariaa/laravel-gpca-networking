@@ -54,6 +54,8 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
 
                             Route::get('/attendees', [AttendeesController::class, 'apiAttendeesList']);
 
+                            Route::get('/v2/attendees', [AttendeesController::class, 'apiAttendeesListv2']);
+
                             Route::prefix('conversation')->group(function () {
                                 Route::get('/', [ConversationController::class, 'apiConversationsList']);
                                 Route::get('/{conversationId}', [ConversationController::class, 'apiConversationMessages']);
