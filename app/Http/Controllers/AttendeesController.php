@@ -878,7 +878,7 @@ class AttendeesController extends Controller
                         'job_title' => $attendee->job_title,
                         'company_name' => $attendee->company_name,
                         'registration_type' => $attendee->registration_type,
-                        'pfp' => $attendee->pfp->file_url ?? null,
+                        'pfp' => $attendee->pfp->file_url ?? "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
                     ]);
                 }
             }
