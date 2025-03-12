@@ -705,7 +705,7 @@ class AttendeesController extends Controller
                         array_push($favoriteSessions, [
                             'session_id' => $favorite->session->id,
                             'title' => $favorite->session->title,
-                            'session_time' => $favorite->session->start_time . ' - ' . $favorite->sessionEndTime,
+                            'session_time' => $favorite->session->start_time . ' - ' . $favorite->end_time,
                             'start_time' => $favorite->session->start_time,
                             'end_time' => $favorite->session->end_time,
                             'session_date' => $finalSessionDate,
