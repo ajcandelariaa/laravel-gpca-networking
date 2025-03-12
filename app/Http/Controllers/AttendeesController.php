@@ -175,12 +175,12 @@ class AttendeesController extends Controller
             $attendee = Attendee::where('event_id', $eventId)->where(function ($query) use ($request) {
                 $query->where('email_address', $request->username)->orWhere('username', $request->username);
             })->where('is_active', true)->first();
-            
+
             if (!$attendee) {
                 return $this->error(null, "Invalid credentials", 401);
             }
 
-            if(!(Hash::check($request->password, $attendee->password))){
+            if (!(Hash::check($request->password, $attendee->password))) {
                 return $this->error(null, "Invalid credentials", 401);
             }
 
@@ -701,12 +701,14 @@ class AttendeesController extends Controller
             if ($attendeeFavoriteSessions->isNotEmpty()) {
                 foreach ($attendeeFavoriteSessions as $favorite) {
                     if ($favorite->session->is_active) {
+                        $finalSessionDate = Carbon::parse($favorite->session->session_date)->format('F d, Y') . ' | ' . Carbon::parse($favorite->session->session_date)->format('l') . ' | ' . $favorite->session->session_day;
                         array_push($favoriteSessions, [
                             'session_id' => $favorite->session->id,
                             'title' => $favorite->session->title,
+                            'session_time' => $favorite->session->start_time . ' - ' . $favorite->sessionEndTime,
                             'start_time' => $favorite->session->start_time,
                             'end_time' => $favorite->session->end_time,
-                            'session_date' => Carbon::parse($favorite->session->session_date)->format('F d, Y'),
+                            'session_date' => $finalSessionDate,
                             'session_week_day' => Carbon::parse($favorite->session->session_date)->format('l'),
                             'session_day' => $favorite->session->session_day,
                         ]);
@@ -719,6 +721,12 @@ class AttendeesController extends Controller
                     if ($favorite->speaker->is_active) {
                         array_push($favoriteSpeakers, [
                             'speaker_id' => $favorite->speaker->id,
+                            'full_name'  => trim(implode(' ', array_filter([
+                                $favorite->speaker->salutation,
+                                $favorite->speaker->first_name,
+                                $favorite->speaker->middle_name,
+                                $favorite->speaker->last_name
+                            ]))),
                             'salutation' => $favorite->speaker->salutation,
                             'first_name' => $favorite->speaker->first_name,
                             'middle_name' => $favorite->speaker->middle_name,
