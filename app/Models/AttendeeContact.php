@@ -16,7 +16,8 @@ class AttendeeContact extends Model
         'datetime_added',
     ];
 
-    
+    public $timestamps = false;
+
     public function contactAttendee()
     {
         return $this->belongsTo(Attendee::class, 'contact_attendee_id');
