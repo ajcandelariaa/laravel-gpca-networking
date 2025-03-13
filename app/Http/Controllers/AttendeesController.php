@@ -11,6 +11,7 @@ use App\Mail\EmailChanged;
 use App\Mail\ForgotPasswordOtp;
 use App\Mail\UsernameChanged;
 use App\Models\Attendee;
+use App\Models\AttendeeContact;
 use App\Models\AttendeeDeviceToken;
 use App\Models\AttendeeFavoriteExhibitor;
 use App\Models\AttendeeFavoriteMp;
@@ -885,6 +886,97 @@ class AttendeesController extends Controller
             return $this->success($data, "Attendees list", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while getting the attendees list", 500);
+        }
+    }
+
+    public function apiAttendeesContact($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $contacts = AttendeeContact::with('contactAttendee')
+                ->where('event_id', $eventId)
+                ->where('attendee_id', $attendeeId)
+                ->orderBy('datetime_added', 'ASC')
+                ->get();
+
+            if ($contacts->isEmpty()) {
+                return $this->error(null, "No contacts found", 404);
+            }
+
+            $data = array();
+            foreach ($contacts as $contact) {
+                array_push($data, [
+                    'attendee_id' => $contact->contact_attendee_id,
+                    'full_name'  => trim(implode(' ', array_filter([
+                        $contact->contactAttendee->salutation,
+                        $contact->contactAttendee->first_name,
+                        $contact->contactAttendee->middle_name,
+                        $contact->contactAttendee->last_name
+                    ]))),
+                    'job_title' => $contact->contactAttendee->job_title,
+                    'company_name' => $contact->contactAttendee->company_name,
+                    'registration_type' => $contact->contactAttendee->registration_type,
+                    'pfp' => $contact->contactAttendee->pfp->file_url ?? "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+                ]);
+            }
+            return $this->success($data, "Attendee contacts list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the attendee contacts list", 500);
+        }
+    }
+
+    public function apiAttendeesAddToContact(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $validator = Validator::make($request->all(), [
+            'attendee_id' => 'required|exists:attendees,id',
+            'contact_attendee_id' => 'required|exists:attendees,id',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        try {
+            $contactExists = AttendeeContact::where('event_id', $eventId)
+                ->where('attendee_id', $request->attendee_id)
+                ->where('contact_attendee_id', $request->contact_attendee_id)
+                ->exists();
+
+            if (!$contactExists) {
+                AttendeeContact::create([
+                    'event_id' => $eventId,
+                    'attendee_id' => $request->attendee_id,
+                    'contact_attendee_id' => $request->contact_attendee_id,
+                    'datetime_added' => now(),
+                ]);
+                return $this->success(null, "Attendee added to contacts successfully", 200);
+            }
+            return $this->error(null, "Contact already exists", 409);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the attendee contacts list", 500);
+        }
+    }
+
+    public function apiAttendeesRemoveFromContact(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $validator = Validator::make($request->all(), [
+            'attendee_id' => 'required|exists:attendees,id',
+            'contact_attendee_id' => 'required|exists:attendees,id',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        try {
+            $contact = AttendeeContact::where('event_id', $eventId)->where('attendee_id', $request->attendeeId)->where('contact_attendee_id', $request->contact_attendee_id)->first();
+
+            if ($contact) {
+                $contact->delete();
+                return $this->success(null, "Attendee removed from contacts successfully", 200);
+            }
+            return $this->error(null, "Contact not found", 404);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the attendee contacts list", 500);
         }
     }
 }
