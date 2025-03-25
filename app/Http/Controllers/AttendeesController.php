@@ -709,7 +709,11 @@ class AttendeesController extends Controller
                             'session_time' => $favorite->session->start_time . ' - ' . $favorite->session->end_time,
                             'start_time' => $favorite->session->start_time,
                             'end_time' => $favorite->session->end_time,
-                            'session_date' => $finalSessionDate,
+                            // 'session_date' => $finalSessionDate,
+                            
+                            // To be removed
+                            'session_date' => Carbon::parse($favorite->session->session_date)->format('F d, Y'),
+
                             'session_week_day' => Carbon::parse($favorite->session->session_date)->format('l'),
                             'session_day' => $favorite->session->session_day,
                         ]);
