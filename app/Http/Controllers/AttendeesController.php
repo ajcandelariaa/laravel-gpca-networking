@@ -872,6 +872,7 @@ class AttendeesController extends Controller
             $data = array();
             foreach ($attendees as $attendee) {
                 if ($attendee->id != $attendeeId) {
+                    $isContact = AttendeeContact::where('attendee_id', $attendeeId)->where('contact_attendee_id', $attendee->id)->exists();
                     array_push($data, [
                         'attendee_id' => $attendee->id,
                         'full_name'  => trim(implode(' ', array_filter([
@@ -883,6 +884,7 @@ class AttendeesController extends Controller
                         'job_title' => $attendee->job_title,
                         'company_name' => $attendee->company_name,
                         'registration_type' => $attendee->registration_type,
+                        'is_contact' => $isContact,
                         'pfp' => $attendee->pfp->file_url ?? "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
                     ]);
                 }
