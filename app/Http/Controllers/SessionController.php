@@ -494,6 +494,13 @@ class SessionController extends Controller
                                         $speaker->middle_name,
                                         $speaker->last_name
                                     ]))),
+
+                                    //to be removed
+                                    'salutation' => $speaker->salutation,
+                                    'first_name' => $speaker->first_name,
+                                    'middle_name' => $speaker->middle_name,
+                                    'last_name' => $speaker->last_name,
+
                                     'company_name' => $speaker->company_name,
                                     'job_title' => $speaker->job_title,
                                     'pfp' => $speaker->pfp->file_url ?? null,
@@ -527,7 +534,15 @@ class SessionController extends Controller
                 'description_html_text' => $session->description_html_text,
                 'session_time' => $session->start_time . ' - ' . $sessionEndTime,
                 'location' => $session->location,
-                'session_date' => $finalSessionDate,
+                // 'session_date' => $finalSessionDate,
+
+                //to be removed
+                'start_time' => $session->start_time,
+                'end_time' => $session->end_time,
+                'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
+                'session_week_day' => Carbon::parse($session->session_date)->format('l'),
+                'session_day' => $session->session_day,
+
                 'session_type' => $session->session_type,
                 'sponsored_by' => $session->sponsor->logo->file_url ?? null,
                 'is_favorite' => AttendeeFavoriteSession::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('session_id', $sessionId)->exists(),
