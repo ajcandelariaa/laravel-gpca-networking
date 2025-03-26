@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             Log::info('Scheduler is running.');
-            $eventId = 2;
+            $eventId = 3;
 
             $notifications = Notification::with('event')->where('event_id', $eventId)->where('is_sent', false)->get();
 
