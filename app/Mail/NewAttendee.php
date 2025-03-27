@@ -32,8 +32,11 @@ class NewAttendee extends Mailable
      */
     public function envelope()
     {
+        // $subject =  $this->details['subject'];
+        $subject =  "Maximize your event experience: Download the 14ᵗʰ GPCA Plastics Conference networking app today!";
+
         return new Envelope(
-            subject: $this->details['subject'],
+            subject: $subject,
         );
     }
 
