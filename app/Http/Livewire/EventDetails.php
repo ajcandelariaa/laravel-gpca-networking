@@ -438,15 +438,13 @@ class EventDetails extends Component
             'image_placeholder_text' => 'required'
         ]);
 
-        $this->editEventAsset();
-
-        // $this->dispatchBrowserEvent('swal:confirmation', [
-        //     'type' => 'warning',
-        //     'message' => 'Are you sure?',
-        //     'text' => "",
-        //     'buttonConfirmText' => "Yes, update it!",
-        //     'livewireEmit' => "editEventAssetConfirmed",
-        // ]);
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, update it!",
+            'livewireEmit' => "editEventAssetConfirmed",
+        ]);
     }
 
     public function editEventAsset()
@@ -621,11 +619,11 @@ class EventDetails extends Component
             ];
         }
 
-        // $this->dispatchBrowserEvent('swal:success', [
-        //     'type' => 'success',
-        //     'message' => $this->assetType . ' updated succesfully!',
-        //     'text' => "",
-        // ]);
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => $this->assetType . ' updated succesfully!',
+            'text' => "",
+        ]);
 
         $this->resetEditEventAssetFields();
     }
