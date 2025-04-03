@@ -91,13 +91,14 @@ class ManageWelcomeEmailNotification extends Component
     public function sendWelcomeEmailConfirmation($index)
     {
         $this->activeSelectedIndex = $index;
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure?',
-            'text' => "",
-            'buttonConfirmText' => "Yes, send it!",
-            'livewireEmit' => "sendWelcomeEmailNotificationConfirmed",
-        ]);
+        $this->sendWelcomeEmailNotification();
+        // $this->dispatchBrowserEvent('swal:confirmation', [
+        //     'type' => 'warning',
+        //     'message' => 'Are you sure?',
+        //     'text' => "",
+        //     'buttonConfirmText' => "Yes, send it!",
+        //     'livewireEmit' => "sendWelcomeEmailNotificationConfirmed",
+        // ]);
     }
 
     public function sendWelcomeEmailNotification()
@@ -146,17 +147,17 @@ class ManageWelcomeEmailNotification extends Component
             $this->finalListOfAttendees[$this->activeSelectedIndex]['totatWelcomeEmailNotificationSent'] += 1;
             $this->finalListOfAttendees[$this->activeSelectedIndex]['lasttWelcomeEmailNotificationSent'] = Carbon::now();
 
-            $this->dispatchBrowserEvent('swal:success', [
-                'type' => 'success',
-                'message' => 'Welcome email sent successfully!',
-                'text' => ''
-            ]);
+            // $this->dispatchBrowserEvent('swal:success', [
+            //     'type' => 'success',
+            //     'message' => 'Welcome email sent successfully!',
+            //     'text' => ''
+            // ]);
         } else {
-            $this->dispatchBrowserEvent('swal:success', [
-                'type' => 'error',
-                'message' => 'An error occured while sending the email!',
-                'text' => $error,
-            ]);
+            // $this->dispatchBrowserEvent('swal:success', [
+            //     'type' => 'error',
+            //     'message' => 'An error occured while sending the email!',
+            //     'text' => $error,
+            // ]);
         }
 
         $this->activeSelectedIndex = null;
@@ -165,13 +166,14 @@ class ManageWelcomeEmailNotification extends Component
     public function sendWelcomeEmailConfirmationBulkConfirmation()
     {
         $text = "This will send to " . count($this->selectedAttendees) . ' attendees!';
-        $this->dispatchBrowserEvent('swal:confirmation', [
-            'type' => 'warning',
-            'message' => 'Are you sure?',
-            'text' => $text,
-            'buttonConfirmText' => "Yes, send it!",
-            'livewireEmit' => "sendWelcomeEmailNotificationBulkConfirmed",
-        ]);
+        $this->sendWelcomeEmailNotificationBulk();
+        // $this->dispatchBrowserEvent('swal:confirmation', [
+        //     'type' => 'warning',
+        //     'message' => 'Are you sure?',
+        //     'text' => $text,
+        //     'buttonConfirmText' => "Yes, send it!",
+        //     'livewireEmit' => "sendWelcomeEmailNotificationBulkConfirmed",
+        // ]);
     }
 
     public function sendWelcomeEmailNotificationBulk()
@@ -225,24 +227,24 @@ class ManageWelcomeEmailNotification extends Component
         }
 
         if($error == count($this->selectedAttendees)){
-            $this->dispatchBrowserEvent('swal:success', [
-                'type' => 'error',
-                'message' => 'Welcome email did not send to all selected attendees!',
-                'text' => "Please check their email address!",
-            ]);
+            // $this->dispatchBrowserEvent('swal:success', [
+            //     'type' => 'error',
+            //     'message' => 'Welcome email did not send to all selected attendees!',
+            //     'text' => "Please check their email address!",
+            // ]);
         } else if ($error == 0) {
-            $this->dispatchBrowserEvent('swal:success', [
-                'type' => 'success',
-                'message' => 'Welcome email sent successfully!',
-                'text' => ''
-            ]);
+            // $this->dispatchBrowserEvent('swal:success', [
+            //     'type' => 'success',
+            //     'message' => 'Welcome email sent successfully!',
+            //     'text' => ''
+            // ]);
         } else {
             $text = $error . ' attendees will not receive welcome email due to incorrect email address!';
-            $this->dispatchBrowserEvent('swal:success', [
-                'type' => 'success',
-                'message' => 'Welcome email sent successfully!',
-                'text' => $text
-            ]);
+            // $this->dispatchBrowserEvent('swal:success', [
+            //     'type' => 'success',
+            //     'message' => 'Welcome email sent successfully!',
+            //     'text' => $text
+            // ]);
         }
     }
 }
