@@ -403,41 +403,28 @@ class EventController extends Controller
 
         $data = array();
 
-        // GET THE DATES FIRST
-        $storeDatesCategoryTemp = [];
-        foreach ($sessions as $session) {
-            $date = $session->session_date;
-            if (!isset($storeDatesCategoryTemp[$date])) {
-                $storeDatesCategoryTemp[$date] = true;
-            }
-        }
-        $uniqueDates = array_keys($storeDatesCategoryTemp);
+        $grouped = $sessions->groupBy('session_date');
 
-        foreach ($uniqueDates as $uniqueDate) {
-            $sessionsTemp = array();
-            $sessionDay = null;
-            for($i=0; $i<3; $i++){
-                if($sessions[$i]->session_date == $uniqueDate){
-                    $sessionDay = $sessions[$i]->session_day;
-                    array_push($sessionsTemp, [
-                        'start_time' => $sessions[$i]->start_time,
-                        'title' => $sessions[$i]->title,
-                    ]);
-                }
+        foreach ($grouped as $date => $sessionsForDate) {
+            $sessionsTemp = [];
+            $sessionDay = $sessionsForDate->first()->session_day;
+
+            foreach ($sessionsForDate->take(3) as $session) {
+                $sessionsTemp[] = [
+                    'start_time' => $session->start_time,
+                    'title' => $session->title,
+                ];
             }
 
-            usort($sessionsTemp, function ($a, $b) {
-                return strtotime($a['start_time']) - strtotime($b['start_time']);
-            });
+            $finalSessionDate = Carbon::parse($date)->format('D d F Y');
 
-            $finalSessionDate =  Carbon::parse($uniqueDate)->format('l') . ' ' . Carbon::parse($uniqueDate)->format('F d, Y');
-
-            array_push($data, [
+            $data[] = [
                 'session_day' => $sessionDay,
                 'session_date' => $finalSessionDate,
                 'sessions' => $sessionsTemp,
-            ]);
+            ];
         }
+
 
         return $data;
     }
