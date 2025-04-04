@@ -305,7 +305,7 @@ class EventController extends Controller
                 'exhibitors' => $this->apiGetExhibitorsList($eventCategory, $eventId),
                 'meeting_room_partners' => $this->apiGetMrpsList($eventCategory, $eventId),
                 'media_partners' => $this->apiGetMpsList($eventCategory, $eventId),
-                
+
                 'notification_count' => $attendeeNotificationsCount,
 
                 'webview' => [
@@ -328,8 +328,119 @@ class EventController extends Controller
         }
     }
 
+    public function apiEventHomepagev2($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $event = Event::with(['eventBanner'])->where('id', $eventId)->where('category', $eventCategory)->first();
+            $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
+            $attendeeNotificationsCount = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('is_seen', false)->count();
+
+            $data = [
+                'event_banner' => $event->eventBanner->file_url ?? null,
+                'sponsors_banner_carousel' => ["https://www.gpca.org.ae/wp-content/uploads/2025/04/Asset-25.jpg", "https://www.gpca.org.ae/wp-content/uploads/2025/04/Asset-39-scaled.jpg", "https://www.gpca.org.ae/wp-content/uploads/2025/04/Asset-38-scaled.jpg"],
+                'attendee_details' => [
+                    'pfp' => $attendee->pfp->file_url ?? asset('assets/images/feature-image-placeholder.jpg'),
+                    'salutation' => $attendee->salutation,
+                    'first_name' => $attendee->first_name,
+                    'middle_name' => $attendee->middle_name,
+                    'last_name' => $attendee->last_name,
+                ],
+                'speakers' => $this->apiGetSpeakersListv2($eventId),
+                'programs' => $this->apiGetProgramsListv2($eventId),
+                'notification_count' => $attendeeNotificationsCount,
+
+                'webview' => [
+                    'delegate_feedback_survey_link' => $event->delegate_feedback_survey_link,
+                    'app_feedback_survey_link' => $event->app_feedback_survey_link,
+                    'about_event_link' => $event->about_event_link,
+                    'venue_link' => $event->venue_link,
+                    'press_releases_link' => $event->press_releases_link,
+                ],
+
+                'floor_plan' => [
+                    'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
+                    'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
+                ],
+            ];
+            return $this->success($data, "Event Homepage details", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the event details", 500);
+        }
+    }
 
 
+    public function apiGetSpeakersListv2($eventId)
+    {
+        $speakers = Speaker::with(['pfp'])->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->limit(8);
+        $data = array();
+
+        foreach ($speakers as $speaker) {
+            if ($speaker->feature_id == 0) {
+                array_push($data, [
+                    'id' => $speaker->id,
+                    'full_name'  => trim(implode(' ', array_filter([
+                        $speaker->salutation,
+                        $speaker->first_name,
+                        $speaker->middle_name,
+                        $speaker->last_name
+                    ]))),
+                    'company_name' => $speaker->company_name,
+                    'job_title' => $speaker->job_title,
+                    'pfp' => $speaker->pfp->file_url ?? null,
+                ]);
+            }
+        }
+        return $data;
+    }
+
+    public function apiGetProgramsListv2($eventId)
+    {
+        $sessions = Session::where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
+
+        if ($sessions->isEmpty()) {
+            return null;
+        }
+
+        $data = array();
+
+        // GET THE DATES FIRST
+        $storeDatesCategoryTemp = [];
+        foreach ($sessions as $session) {
+            $date = $session->session_date;
+            if (!isset($storeDatesCategoryTemp[$date])) {
+                $storeDatesCategoryTemp[$date] = true;
+            }
+        }
+        $uniqueDates = array_keys($storeDatesCategoryTemp);
+
+        foreach ($uniqueDates as $uniqueDate) {
+            $sessionsTemp = array();
+            $sessionDay = null;
+            for($i=0; $i<3; $i++){
+                if($sessions[$i]->session_date == $uniqueDate){
+                    $sessionDay = $sessions[$i]->session_day;
+                    array_push($sessionsTemp, [
+                        'start_time' => $sessions[$i]->start_time,
+                        'title' => $sessions[$i]->title,
+                    ]);
+                }
+            }
+
+            usort($sessionsTemp, function ($a, $b) {
+                return strtotime($a['start_time']) - strtotime($b['start_time']);
+            });
+
+            $finalSessionDate =  Carbon::parse($uniqueDate)->format('l') . ' ' . Carbon::parse($uniqueDate)->format('F d, Y');
+
+            array_push($data, [
+                'session_day' => $sessionDay,
+                'session_date' => $finalSessionDate,
+                'sessions' => $sessionsTemp,
+            ]);
+        }
+
+        return $data;
+    }
 
     public function apiGetSpeakersList($eventCategory, $eventId)
     {
@@ -474,7 +585,7 @@ class EventController extends Controller
 
         $startDate = Carbon::parse($uniqueDates[0]);
         $endDate = Carbon::parse(end($uniqueDates));
-        
+
         if ($startDate == $endDate) {
             $formattedDate = $startDate->format('d F Y');
         } else {
