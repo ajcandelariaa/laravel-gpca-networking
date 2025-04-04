@@ -371,7 +371,7 @@ class EventController extends Controller
 
     public function apiGetSpeakersListv2($eventId)
     {
-        $speakers = Speaker::with(['pfp'])->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->limit(8);
+        $speakers = Speaker::with(['pfp'])->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->limit(8)->get();
         $data = array();
 
         foreach ($speakers as $speaker) {
