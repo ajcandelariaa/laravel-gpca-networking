@@ -710,7 +710,7 @@ class AttendeesController extends Controller
                             'start_time' => $favorite->session->start_time,
                             'end_time' => $favorite->session->end_time,
                             // 'session_date' => $finalSessionDate,
-                            
+
                             // To be removed
                             'session_date' => Carbon::parse($favorite->session->session_date)->format('F d, Y'),
 
@@ -892,6 +892,29 @@ class AttendeesController extends Controller
             return $this->success($data, "Attendees list", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while getting the attendees list", 500);
+        }
+    }
+
+    public function apiAttendeeDetails($apiCode, $eventCategory, $eventId, $attendeeId, $otherAttendeeId)
+    {
+        try {
+            $attendee = Attendee::with('pfp')->where('event_id', $eventId)->where('id', $otherAttendeeId)->where('is_active', true)->first();
+
+            if (!$attendee) {
+                return $this->error(null, "There are no attendee", 404);
+            }
+            $data = [
+                'full_name'  => trim(implode(' ', array_filter([
+                    $attendee->salutation,
+                    $attendee->first_name,
+                    $attendee->middle_name,
+                    $attendee->last_name
+                ]))),
+                'pfp' => $attendee->pfp->file_url ?? "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+            ];
+            return $this->success($data, "Attendee details", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the attendee details", 500);
         }
     }
 
