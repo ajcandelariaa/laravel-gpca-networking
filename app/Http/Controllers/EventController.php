@@ -763,6 +763,7 @@ class EventController extends Controller
                 'id' => $meetingRoomPartner->id,
                 'name' => $meetingRoomPartner->name,
                 'location' => $meetingRoomPartner->location,
+                'website' => $meetingRoomPartner->website,
                 'logo' => $meetingRoomPartner->logo->file_url ?? null,
             ]);
         }
