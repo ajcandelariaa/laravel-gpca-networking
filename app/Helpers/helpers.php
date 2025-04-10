@@ -224,6 +224,22 @@ if (!function_exists('sendPushNotification')) {
                     'title' => $title,
                     'body' => $message,
                 ],
+                'android' => [
+                    'priority' => 'high',
+                    'notification' => [
+                        'sound' => 'default',
+                        'channel_id' => 'high_importance_channel',
+                        'click_action' => 'FLUTTER_NOTIFICATION_CLICK'
+                    ]
+                ],
+                'apns' => [
+                    'payload' => [
+                        'aps' => [
+                            'sound' => 'default',
+                            'content-available' => 1,
+                        ]
+                    ]
+                ],
                 'data' => $data,
             ],
         ];
