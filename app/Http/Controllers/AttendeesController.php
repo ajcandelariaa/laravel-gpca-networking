@@ -1032,7 +1032,7 @@ class AttendeesController extends Controller
                     sendPushNotification($deviceToken->device_token, "New message from $senderName", $message->message, $data2);
                     Log::info('Sending push to', ['sender_name' => $senderName]);
                 } catch (\Exception $e) {
-                    Log::info('Error sending push to', ['sender_name' => $senderName]);
+                    Log::info('Error sending push to', ['sender_name' => $senderName, 'error' => $e]);
                 }
             }
     }
