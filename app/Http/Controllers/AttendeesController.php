@@ -1010,33 +1010,33 @@ class AttendeesController extends Controller
         }
     }
 
-    public function sendChatPush(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    public function sendChatPushNotification(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
         $receiverId = $request->receiver_id;
-        $message = $request->message;
+        $senderId = $request->sender_id;
         $chatId = $request->chat_id;
+        $message = $request->message;
         $senderName = $request->sender_name;
 
         $attendee = Attendee::with('deviceTokens')->where('id', $request->receiver_id)->first();
         if ($attendee->deviceTokens->isNotEmpty()) {
             foreach ($attendee->deviceTokens as $deviceToken) {
-                $data2 = [
+                $data = [
                     'event_id' => $eventId,
                     'notification_type' => NotificationTypes::ATTENDEE_CHATS->value,
                     'entity_id' => null,
                     'chat_id' => $chatId,
-                    'sender_id' => $request->sender_id,
+                    'sender_id' => $senderId,
                     'receiver_id' => $receiverId
                 ];
                 try {
-                    sendPushNotification($deviceToken->device_token, "New message from $senderName", $message, $data2);
-                    Log::info('Sending push to', ['sender_name' => $senderName]);
+                    sendPushNotification($deviceToken->device_token, "New message from $senderName", $message, $data);
+                    Log::info('Sending push from', ['sender_name' => $senderName]);
                 } catch (\Exception $e) {
-                    Log::info('Error sending push to', ['sender_name' => $senderName, 'error' => $e]);
+                    Log::info('Error sending push from', ['sender_name' => $senderName, 'error' => $e]);
                 }
             }
-    }
-
+        }
         return $this->success(null, "Push sent", 200);
     }
 }

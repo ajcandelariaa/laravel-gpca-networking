@@ -70,7 +70,7 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                                 Route::post('/send-message', [ConversationController::class, 'apiConversationSendMessage']);
                             });
 
-                            Route::post('/send-chat-push', [AttendeesController::class, 'sendChatPush']);
+                            Route::post('/send-chat-push-notification', [AttendeesController::class, 'sendChatPushNotification']);
 
                             Route::get('/favorites', [AttendeesController::class, 'apiAttendeeFavorites']);
 
