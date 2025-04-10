@@ -1009,7 +1009,7 @@ class AttendeesController extends Controller
         }
     }
 
-    public function sendChatPush(Request $request)
+    public function sendChatPush(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
     {
         $receiverId = $request->receiver_id;
         $message = $request->message;
