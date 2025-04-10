@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\FileUploadDirectory;
 use App\Enums\MediaEntityTypes;
+use App\Enums\NotificationTypes;
 use App\Enums\PassTypes;
 use App\Enums\PasswordChangedBy;
 use App\Mail\AttendeeResetPassword;
@@ -1016,23 +1017,24 @@ class AttendeesController extends Controller
         $chatId = $request->chat_id;
         $senderName = $request->sender_name;
 
-        $deviceToken = Attendee::where('id', $receiverId)->value('device_token');
-
-        if (!$deviceToken) {
-            return $this->error(null, "Device token not found", 404);
+        $attendee = Attendee::with('deviceTokens')->where('id', $request->receiver_id)->first();
+        if ($attendee->deviceTokens->isNotEmpty()) {
+            foreach ($attendee->deviceTokens as $deviceToken) {
+                $data2 = [
+                    'event_id' => $eventId,
+                    'notification_type' => NotificationTypes::ATTENDEE_CHATS->value,
+                    'entity_id' => null,
+                    'chat_id' => $chatId,
+                    'sender_id' => $request->sender_id,
+                    'receiver_id' => $receiverId
+                ];
+                try {
+                    sendPushNotification($deviceToken->device_token, "New message", $message->message, $data2);
+                } catch (\Exception $e) {
+                }
+            }
         }
 
-        sendPushNotification(
-            $deviceToken,
-            $senderName,
-            $message,
-            [
-                'type' => 'chat',
-                'chat_id' => $chatId,
-                'sender_id' => $request->sender_id,
-                'receiver_id' => $receiverId,
-            ]
-        );
         return $this->success(null, "Push sent", 200);
     }
 }
