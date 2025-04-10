@@ -1008,4 +1008,31 @@ class AttendeesController extends Controller
             return $this->error($e, "An error occurred while getting the attendee contacts list", 500);
         }
     }
+
+    public function sendChatPush(Request $request)
+    {
+        $receiverId = $request->receiver_id;
+        $message = $request->message;
+        $chatId = $request->chat_id;
+        $senderName = $request->sender_name;
+
+        $deviceToken = Attendee::where('id', $receiverId)->value('device_token');
+
+        if (!$deviceToken) {
+            return $this->error(null, "Device token not found", 404);
+        }
+
+        sendPushNotification(
+            $deviceToken,
+            $senderName,
+            $message,
+            [
+                'type' => 'chat',
+                'chat_id' => $chatId,
+                'sender_id' => $request->sender_id,
+                'receiver_id' => $receiverId,
+            ]
+        );
+        return $this->success(null, "Push sent", 200);
+    }
 }
