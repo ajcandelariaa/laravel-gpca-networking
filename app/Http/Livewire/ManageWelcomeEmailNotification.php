@@ -165,7 +165,6 @@ class ManageWelcomeEmailNotification extends Component
     public function sendWelcomeEmailConfirmationBulkConfirmation()
     {
         $text = "This will send to " . count($this->selectedAttendees) . ' attendees!';
-        $this->sendWelcomeEmailNotificationBulk();
         $this->dispatchBrowserEvent('swal:confirmation', [
             'type' => 'warning',
             'message' => 'Are you sure?',
