@@ -89,7 +89,7 @@ class ExhibitorController extends Controller
             $exhibitors = Exhibitor::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
 
             if ($exhibitors->isEmpty()) {
-                return null;
+                return $this->error(null, "No exhibitors found", 404);
             }
 
             $data = array();
