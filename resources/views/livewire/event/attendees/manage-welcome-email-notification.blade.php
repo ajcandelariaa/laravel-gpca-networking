@@ -68,10 +68,10 @@
                         </div>
                     @endif
 
-                    <div class="col-span-1">{{ $finalListOfAttendee['name'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfAttendee['job_title'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfAttendee['email_address'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfAttendee['company_name'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['name'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['job_title'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['email_address'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['company_name'] }}</div>
                     <div class="col-span-1">
                         @if ($finalListOfAttendee['is_logged_in_already'])
                             <span class="bg-green-300 py-1 px-10">Yes</span>

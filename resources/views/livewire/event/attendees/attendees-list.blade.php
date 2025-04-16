@@ -54,12 +54,12 @@
             @foreach ($finalListOfAttendees as $index => $finalListOfAttendee)
                 <div
                     class="grid grid-cols-7 gap-10 pt-2 pb-2 mb-1 text-center items-center text-sm {{ $index % 2 == 0 ? 'bg-registrationInputFieldsBGColor' : 'bg-registrationCardBGColor' }}">
-                    <div class="col-span-1">{{ $finalListOfAttendee['badge_number'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfAttendee['name'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfAttendee['job_title'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfAttendee['email_address'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfAttendee['company_name'] }}</div>
-                    <div class="col-span-1">{{ $finalListOfAttendee['registration_type'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['badge_number'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['name'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['job_title'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['email_address'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['company_name'] }}</div>
+                    <div class="col-span-1 break-words">{{ $finalListOfAttendee['registration_type'] }}</div>
                     <div class="col-span-1">
                         <a href="{{ route('admin.event.attendee.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'attendeeId' => $finalListOfAttendee['id']]) }}"
                             class="cursor-pointer hover:text-gray-600 text-gray-500">
