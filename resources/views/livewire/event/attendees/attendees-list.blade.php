@@ -16,6 +16,9 @@
                 attendees</button>
             <button class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-40 h-10">Export
                 data</button> --}}
+            <a href="{{ route('admin.event.attendees.export', ['eventCategory' => $event->category, 'eventId' => $event->id]) }}"
+                class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-64 h-10 inline-flex items-center justify-center">Export
+                data</a>
         </div>
         <div class="flex items-center gap-2">
             <div class="relative">
