@@ -154,6 +154,194 @@ class AttendeesController extends Controller
         ]);
     }
 
+    public function eventAttendeesExport($eventCategory, $eventId)
+    {
+        $finalExcelData = array();
+        $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
+        $attendees = Attendee::with(['passwordResets', 'logins', 'welcomeEmailNotifications', 'pfp'])->where('event_id', $eventId)->get();
+
+        if ($attendees->isNotEmpty()) {
+            foreach ($attendees as $attendee) {
+                $is_password_resetted = true;
+                $is_logged_in_already = true;
+                $totatWelcomeEmailNotificationSent = 0;
+                $lasttWelcomeEmailNotificationSent = "N/A";
+
+                if ($attendee->passwordResets->isEmpty()) {
+                    $is_password_resetted = false;
+                }
+
+                if ($attendee->logins->isEmpty()) {
+                    $is_logged_in_already = false;
+                }
+
+                if ($attendee->welcomeEmailNotifications->isNotEmpty()) {
+                    foreach ($attendee->welcomeEmailNotifications as $welcomeEmailNotification) {
+                        $totatWelcomeEmailNotificationSent++;
+                        $lasttWelcomeEmailNotificationSent = $welcomeEmailNotification->sent_datetime;
+                    }
+                }
+
+                array_push($finalExcelData, [
+                    'badge_number' => $attendee->badge_number,
+                    'registration_type' => $attendee->registration_type,
+
+                    'pass_type' => $attendee->pass_type,
+                    'company_name' => $attendee->company_name,
+                    'company_country' => $attendee->company_country,
+                    'company_phone_number' => $attendee->company_phone_number,
+
+                    'username' => $attendee->username,
+
+                    'salutation' => $attendee->salutation,
+                    'first_name' => $attendee->first_name,
+                    'middle_name' => $attendee->middle_name,
+                    'last_name' => $attendee->last_name,
+                    'job_title' => $attendee->job_title,
+
+                    'email_address' => $attendee->email_address,
+                    'mobile_number' => $attendee->mobile_number,
+
+                    'pfp' => $attendee->pfp->file_url,
+                    'biography' => $attendee->biography,
+
+                    'gender' => $attendee->gender,
+                    'birthdate' => $attendee->birthdate,
+                    'country' => $attendee->country,
+                    'city' => $attendee->city,
+                    'address' => $attendee->address,
+                    'nationality' => $attendee->nationality,
+
+                    'website' => $attendee->website,
+                    'facebook' => $attendee->facebook,
+                    'linkedin' => $attendee->linkedin,
+                    'twitter' => $attendee->twitter,
+                    'instagram' => $attendee->instagram,
+
+                    'is_password_resetted' => $is_password_resetted,
+                    'is_logged_in_already' => $is_logged_in_already,
+
+                    'totatWelcomeEmailNotificationSent' => $totatWelcomeEmailNotificationSent,
+                    'lasttWelcomeEmailNotificationSent' => $lasttWelcomeEmailNotificationSent,
+
+                    'joined_date_time' => $attendee->joined_date_time,
+                ]);
+            }
+        }
+
+        $currentDate = Carbon::now()->format('Y-m-d');
+        $fileName = $eventCategory . ' ' . $event->year . ' Attendees ' . '[' . $currentDate . '].csv';
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = array(
+            'Badge Number',
+            'Registration Type',
+
+            'Pass Type',
+            'Company Name',
+            'Company Country',
+            'Company Phone Number',
+
+            'Username',
+
+            'Salutation',
+            'First Name',
+            'Middle Name',
+            'Last Name',
+            'Job Title',
+
+            'Email Address',
+            'Mobile Number',
+
+            'Headshot',
+            'Biography',
+
+            'Gender',
+            'Birthdate',
+            'Country',
+            'City',
+            'Address',
+            'Nationality',
+
+            'Website',
+            'Facebook',
+            'LinkedIn',
+            'Twitter',
+            'Instagram',
+
+            'Is Password Resetted',
+            'Is Logged In Already',
+
+            'Total Welcome Email Notification Sent',
+            'Last Welcome Email Notification Sent',
+
+            'Joined Date & Time',
+        );
+
+        $callback = function () use ($finalExcelData, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            foreach ($finalExcelData as $data) {
+                fputcsv(
+                    $file,
+                    array(
+                        $data['badge_number'],
+                        $data['registration_type'],
+
+                        $data['pass_type'],
+                        $data['company_name'],
+                        $data['company_country'],
+                        $data['company_phone_number'],
+
+                        $data['username'],
+
+                        $data['salutation'],
+                        $data['first_name'],
+                        $data['middle_name'],
+                        $data['last_name'],
+                        $data['job_title'],
+
+                        $data['email_address'],
+                        $data['mobile_number'],
+
+                        $data['pfp'],
+                        $data['biography'],
+
+                        $data['gender'],
+                        $data['birthdate'],
+                        $data['country'],
+                        $data['city'],
+                        $data['address'],
+                        $data['nationality'],
+
+                        $data['website'],
+                        $data['facebook'],
+                        $data['linkedin'],
+                        $data['twitter'],
+                        $data['instagram'],
+
+                        $data['is_password_resetted'],
+                        $data['is_logged_in_already'],
+
+                        $data['totatWelcomeEmailNotificationSent'],
+                        $data['lasttWelcomeEmailNotificationSent'],
+
+                        $data['joined_date_time'],
+                    )
+                );
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
 
 
 

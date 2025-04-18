@@ -43,6 +43,7 @@ Route::prefix('admin')->group(function () {
                     Route::get('/manage-welcome-email-notification', [AttendeesController::class, 'eventManageWelcomeEmailNotificationView'])->name('admin.event.manage.welcome.email.notif.view');
                     Route::get('/{attendeeId}', [AttendeesController::class, 'eventAttendeeView'])->name('admin.event.attendee.view');
                     Route::get('/add/from-api', [AttendeesController::class, 'eventAddAttendeeFromApiView'])->name('admin.event.add.attendee.from.api.view');
+                    Route::get('/export', [AttendeesController::class, 'eventAttendeesExport'])->name('admin.event.attendees.export');
                 });
 
                 Route::prefix('/speaker')->group(function () {
