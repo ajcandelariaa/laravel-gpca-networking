@@ -163,17 +163,17 @@ class AttendeesController extends Controller
 
         if ($attendees->isNotEmpty()) {
             foreach ($attendees as $attendee) {
-                $is_password_resetted = true;
-                $is_logged_in_already = true;
+                $is_password_resetted = "Yes";
+                $is_logged_in_already = "Yes";
                 $totatWelcomeEmailNotificationSent = 0;
                 $lasttWelcomeEmailNotificationSent = "N/A";
 
                 if ($attendee->passwordResets->isEmpty()) {
-                    $is_password_resetted = false;
+                    $is_password_resetted = "No";
                 }
 
                 if ($attendee->logins->isEmpty()) {
-                    $is_logged_in_already = false;
+                    $is_logged_in_already = "No";
                 }
 
                 if ($attendee->welcomeEmailNotifications->isNotEmpty()) {
@@ -298,7 +298,7 @@ class AttendeesController extends Controller
                         $data['pass_type'],
                         $data['company_name'],
                         $data['company_country'],
-                        $data['company_phone_number'],
+                        "\t" . $data['company_phone_number'],
 
                         $data['username'],
 
@@ -309,7 +309,7 @@ class AttendeesController extends Controller
                         $data['job_title'],
 
                         $data['email_address'],
-                        $data['mobile_number'],
+                        "\t" . $data['mobile_number'],
 
                         $data['pfp'],
                         $data['biography'],
