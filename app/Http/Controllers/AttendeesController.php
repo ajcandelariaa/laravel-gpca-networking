@@ -203,7 +203,7 @@ class AttendeesController extends Controller
                     'email_address' => $attendee->email_address,
                     'mobile_number' => $attendee->mobile_number,
 
-                    'pfp' => $attendee->pfp->file_url,
+                    'pfp' => $attendee->pfp->file_url ?? "",
                     'biography' => $attendee->biography,
 
                     'gender' => $attendee->gender,
