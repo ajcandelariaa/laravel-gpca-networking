@@ -156,7 +156,7 @@ class AttendeesController extends Controller
 
     public function eventAttendeesExport($eventCategory, $eventId)
     {
-        dd("Test");
+        // dd("Test");
         $finalExcelData = array();
         $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
         $attendees = Attendee::with(['passwordResets', 'logins', 'welcomeEmailNotifications', 'pfp'])->where('event_id', $eventId)->get();
