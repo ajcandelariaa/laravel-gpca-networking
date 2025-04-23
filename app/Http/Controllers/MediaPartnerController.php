@@ -87,7 +87,7 @@ class MediaPartnerController extends Controller
             $mediaPartners = MediaPartner::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
 
             if ($mediaPartners->isEmpty()) {
-                return null;
+                return $this->error(null, "No media partners available at the moment.", 404);
             }
 
             $data = array();

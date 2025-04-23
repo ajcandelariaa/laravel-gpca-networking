@@ -127,7 +127,7 @@ class SpeakerController extends Controller
             $event = Event::where('id', $eventId)->where('category', $eventCategory)->first();
 
             if ($speakers->isEmpty()) {
-                return null;
+                return $this->error(null, "No speakers available at the moment.", 404);
             }
 
             $data = array();

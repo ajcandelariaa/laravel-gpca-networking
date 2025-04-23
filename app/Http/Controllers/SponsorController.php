@@ -124,7 +124,7 @@ class SponsorController extends Controller
             $sponsorTypes = SponsorType::where('event_id', $eventId)->orderBy('datetime_added', 'ASC')->get();
 
             if ($sponsors->isEmpty()) {
-                return null;
+                return $this->error(null, "No sponsors available at the moment.", 404);
             }
 
             $data = array();

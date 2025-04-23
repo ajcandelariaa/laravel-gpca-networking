@@ -90,7 +90,7 @@ class MeetingRoomPartnerController extends Controller
             $meetingRoomPartners = MeetingRoomPartner::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
 
             if ($meetingRoomPartners->isEmpty()) {
-                return null;
+                return $this->error(null, "No meeting room partners available at the moment.", 404);
             }
 
             $data = array();

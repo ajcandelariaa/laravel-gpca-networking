@@ -37,7 +37,7 @@ class NotificationController extends Controller
             $attendeeNotifications = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->orderBy('sent_datetime', 'DESC')->get();
 
             if ($attendeeNotifications->isEmpty()) {
-                return null;
+                return $this->error(null, "No notifications available at the moment.", 404);
             }
 
             $data = array();

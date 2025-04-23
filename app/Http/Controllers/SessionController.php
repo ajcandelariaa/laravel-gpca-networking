@@ -191,7 +191,7 @@ class SessionController extends Controller
             $sessions = Session::with(['feature', 'sponsor.logo'])->where('event_id', $eventId)->where('is_active', true)->orderBy('session_date', 'ASC')->orderBy('start_time', 'ASC')->get();
 
             if ($sessions->isEmpty()) {
-                return null;
+                return $this->error(null, "No sessions available at the moment.", 404);
             }
 
             $data = array();
