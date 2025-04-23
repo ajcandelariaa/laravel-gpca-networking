@@ -527,6 +527,12 @@ class SessionController extends Controller
             }
 
             $finalSessionDate = Carbon::parse($session->session_date)->format('F d, Y') . ' | ' . Carbon::parse($session->session_date)->format('l') . ' | ' . $session->session_day;
+            $finalCategory = "";
+            if ($session->feature_id == 0) {
+                $finalCategory = $session->event->short_name;
+            } else {
+                $finalCategory = $session->feature->short_name;
+            }
 
             $data = [
                 'session_id' => $session->id,
@@ -542,6 +548,8 @@ class SessionController extends Controller
                 'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
                 'session_week_day' => Carbon::parse($session->session_date)->format('l'),
                 'session_day' => $session->session_day,
+
+                'session_category' => $finalCategory,
 
                 'session_type' => $session->session_type,
                 'sponsored_by' => $session->sponsor->logo->file_url ?? null,
