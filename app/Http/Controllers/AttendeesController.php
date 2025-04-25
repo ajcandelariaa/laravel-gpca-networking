@@ -588,7 +588,7 @@ class AttendeesController extends Controller
                 'job_title' => $attendee->job_title,
                 'email_address' => $attendee->email_address,
                 'mobile_number' => $attendee->mobile_number,
-                'pfp' => $attendee->pfp->file_url ?? null,
+                'pfp' => $attendee->pfp->file_url ?? asset('assets/images/feature-image-placeholder.jpg'),
                 'biography' => $attendee->biography,
                 'gender' => $attendee->gender,
                 'birthdate' => $attendee->birthdate,
