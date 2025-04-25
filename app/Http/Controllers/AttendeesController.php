@@ -1053,7 +1053,7 @@ class AttendeesController extends Controller
     public function apiAttendeesListv2($apiCode, $eventCategory, $eventId, $attendeeId)
     {
         try {
-            $attendees = Attendee::with('pfp')->where('event_id', $eventId)->orderBy('first_name', 'ASC')->where('is_active', true)->get();
+            $attendees = Attendee::with('pfp')->where('event_id', $eventId)->where('id', '!=', $attendeeId)->orderBy('first_name', 'ASC')->where('is_active', true)->get();
 
             if ($attendees->isEmpty()) {
                 return $this->error(null, "There are no attendees yet", 404);
