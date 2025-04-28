@@ -43,6 +43,12 @@
                     <div class="mt-2">
                         <input placeholder="Text Color" type="text" wire:model.lazy="text_color"
                             class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+
+                        @error('text_color')
+                            <div class="text-red-500 text-xs italic mt-1">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
 
@@ -53,18 +59,22 @@
                     <div class="mt-2">
                         <input placeholder="Background Color" type="text" wire:model.lazy="background_color"
                             class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+
+                        @error('background_color')
+                            <div class="text-red-500 text-xs italic mt-1">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
             </div>
 
             @if ($editState)
                 <div class="mt-5 flex gap-5">
-                    <button type="button"
-                        class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-1 px-10"
+                    <button type="button" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-md py-1 px-10"
                         wire:click.prevent="editSponsorType">Update</button>
 
-                    <button type="button"
-                        class="bg-red-500 hover:bg-red-600 text-white rounded-md py-1 px-10"
+                    <button type="button" class="bg-red-500 hover:bg-red-600 text-white rounded-md py-1 px-10"
                         wire:click.prevent="resetEditSponsorTypeFields">Cancel</button>
                 </div>
             @else
