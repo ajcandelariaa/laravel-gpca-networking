@@ -7,6 +7,7 @@ use App\Models\AttendeeFavoriteExhibitor;
 use App\Models\Event;
 use App\Models\Exhibitor;
 use App\Models\Media;
+use App\Models\MeetingRoomPartner;
 use App\Traits\HttpResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -172,6 +173,54 @@ class ExhibitorController extends Controller
             return $this->success(null, "Exhibitor favorite status updated successfully", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while updating the favorite status", 500);
+        }
+    }
+
+    public function apiEventExhibitorMeetingRoomPartners($apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        try {
+            $finalData = array();
+            $exhibitorsData = array();
+            $meetingRoomPartnersData = array();
+
+            $exhibitors = Exhibitor::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+            $meetingRoomPartners = MeetingRoomPartner::with('logo')->where('event_id', $eventId)->where('is_active', true)->orderBy('datetime_added', 'ASC')->get();
+
+
+            if ($exhibitors->isEmpty() && $meetingRoomPartners->isEmpty()) {
+                return $this->error(null, "No exhibitors and meeting room partners available at the moment.", 404);
+            }
+
+            if($exhibitors->isNotEmpty()) {
+                foreach ($exhibitors as $exhibitor) {
+                    array_push($exhibitorsData, [
+                        'id' => $exhibitor->id,
+                        'name' => $exhibitor->name,
+                        'stand_number' => $exhibitor->stand_number ?? $exhibitor->website,
+                        'logo' => $exhibitor->logo->file_url ?? null,
+                    ]);
+                }
+            }
+
+            if($meetingRoomPartners->isNotEmpty()) {
+                foreach ($meetingRoomPartners as $meetingRoomPartner) {
+                    array_push($meetingRoomPartnersData, [
+                        'id' => $meetingRoomPartner->id,
+                        'name' => $meetingRoomPartner->name,
+                        'location' => $meetingRoomPartner->location,
+                        'logo' => $meetingRoomPartner->logo->file_url ?? null,
+                    ]);
+                }
+            }
+
+            $finalData = [
+                'exhibitors' => $exhibitorsData,
+                'meeting_room_partners' => $meetingRoomPartnersData,
+            ];
+
+            return $this->success($finalData, "Exhibitors & Meeting room partners list", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while getting the exhibitor and meeting room partner list", 500);
         }
     }
 }

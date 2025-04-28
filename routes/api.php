@@ -98,6 +98,10 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                                 Route::post('/mark-as-favorite', [ExhibitorController::class, 'apiEventExhibitorMarkAsFavorite']);
                             });
 
+                            Route::prefix('exhibitor-meeting-room-partner')->group(function () {
+                                Route::get('/', [ExhibitorController::class, 'apiEventExhibitorMeetingRoomPartners']);
+                            });
+
                             Route::prefix('meeting-room-partner')->group(function () {
                                 Route::get('/', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartners']);
                                 Route::get('/{meetingRoomPartnerId}', [MeetingRoomPartnerController::class, 'apiEventMeetingRoomPartnerDetail']);

@@ -55,6 +55,8 @@ class SponsorTypeList extends Component
     public function addSponsorTypeConfirmation(){
         $this->validate([
             'name' => 'required',
+            'text_color' => 'required',
+            'background_color' => 'required',
         ]);
 
         $this->dispatchBrowserEvent('swal:confirmation', [
@@ -167,6 +169,8 @@ class SponsorTypeList extends Component
     {
         $this->validate([
             'name' => 'required',
+            'text_color' => 'required',
+            'background_color' => 'required',
         ]);
 
         SponsorTypes::where('id', $this->editId)->update([

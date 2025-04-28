@@ -38,7 +38,7 @@
 
                 <div>
                     <div class="text-primaryColor">
-                        Text Color
+                        Text Color <span class="text-red-700">*</span>
                     </div>
                     <div class="mt-2">
                         <input placeholder="Text Color" type="text" wire:model.lazy="text_color"
@@ -48,7 +48,7 @@
 
                 <div>
                     <div class="text-primaryColor">
-                        Background Color
+                        Background Color <span class="text-red-700">*</span>
                     </div>
                     <div class="mt-2">
                         <input placeholder="Background Color" type="text" wire:model.lazy="background_color"
