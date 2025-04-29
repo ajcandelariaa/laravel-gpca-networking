@@ -540,7 +540,7 @@ class SessionController extends Controller
                 'description_html_text' => $session->description_html_text,
                 'session_time' => $session->start_time . ' - ' . $sessionEndTime,
                 'location' => $session->location,
-                // 'session_date' => $finalSessionDate,
+                'session_date' => $finalSessionDate,
 
                 //to be removed
                 'start_time' => $session->start_time,
