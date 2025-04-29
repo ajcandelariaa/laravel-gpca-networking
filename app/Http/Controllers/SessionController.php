@@ -545,7 +545,7 @@ class SessionController extends Controller
                 //to be removed
                 'start_time' => $session->start_time,
                 'end_time' => $session->end_time,
-                'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
+                // 'session_date' => Carbon::parse($session->session_date)->format('F d, Y'),
                 'session_week_day' => Carbon::parse($session->session_date)->format('l'),
                 'session_day' => $session->session_day,
 
