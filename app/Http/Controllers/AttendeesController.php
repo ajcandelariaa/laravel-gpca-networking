@@ -1147,6 +1147,8 @@ class AttendeesController extends Controller
                     'job_title' => $contact->contactAttendee->job_title,
                     'company_name' => $contact->contactAttendee->company_name,
                     'registration_type' => $contact->contactAttendee->registration_type,
+                    'company_country' => $contact->contactAttendee->company_country,
+                    'firebase_uid' => $contact->contactAttendee->firebase_uid,
                     'pfp' => $contact->contactAttendee->pfp->file_url ?? "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
                 ]);
             }
