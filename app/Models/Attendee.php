@@ -50,6 +50,8 @@ class Attendee extends Model
         'linkedin',
         'twitter',
         'instagram',
+        
+        'firebase_uid',
 
         'is_active',
         'joined_date_time',

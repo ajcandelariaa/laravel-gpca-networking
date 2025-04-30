@@ -356,6 +356,7 @@ class AttendeesController extends Controller
             'username' => 'required',
             'password' => 'required',
             'device_token' => 'required',
+            'firebase_uid' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -373,6 +374,16 @@ class AttendeesController extends Controller
 
             if (!(Hash::check($request->password, $attendee->password))) {
                 return $this->error(null, "Invalid credentials", 401);
+            }
+
+            if (!$attendee->firebase_uid) {
+                $existingUid = Attendee::where('firebase_uid', $request->firebase_uid)->first();
+                if ($existingUid && $existingUid->id !== $attendee->id) {
+                    return $this->error(null, "This Firebase account is already linked to another attendee.", 409);
+                }
+
+                $attendee->firebase_uid = $request->firebase_uid;
+                $attendee->save();
             }
 
             $attendeeDeviceToken = AttendeeDeviceToken::where('event_id', $eventId)->where('attendee_id', $attendee->id)->where('device_token', $request->device_token)->first();
@@ -399,7 +410,7 @@ class AttendeesController extends Controller
                 'expires_at_datetime' => $expiresAt,
             ]);
 
-            return $this->success(['token' => $tokenResult->plainTextToken, 'expires_at' => $expiresAt, 'attendeeId' => $attendee->id], "Logged in successfully", 200);
+            return $this->success(['token' => $tokenResult->plainTextToken, 'expires_at' => $expiresAt, 'attendeeId' => $attendee->id, 'firebaseUid' => $attendee->firebase_uid ?? ''], "Logged in successfully", 200);
         } catch (\Exception $e) {
             return $this->error($e, "An error occurred while logging in", 500);
         }
