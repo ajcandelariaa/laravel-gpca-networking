@@ -1086,8 +1086,8 @@ class AttendeesController extends Controller
                         'company_name' => $attendee->company_name,
                         'registration_type' => $attendee->registration_type,
                         'is_contact' => $isContact,
-                        'company_country' => $attendee->company_country,
-                        'firebase_uid' => $attendee->firebase_uid,
+                        'company_country' => $attendee->company_country ?? "",
+                        'firebase_uid' => $attendee->firebase_uid ?? "",
                         'pfp' => $attendee->pfp->file_url ?? "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
                     ]);
                 }
