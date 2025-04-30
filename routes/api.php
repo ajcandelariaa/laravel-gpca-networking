@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AttendeesController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\EventController;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => 'api.check.secret.code'], function () {
     Route::prefix('{api_code}')->group(function () {
         Route::get('/event', [EventController::class, 'apiEventsList']);
+        Route::get('/latest-version', [AdminController::class, 'apiLatestAppVersion']);
         Route::group(['middleware' => 'api.check.event.exists'], function () {
             Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
                 Route::post('/login', [AttendeesController::class, 'apiAttendeeLogin']);

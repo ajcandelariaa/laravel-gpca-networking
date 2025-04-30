@@ -8,23 +8,25 @@ use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
-    public function loginView(){
-        if(Session::has('userType')){
-            if(Session::get('userType') == 'gpcaAdmin'){
+    public function loginView()
+    {
+        if (Session::has('userType')) {
+            if (Session::get('userType') == 'gpcaAdmin') {
                 return redirect('/admin/dashboard');
             }
         }
         return view('admin.login.login');
     }
 
-    
+
     // RENDER LOGICS
-    public function login(Request $request){
-        $request->validate([ 
+    public function login(Request $request)
+    {
+        $request->validate([
             'username' => 'required',
             'password' => 'required'
         ]);
-        if($request->username == env('ADMIN_USERNAME') && $request->password == env('ADMIN_PASSWORD')){
+        if ($request->username == env('ADMIN_USERNAME') && $request->password == env('ADMIN_PASSWORD')) {
             $request->session()->put('userType', 'gpcaAdmin');
             return Redirect::to("/admin/event")->withSuccess('Welcome');
         } else {
@@ -32,8 +34,41 @@ class AdminController extends Controller
         }
     }
 
-    public function logout(){
+    public function logout()
+    {
         Session::flush();
         return Redirect::to("/admin/login")->withSuccess('Logged out successfully');
+    }
+
+
+
+
+
+
+
+    // =========================================================
+    //                       API FUNCTIONS
+    // =========================================================
+    public function apiLatestAppVersion(Request $request)
+    {
+        $platform = $request->query('platform');
+
+        if ($platform === 'android') {
+            return response()->json([
+                'version' => '2.0.0',
+                'force_update' => false,
+                'update_url' => 'https://play.google.com/store/apps/details?id=com.gpcanetworking2.app',
+            ]);
+        }
+
+        if ($platform === 'ios') {
+            return response()->json([
+                'version' => '2.0.0',
+                'force_update' => false,
+                'update_url' => 'https://apps.apple.com/us/app/gpca-events-networking/id6639614793',
+            ]);
+        }
+
+        return response()->json(['message' => 'Invalid platform.'], 400);
     }
 }
