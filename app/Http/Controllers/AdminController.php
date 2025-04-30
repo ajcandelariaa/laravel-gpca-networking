@@ -55,7 +55,7 @@ class AdminController extends Controller
 
         if ($platform === 'android') {
             return response()->json([
-                'version' => '3.0.0',
+                'version' => '2.0.0',
                 'force_update' => false,
                 'update_url' => 'https://play.google.com/store/apps/details?id=com.gpcanetworking2.app',
             ]);
