@@ -340,6 +340,10 @@ if (!function_exists('sendPushNotificationV2')) {
                         'aps' => [
                             'sound' => 'default',
                             'content-available' => 1,
+                            'alert' => [
+                                'title' => $title,
+                                'body' => $message
+                            ],
                         ]
                     ]
                 ],
