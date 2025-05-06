@@ -335,9 +335,21 @@ class EventController extends Controller
             $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
             $attendeeNotificationsCount = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('is_seen', false)->count();
 
+            $sponsorsBannerCarousel = [
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1.jpg", 
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy.jpg", 
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-2-1.jpg", 
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-3.jpg", 
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-4.jpg", 
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-5.jpg", 
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-6.jpg",
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-8.jpg",
+                "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-7.jpg"
+            ];
+
             $data = [
                 'event_banner' => $event->eventBanner->file_url ?? null,
-                'sponsors_banner_carousel' => ["https://www.gpca.org.ae/wp-content/uploads/2025/04/Asset-25.jpg", "https://www.gpca.org.ae/wp-content/uploads/2025/04/Asset-39-scaled.jpg", "https://www.gpca.org.ae/wp-content/uploads/2025/04/Asset-38-scaled.jpg"],
+                'sponsors_banner_carousel' => $sponsorsBannerCarousel,
                 'attendee_details' => [
                     'pfp' => $attendee->pfp->file_url ?? asset('assets/images/feature-image-placeholder.jpg'),
                     'salutation' => $attendee->salutation,
