@@ -411,9 +411,9 @@ class AttendeesController extends Controller
             ]);
 
             return $this->success([
-                'token' => $tokenResult->plainTextToken, 
-                'expires_at' => $expiresAt, 
-                'attendeeId' => $attendee->id, 
+                'token' => $tokenResult->plainTextToken,
+                'expires_at' => $expiresAt,
+                'attendeeId' => $attendee->id,
                 'firebaseUid' => $attendee->firebase_uid ?? '',
             ], "Logged in successfully", 200);
         } catch (\Exception $e) {
@@ -1262,10 +1262,11 @@ class AttendeesController extends Controller
         try {
             $attendee = Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->first();
 
-            if($attendee == null) {
+            if (!$attendee) {
                 return $this->error(null, "Attendee not found", 404);
             }
             
+            $request->user()->currentAccessToken()?->delete();
             $attendee->delete();
             return $this->success(null, "Your account has been deleted successfully.", 200);
         } catch (\Exception $e) {
