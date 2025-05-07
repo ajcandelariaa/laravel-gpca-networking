@@ -53,6 +53,7 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                                 Route::post('/edit-username-email', [AttendeesController::class, 'apiAttendeeEditProfileUsernameEmail']);
                                 Route::post('/edit-password', [AttendeesController::class, 'apiAttendeeEditProfilePassword']);
                                 Route::post('/edit-pfp', [AttendeesController::class, 'apiAttendeeEditPfp']);
+                                Route::post('/delete-account', [AttendeesController::class, 'apiAttendeeDeleteAccount']);
                             });
 
                             Route::get('/attendees', [AttendeesController::class, 'apiAttendeesList']);

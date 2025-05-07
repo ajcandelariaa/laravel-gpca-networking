@@ -1248,4 +1248,28 @@ class AttendeesController extends Controller
         }
         return $this->success(null, "Push sent", 200);
     }
+
+    public function apiAttendeeDeleteAccount(Request $request, $apiCode, $eventCategory, $eventId, $attendeeId)
+    {
+        $validator = Validator::make($request->all(), [
+            'attendee_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorValidation($validator->errors());
+        }
+
+        try {
+            $attendee = Attendee::where('id', $request->attendee_id)->where('event_id', $eventId)->first();
+
+            if($attendee == null) {
+                return $this->error(null, "Attendee not found", 404);
+            }
+            
+            $attendee->delete();
+            return $this->success(null, "Your account has been deleted successfully.", 200);
+        } catch (\Exception $e) {
+            return $this->error($e, "An error occurred while deleting your account.", 500);
+        }
+    }
 }
