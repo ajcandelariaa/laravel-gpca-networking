@@ -257,6 +257,16 @@ class SessionController extends Controller
                 array_push($data, [
                     'sessions_date' => $formattedDate,
                     'sessions' => $sessionsTemp,
+                    'pdfs' => [
+                        [
+                            'title' => 'GPCA Gulf SQAS Workshop Agenda (PDF)',
+                            'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/GPCA-Gulf-SQAS-WS-Agenda.pdf'
+                        ],
+                        [
+                            'title' => '16th GPCA Supply Chain Conference Agenda (PDF)',
+                            'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/16th-GPCA-Supply-Chain-Conference-Agenda_7May.pdf'
+                        ]
+                    ],
                 ]);
             }
             return $this->success($data, "Sessions list", 200);
