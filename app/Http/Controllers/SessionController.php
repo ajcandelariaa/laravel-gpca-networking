@@ -260,7 +260,7 @@ class SessionController extends Controller
                     'pdfs' => [
                         [
                             'title' => 'GPCA Gulf SQAS Workshop Agenda (PDF)',
-                            'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/GPCA-Gulf-SQAS-WS-Agenda.pdf'
+                            'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/GPCA-Gulf-SQAS-WS-Agenda-1.pdf'
                         ],
                         [
                             'title' => '16th GPCA Supply Chain Conference Agenda (PDF)',
