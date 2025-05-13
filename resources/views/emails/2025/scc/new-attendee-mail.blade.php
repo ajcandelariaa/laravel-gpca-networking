@@ -33,7 +33,7 @@
 
 <p class="normal" style="margin-top: 15px;">For any assistance and technical issues, please contact <a href="mailto:jhoanna@gpca.org.ae">jhoanna@gpca.org.ae</a></p>
 
-<p class="normal" style="margin-top: 15px;">We are excited to welcome you to the <strong>16<sup>th</sup> GPCA Supply Chain Conference</strong> in <strong>Riyadh</strong> and ensure a rewarding and engaging conference experience.</p>
+<p class="normal" style="margin-top: 15px;">We are excited to welcome you to the <strong>16<sup>th</sup> GPCA Supply Chain Conference</strong> in <strong>Dubai, UAE</strong> and ensure a rewarding and engaging conference experience.</p>
 
 <p class="normal" style="margin-top: 15px;">Regards,</p>
 <p class="normal" style="margin-top: 5px;">GPCA Team</p>
