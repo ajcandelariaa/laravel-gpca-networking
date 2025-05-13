@@ -16,11 +16,18 @@
 
 <p class="normal" style="margin-top: 15px;"><strong>To get started:</strong></p>
 <ol class="list">
-    <li>Download the GPCA Events Networking app from Google Play Store or the Apple App Store</li>
+    <li>Download the GPCA Events Networking app:
+        <ul>
+            <li>iOS - <a href="https://apps.apple.com/us/app/gpca-events-networking/id6639614793" target="_blank">www.apps.apple.com</a></li>
+            <li>Android - <a href="https://play.google.com/store/apps/details?id=com.gpcanetworking2.app" target="_blank">www.play.google.com</a></li>
+        </ul>
+    </li>
     <li>Select 16<sup>th</sup> GPCA Supply Chain Conference from the event list.</li>
     <li>Enter your username and the temporary password provided above.</li>
     <li>Once logged in, you will have access to all event sessions and features.</li>
 </ol>
+
+<img src="https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/App-banner-1-scaled.png" alt="app" style="margin-top: 15px;">
 
 <p class="normal" style="margin-top: 15px;">Plan your participation in advance and start connecting with fellow attendees. Explore the networking app today to engage with industry peers, expand your professional network, and gain valuable insights from industry leaders. Make the most of the opportunities available at this year’s conference.</p>
 
