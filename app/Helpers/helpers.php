@@ -465,6 +465,8 @@ if (!function_exists('getFirestoreChatStats')) {
             // }
         }
 
+        Log::info("Total Conversations: $totalConversations");
+        Log::info("Total Chats: $totalChats");
         return [
             'totalConversations' => $totalConversations,
             'totalChats' => $totalChats,
