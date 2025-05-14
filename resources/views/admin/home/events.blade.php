@@ -23,7 +23,7 @@
             <div class="mt-10 grid grid-cols-2 gap-5">
                 @foreach ($finalEvents as $event)
                     <a
-                        href="{{ route('admin.event.dashboard.view', ['eventCategory' => $event['eventCategory'], 'eventId' => $event['eventId']]) }}">
+                        href="{{ route('admin.event.details.view', ['eventCategory' => $event['eventCategory'], 'eventId' => $event['eventId']]) }}">
                         <div
                             class="bg-gray-100 px-4 py-4 rounded-lg hover:scale-110 hover:cursor-pointer hover:shadow-md duration-100">
                             <div class="flex items-center gap-4">
