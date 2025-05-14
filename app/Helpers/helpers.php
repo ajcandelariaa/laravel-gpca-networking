@@ -168,9 +168,9 @@ if (!function_exists('sendPushNotification')) {
     {
         $clientEmail = env('FIREBASE_CLIENT_EMAIL');
         $privateKey = env('FIREBASE_PRIVATE_KEY');
-        
+
         // Define JWT header and payload
-        $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT' ]);
+        $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT']);
         $now = time();
         $expiration = $now + 3600; // 1 hour expiration
         $payload = json_encode([
@@ -182,13 +182,13 @@ if (!function_exists('sendPushNotification')) {
         ]);
 
         // Encode to base64
-        $base64UrlHeader = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($header));
-        $base64UrlPayload = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($payload));
+        $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
 
         // Create the signature
         $signatureInput = $base64UrlHeader . "." . $base64UrlPayload;
         openssl_sign($signatureInput, $signature, $privateKey, 'sha256');
-        $base64UrlSignature = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($signature));
+        $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
 
         // Create the JWT
         $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
@@ -251,7 +251,7 @@ if (!function_exists('sendPushNotification')) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $accessToken,    
+            'Authorization: Bearer ' . $accessToken,
             'Content-Type: application/json; UTF-8',
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($notification));
@@ -271,9 +271,9 @@ if (!function_exists('sendPushNotificationV2')) {
     {
         $clientEmail = env('FIREBASE_CLIENT_EMAIL_V2');
         $privateKey = env('FIREBASE_PRIVATE_KEY_V2');
-        
+
         // Define JWT header and payload
-        $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT' ]);
+        $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT']);
         $now = time();
         $expiration = $now + 3600; // 1 hour expiration
         $payload = json_encode([
@@ -285,13 +285,13 @@ if (!function_exists('sendPushNotificationV2')) {
         ]);
 
         // Encode to base64
-        $base64UrlHeader = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($header));
-        $base64UrlPayload = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($payload));
+        $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
 
         // Create the signature
         $signatureInput = $base64UrlHeader . "." . $base64UrlPayload;
         openssl_sign($signatureInput, $signature, $privateKey, 'sha256');
-        $base64UrlSignature = str_replace(['+', '/' , '='], ['-', '_', ''], base64_encode($signature));
+        $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
 
         // Create the JWT
         $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
@@ -361,7 +361,7 @@ if (!function_exists('sendPushNotificationV2')) {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Authorization: Bearer ' . $accessToken,    
+            'Authorization: Bearer ' . $accessToken,
             'Content-Type: application/json; UTF-8',
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($notification));
@@ -371,5 +371,103 @@ if (!function_exists('sendPushNotificationV2')) {
         }
         curl_close($ch);
         Log::info($response);
+    }
+}
+
+
+if (!function_exists('getFirestoreAccessToken')) {
+    function getFirestoreAccessToken()
+    {
+        $clientEmail = env('FIREBASE_CLIENT_EMAIL_V2');
+        $privateKey = env('FIREBASE_PRIVATE_KEY_V2');
+
+        $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT']);
+        $now = time();
+        $expiration = $now + 3600;
+
+        $payload = json_encode([
+            'iss' => $clientEmail,
+            'scope' => 'https://www.googleapis.com/auth/datastore',
+            'aud' => 'https://oauth2.googleapis.com/token',
+            'exp' => $expiration,
+            'iat' => $now,
+        ]);
+
+        $base64UrlHeader = rtrim(strtr(base64_encode($header), '+/', '-_'), '=');
+        $base64UrlPayload = rtrim(strtr(base64_encode($payload), '+/', '-_'), '=');
+
+        openssl_sign("$base64UrlHeader.$base64UrlPayload", $signature, $privateKey, 'sha256');
+        $base64UrlSignature = rtrim(strtr(base64_encode($signature), '+/', '-_'), '=');
+
+        $jwt = "$base64UrlHeader.$base64UrlPayload.$base64UrlSignature";
+
+        $ch = curl_init('https://oauth2.googleapis.com/token');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion' => $jwt,
+        ]));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $result = json_decode($response, true);
+        return $result['access_token'] ?? null;
+    }
+}
+
+
+if (!function_exists('getFirestoreChatStats')) {
+    function getFirestoreChatStats($eventId)
+    {
+        $accessToken = getFirestoreAccessToken();
+        if (!$accessToken) return ['totalConversations' => 0, 'totalChats' => 0];
+
+        $projectId = 'gpca-networking-app-v2'; // Update if different
+        $url = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents/chats";
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer $accessToken"
+        ]);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $result = json_decode($response, true);
+        $documents = $result['documents'] ?? [];
+
+        $totalConversations = 0;
+        $totalChats = 0;
+
+        foreach ($documents as $doc) {
+            // Check event_id field if you store it in Firestore
+            // if (
+            //     isset($doc['fields']['event_id']['stringValue']) &&
+            //     $doc['fields']['event_id']['stringValue'] == $eventId
+            // ) {
+                $totalConversations++;
+
+                $chatId = basename($doc['name']);
+                $messagesUrl = "https://firestore.googleapis.com/v1/projects/$projectId/databases/(default)/documents/chats/$chatId/messages";
+
+                $ch = curl_init($messagesUrl);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    "Authorization: Bearer $accessToken"
+                ]);
+                $messagesResponse = curl_exec($ch);
+                curl_close($ch);
+
+                $messagesData = json_decode($messagesResponse, true);
+                $messages = $messagesData['documents'] ?? [];
+                $totalChats += count($messages);
+            // }
+        }
+
+        return [
+            'totalConversations' => $totalConversations,
+            'totalChats' => $totalChats,
+        ];
     }
 }

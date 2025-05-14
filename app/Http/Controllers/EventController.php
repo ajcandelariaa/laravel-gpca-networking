@@ -211,6 +211,18 @@ class EventController extends Controller
         }
         $totalLogins = AttendeeDeviceToken::where('event_id', $eventId)->distinct('attendee_id')->count('attendee_id');
 
+        $event = Event::where('id', $eventId)->first();
+
+        $chatStats = getFirestoreChatStats($eventId);
+
+        if($event->category == "SCC"){
+            $finalTotalConversations = $chatStats['totalConversations'];
+            $finalTotalChats = $chatStats['totalMessages'];
+        } else {
+            $finalTotalConversations = $totalConversations;
+            $finalTotalChats = $totalChats;
+        }
+
         $finalData = [
             'totalAttendees' => $totalAttendees,
             'totalSpeakers' => $totalSpeakers,
@@ -219,8 +231,8 @@ class EventController extends Controller
             'totalExhibitors' => $totalExhibitors,
             'totalMrps' => $totalMrps,
             'totalMps' => $totalMps,
-            'totalConversations' => $totalConversations,
-            'totalChats' => $totalChats,
+            'totalConversations' => $finalTotalConversations,
+            'totalChats' => $finalTotalChats,
             'totalLogins' => $totalLogins,
         ];
 
@@ -345,7 +357,7 @@ class EventController extends Controller
                 $sponsorsBannerCarousel = [
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1.jpg", 
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy.jpg", 
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-2-1-1.jpg", 
+                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-2-2.jpg", 
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-3.jpg", 
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-4.jpg", 
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-5.jpg", 
