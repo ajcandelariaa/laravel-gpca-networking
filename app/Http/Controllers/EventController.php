@@ -213,9 +213,8 @@ class EventController extends Controller
 
         $event = Event::where('id', $eventId)->first();
 
-        $chatStats = getFirestoreChatStats($eventId);
-
-        if($event->category == "SCC"){
+        if ($event->category == "SCC") {
+            $chatStats = getFirestoreChatStats($eventId);
             $finalTotalConversations = $chatStats['totalConversations'];
             $finalTotalChats = $chatStats['totalMessages'];
         } else {
@@ -347,7 +346,7 @@ class EventController extends Controller
             $attendee = Attendee::with('pfp')->where('id', $attendeeId)->where('event_id', $eventId)->first();
             $attendeeNotificationsCount = AttendeeNotification::with('notification')->where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('is_seen', false)->count();
 
-            if($eventCategory == "PC"){
+            if ($eventCategory == "PC") {
                 $sponsorsBannerCarousel = [
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-6.jpg",
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-8.jpg",
@@ -355,12 +354,12 @@ class EventController extends Controller
                 ];
             } else {
                 $sponsorsBannerCarousel = [
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1.jpg", 
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy.jpg", 
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-2-2.jpg", 
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-3.jpg", 
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-4.jpg", 
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-5.jpg", 
+                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1.jpg",
+                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy.jpg",
+                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-2-2.jpg",
+                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-3.jpg",
+                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-4.jpg",
+                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-5.jpg",
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-6.jpg",
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-8.jpg",
                     "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-7.jpg"
