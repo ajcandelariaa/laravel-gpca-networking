@@ -412,6 +412,7 @@ if (!function_exists('getFirestoreAccessToken')) {
         curl_close($ch);
 
         $result = json_decode($response, true);
+        Log::info($result);
         return $result['access_token'] ?? null;
     }
 }
