@@ -200,15 +200,6 @@ class EventController extends Controller
         $totalExhibitors = Exhibitor::where('event_id', $eventId)->count();
         $totalMrps = MeetingRoomPartner::where('event_id', $eventId)->count();
         $totalMps = MediaPartner::where('event_id', $eventId)->count();
-
-        $singleConversations = SingleConversation::where('event_id', $eventId)->get();
-
-        if ($singleConversations->isNotEmpty()) {
-            foreach ($singleConversations as $singleConversation) {
-                $totalConversations++;
-                $totalChats = $totalChats + SingleConversationMessage::where('single_conversation_id', $singleConversation->id)->count();
-            }
-        }
         $totalLogins = AttendeeDeviceToken::where('event_id', $eventId)->distinct('attendee_id')->count('attendee_id');
 
         $event = Event::where('id', $eventId)->first();
@@ -216,8 +207,17 @@ class EventController extends Controller
         if ($event->category == "SCC") {
             $chatStats = getFirestoreChatStats($eventId);
             $finalTotalConversations = $chatStats['totalConversations'];
-            $finalTotalChats = $chatStats['totalMessages'];
+            $finalTotalChats = $chatStats['totalChats'];
         } else {
+            $singleConversations = SingleConversation::where('event_id', $eventId)->get();
+
+            if ($singleConversations->isNotEmpty()) {
+                foreach ($singleConversations as $singleConversation) {
+                    $totalConversations++;
+                    $totalChats = $totalChats + SingleConversationMessage::where('single_conversation_id', $singleConversation->id)->count();
+                }
+            }
+
             $finalTotalConversations = $totalConversations;
             $finalTotalChats = $totalChats;
         }
