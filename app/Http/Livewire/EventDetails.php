@@ -27,7 +27,7 @@ class EventDetails extends Component
     public $editEventHTMLTextsForm;
 
     // EDIT WebView Links
-    public $delegate_feedback_survey_link, $app_feedback_survey_link, $about_event_link, $venue_link, $press_releases_link;
+    public $delegate_feedback_survey_link, $app_feedback_survey_link, $about_event_link, $venue_link, $press_releases_link, $slido_link;
     public $editEventWebViewLinksForm;
 
     // EDIT Floor Plan image Links
@@ -318,6 +318,7 @@ class EventDetails extends Component
         $this->about_event_link = $this->eventData['eventWebViewLinks']['about_event_link'];
         $this->venue_link = $this->eventData['eventWebViewLinks']['venue_link'];
         $this->press_releases_link = $this->eventData['eventWebViewLinks']['press_releases_link'];
+        $this->slido_link = $this->eventData['eventWebViewLinks']['slido_link'];
         $this->editEventWebViewLinksForm = true;
     }
 
@@ -329,6 +330,7 @@ class EventDetails extends Component
         $this->about_event_link = null;
         $this->venue_link = null;
         $this->press_releases_link = null;
+        $this->slido_link = null;
     }
 
     public function editEventWebViewLinksConfirmation()
@@ -350,6 +352,7 @@ class EventDetails extends Component
             'about_event_link' => $this->about_event_link,
             'venue_link' => $this->venue_link,
             'press_releases_link' => $this->press_releases_link,
+            'slido_link' => $this->slido_link,
         ]);
 
         $this->eventData['eventWebViewLinks']['delegate_feedback_survey_link'] = $this->delegate_feedback_survey_link;
@@ -357,6 +360,7 @@ class EventDetails extends Component
         $this->eventData['eventWebViewLinks']['about_event_link'] = $this->about_event_link;
         $this->eventData['eventWebViewLinks']['venue_link'] = $this->venue_link;
         $this->eventData['eventWebViewLinks']['press_releases_link'] = $this->press_releases_link;
+        $this->eventData['eventWebViewLinks']['slido_link'] = $this->slido_link;
 
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',

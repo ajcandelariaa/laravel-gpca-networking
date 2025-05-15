@@ -58,6 +58,15 @@
                                 <input placeholder="https://gpca.org.ae/conferences/anc/delegate-feedback/" type="text" wire:model.lazy="press_releases_link" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                             </div>
                         </div>
+                        
+                        <div class="col-span-2 mt-2">
+                            <div class="text-primaryColor">
+                                Slido link
+                            </div>
+                            <div class="mt-2">
+                                <input placeholder="https://app.sli.do/event/uqXFfmDSuepN3oxrUH6zBM" type="text" wire:model.lazy="slido_link" class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse mt-5">

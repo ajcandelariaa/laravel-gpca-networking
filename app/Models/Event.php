@@ -45,6 +45,7 @@ class Event extends Model
         'about_event_link',
         'venue_link',
         'press_releases_link',
+        'slido_link',
 
         'floor_plan_3d_image_link',
         'floor_plan_exhibition_image_link',

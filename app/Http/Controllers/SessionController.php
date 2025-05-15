@@ -254,8 +254,11 @@ class SessionController extends Controller
                 $dateTemp = Carbon::parse($uniqueDate);
                 $formattedDate = $dateTemp->format('D d M');
 
+                $slidoLink = Event::where('id', $eventId)->value('slido_link');
+
                 array_push($data, [
                     'sessions_date' => $formattedDate,
+                    'slido_link' => $slidoLink ?? "",
                     'sessions' => $sessionsTemp,
                     'pdfs' => [
                         [

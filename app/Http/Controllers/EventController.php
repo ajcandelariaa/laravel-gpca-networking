@@ -137,6 +137,7 @@ class EventController extends Controller
                     'about_event_link' => $event->about_event_link,
                     'venue_link' => $event->venue_link,
                     'press_releases_link' => $event->press_releases_link,
+                    'slido_link' => $event->slido_link,
                 ],
                 "eventFloorPlanLinks" => [
                     'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
@@ -386,6 +387,7 @@ class EventController extends Controller
                     'about_event_link' => $event->about_event_link,
                     'venue_link' => $event->venue_link,
                     'press_releases_link' => $event->press_releases_link,
+                    'slido_link' => $event->slido_link,
                 ],
 
                 'floor_plan' => [

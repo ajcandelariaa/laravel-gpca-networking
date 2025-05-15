@@ -155,6 +155,11 @@
             <p class="font-bold text-primaryColor">Press releases link: </p>
             <p>{{ $eventData['eventWebViewLinks']['press_releases_link'] ?? 'N/A' }}</p>
         </div>
+
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Slido link: </p>
+            <p>{{ $eventData['eventWebViewLinks']['slido_link'] ?? 'N/A' }}</p>
+        </div>
     </div>
 
     {{-- EVENT WEBVIEW LINKS --}}
