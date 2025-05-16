@@ -915,10 +915,7 @@ class AttendeesController extends Controller
                             'session_time' => $favorite->session->start_time . ' - ' . $favorite->session->end_time,
                             'start_time' => $favorite->session->start_time,
                             'end_time' => $favorite->session->end_time,
-                            // 'session_date' => $finalSessionDate,
-
-                            // To be removed
-                            'session_date' => Carbon::parse($favorite->session->session_date)->format('F d, Y'),
+                            'session_date' => $finalSessionDate,
 
                             'session_week_day' => Carbon::parse($favorite->session->session_date)->format('l'),
                             'session_day' => $favorite->session->session_day,
@@ -938,10 +935,6 @@ class AttendeesController extends Controller
                                 $favorite->speaker->middle_name,
                                 $favorite->speaker->last_name
                             ]))),
-                            'salutation' => $favorite->speaker->salutation,
-                            'first_name' => $favorite->speaker->first_name,
-                            'middle_name' => $favorite->speaker->middle_name,
-                            'last_name' => $favorite->speaker->last_name,
                             'company_name' => $favorite->speaker->company_name,
                             'job_title' => $favorite->speaker->job_title,
                             'pfp' => $favorite->speaker->pfp->file_url ?? null,
@@ -969,7 +962,7 @@ class AttendeesController extends Controller
                         array_push($favoriteExhibitors, [
                             'exhibitor_id' => $favorite->exhibitor->id,
                             'name' => $favorite->exhibitor->name,
-                            'stand_number' => $favorite->exhibitor->stand_number,
+                            'stand_number' => $favorite->exhibitor->stand_number ?? $favorite->exhibitor->website,
                             'logo' => $favorite->exhibitor->logo->file_url ?? null,
                         ]);
                     }
@@ -982,7 +975,7 @@ class AttendeesController extends Controller
                         array_push($favoriteMrps, [
                             'meetingRoomPartner_id' => $favorite->meetingRoomPartner->id,
                             'name' => $favorite->meetingRoomPartner->name,
-                            'location' => $favorite->meetingRoomPartner->location,
+                            'location' => $favorite->meetingRoomPartner->location ?? $favorite->meetingRoomPartner->website,
                             'logo' => $favorite->meetingRoomPartner->logo->file_url ?? null,
                         ]);
                     }
