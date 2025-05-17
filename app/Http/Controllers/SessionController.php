@@ -267,7 +267,7 @@ class SessionController extends Controller
                         ],
                         [
                             'title' => '16th GPCA Supply Chain Conference Agenda (PDF)',
-                            'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/16th-GPCA-Supply-Chain-Conference-Agenda_12May.pdf'
+                            'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/16th-GPCA-Supply-Chain-Conference-Agenda_15May.pdf'
                         ]
                     ],
                 ]);
