@@ -349,21 +349,22 @@ class EventController extends Controller
 
             if ($eventCategory == "PC") {
                 $sponsorsBannerCarousel = [
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-6.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-8.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-7.jpg"
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/8.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/9.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/10.jpg"
                 ];
             } else {
                 $sponsorsBannerCarousel = [
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-2-2.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-3.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-4.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-5.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-6.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-8.jpg",
-                    "http://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/Artboard-1-copy-7.jpg"
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/1.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/2.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/3.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/4.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/5.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/6.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/7.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/8.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/9.jpg",
+                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/10.jpg",
                 ];
             }
 
