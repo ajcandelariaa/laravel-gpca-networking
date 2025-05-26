@@ -205,7 +205,7 @@ class EventController extends Controller
 
         $event = Event::where('id', $eventId)->first();
 
-        if ($event->category == "SCC") {
+        if ($event->category == "SCC2") {
             $chatStats = getFirestoreChatStats($eventId);
             $finalTotalConversations = $chatStats['totalConversations'];
             $finalTotalChats = $chatStats['totalChats'];
