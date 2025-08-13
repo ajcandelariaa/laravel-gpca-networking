@@ -353,9 +353,9 @@ class EventController extends Controller
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/9.jpg",
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/10.jpg"
                 ];
-            } else {
+            } else if ($eventCategory == "SCC") {
                 $sponsorsBannerCarousel = [
-                    "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/1.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/exhibitor1.jpg",
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/2.jpg",
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/3.jpg",
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/4.jpg",
@@ -365,6 +365,19 @@ class EventController extends Controller
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/8.jpg",
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/9.jpg",
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/10.jpg",
+                ];
+            } else {
+                $sponsorsBannerCarousel = [
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor1.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor2.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor3.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor4.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor5.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/exhibitor1.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/exhibitor2.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/exhibitor3.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/event1.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/event2.jpg",
                 ];
             }
 
