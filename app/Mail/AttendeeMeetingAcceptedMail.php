@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\SerializesModels;
+
+class AttendeeMeetingAcceptedMail extends Mailable
+{
+    use Queueable, SerializesModels;
+
+    public $details, $isReceiver;
+
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
+    public function __construct($details, $isReceiver = true)
+    {
+        $this->isReceiver = $isReceiver;
+        $this->details = $details;
+    }
+
+    /**
+     * Get the message envelope.
+     *
+     * @return \Illuminate\Mail\Mailables\Envelope
+     */
+    public function envelope()
+    {
+        if ($this->isReceiver) {
+            $subject = "You Accepted a Meeting with " . $this->details['requesterName'] . " - " . $this->details['eventName'];
+        } else {
+            $subject = $this->details['receiverName'] . " Accepted Your Meeting Request - " . $this->details['eventName'];
+        }
+
+        return new Envelope(
+            subject: $subject ?? 'Meeting Accepted',
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     *
+     * @return \Illuminate\Mail\Mailables\Content
+     */
+    public function content()
+    {
+        if ($this->isReceiver) {
+            return new Content(
+                markdown: 'emails.meeting.accepted.receiver-mail',
+            );
+        } else {
+            return new Content(
+                markdown: 'emails.meeting.accepted.requester-mail',
+            );
+        }
+    }
+
+    /**
+     * Get the attachments for the message.
+     *
+     * @return array
+     */
+    public function attachments()
+    {
+        return [];
+    }
+}

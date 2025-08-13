@@ -7,6 +7,7 @@ use App\Http\Controllers\ExhibitorController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MediaPartnerController;
+use App\Http\Controllers\MeetingResponseController;
 use App\Http\Controllers\MeetingRoomPartnerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SessionController;
@@ -37,7 +38,7 @@ Route::prefix('admin')->group(function () {
             Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
                 Route::get('/dashboard', [EventController::class, 'eventDashboardView'])->name('admin.event.dashboard.view');
                 Route::get('/details', [EventController::class, 'eventDetailsView'])->name('admin.event.details.view');
-                
+
                 Route::prefix('attendee')->group(function () {
                     Route::get('/', [AttendeesController::class, 'eventAttendeesView'])->name('admin.event.attendees.view');
                     Route::get('/export', [AttendeesController::class, 'eventAttendeesExport'])->name('admin.event.attendees.export');
@@ -57,7 +58,7 @@ Route::prefix('admin')->group(function () {
                     Route::get('/{sessionId}', [SessionController::class, 'eventSessionView'])->name('admin.event.session.view');
                     Route::get('/{sessionId}/speaker/type', [SessionController::class, 'eventSessionSpeakerTypesView'])->name('admin.event.session.speaker.types.view');
                 });
-                
+
                 Route::prefix('/sponsor')->group(function () {
                     Route::get('/', [SponsorController::class, 'eventSponsorsView'])->name('admin.event.sponsors.view');
                     Route::get('/type', [SponsorController::class, 'eventSponsorTypesView'])->name('admin.event.sponsor.types.view');
@@ -96,3 +97,10 @@ Route::prefix('admin')->group(function () {
 });
 
 Route::get('/test-push-notification', [NotificationController::class, 'testPushNotification'])->name('test-notif');
+
+Route::group(['middleware' => 'check.event.exists'], function () {
+    Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
+        Route::get('/meeting/{meetingId}/respond/{token}', [MeetingResponseController::class, 'meetingRespondView'])->middleware('throttle:10,1')->name('meeting.respond.view');
+        Route::post('/meeting/{meetingId}/respond', [MeetingResponseController::class, 'meetingRespond'])->middleware('throttle:10,1')->name('meeting.respond.submit');
+    });
+});

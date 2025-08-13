@@ -6,6 +6,7 @@ use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExhibitorController;
 use App\Http\Controllers\MediaPartnerController;
+use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\MeetingRoomPartnerController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SessionController;
@@ -116,6 +117,17 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                             Route::prefix('notification')->group(function () {
                                 Route::get('/', [NotificationController::class, 'apiEventNofications']);
                                 Route::post('/mark-as-read', [NotificationController::class, 'apiEventNotificationMarkAsRead']);
+                            });
+
+                            Route::prefix('meeting')->group(function () {
+                                Route::get('/', [MeetingController::class, 'apiAttendeeMeetings']);
+                                Route::get('/metadata/{receiverId}/{receiverType}/{excludeMeetingId?}', [MeetingController::class, 'apiAttendeeMeetingMetadata']);
+                                Route::get('/{meetingId}', [MeetingController::class, 'apiAttendeeMeetingDetails']);
+                                Route::post('/add', [MeetingController::class, 'apiAttendeeAddMeeting']);
+                                Route::post('/accept', [MeetingController::class, 'apiAttendeeAcceptMeeting']);
+                                Route::post('/decline', [MeetingController::class, 'apiAttendeeDeclineMeeting']);
+                                Route::post('/cancel', [MeetingController::class, 'apiAttendeeCancelMeeting']);
+                                Route::post('/reschedule', [MeetingController::class, 'apiAttendeeRescheduleMeeting']);
                             });
                         });
                     });
