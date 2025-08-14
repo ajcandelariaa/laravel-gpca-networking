@@ -206,6 +206,28 @@ class SessionController extends Controller
             }
             $uniqueDates = array_keys($storeDatesCategoryTemp);
 
+            if ($eventCategory == "SCC") {
+                $pdf = [
+                    [
+                        'title' => 'GPCA Gulf SQAS Workshop Agenda (PDF)',
+                        'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/GPCA-Gulf-SQAS-WS-Agenda-clean.pdf'
+                    ],
+                    [
+                        'title' => '16th GPCA Supply Chain Conference Agenda (PDF)',
+                        'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/16th-GPCA-Supply-Chain-Conference-Agenda_26May.pdf'
+                    ]
+                ];
+            } else if ($eventCategory == "ANC") {
+                $pdf = [
+                    [
+                        'title' => '15th GPCA Agri-Nutrients Conference Agenda (PDF)',
+                        'url' => 'https://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/15th-GPCA-Agri-Nutrients-Conference_event-brochure_11Aug.pdf'
+                    ],
+                ];
+            } else {
+                $pdf = [];
+            }
+
             foreach ($uniqueDates as $uniqueDate) {
                 $sessionsTemp = array();
                 foreach ($sessions as $session) {
@@ -256,20 +278,13 @@ class SessionController extends Controller
 
                 $slidoLink = Event::where('id', $eventId)->value('slido_link');
 
+
+
                 array_push($data, [
                     'sessions_date' => $formattedDate,
                     'slido_link' => $slidoLink ?? "",
                     'sessions' => $sessionsTemp,
-                    'pdfs' => [
-                        [
-                            'title' => 'GPCA Gulf SQAS Workshop Agenda (PDF)',
-                            'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/GPCA-Gulf-SQAS-WS-Agenda-clean.pdf'
-                        ],
-                        [
-                            'title' => '16th GPCA Supply Chain Conference Agenda (PDF)',
-                            'url' => 'https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/16th-GPCA-Supply-Chain-Conference-Agenda_26May.pdf'
-                        ]
-                    ],
+                    'pdfs' => $pdf,
                 ]);
             }
             return $this->success($data, "Sessions list", 200);
