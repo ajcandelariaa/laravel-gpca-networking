@@ -390,6 +390,7 @@ class EventController extends Controller
                     'first_name' => $attendee->first_name,
                     'middle_name' => $attendee->middle_name,
                     'last_name' => $attendee->last_name,
+                    'job_title' => $attendee->job_title,
                 ],
                 'speakers' => $this->apiGetSpeakersListv2($eventId),
                 'programs' => $this->apiGetProgramsListv2($eventId),
