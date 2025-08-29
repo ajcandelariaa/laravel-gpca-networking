@@ -399,7 +399,7 @@ class AttendeesController extends Controller
             $tokenResult = $attendee->createToken('api token of ' . $attendee->id);
 
             $token = $tokenResult->accessToken;
-            $expiresAt = now()->addDay();
+            $expiresAt = now()->addDays(7);
             $token->expires_at = $expiresAt;
             $token->save();
 
