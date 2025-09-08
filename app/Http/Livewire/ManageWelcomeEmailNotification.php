@@ -105,13 +105,6 @@ class ManageWelcomeEmailNotification extends Component
         $currentAttendee = $this->finalListOfAttendees[$this->activeSelectedIndex];
         $eventFormattedDate = Carbon::parse($this->event->event_start_date)->format('d') . '-' . Carbon::parse($this->event->event_end_date)->format('d M Y');
 
-        $currentDate = Carbon::parse($currentAttendee['joined_date_time']);
-        $day = $currentDate->format('d');
-        $month = $currentDate->format('m');
-        $year = $currentDate->format('y');
-
-        $randomPassword = $this->event->category . '@' . $currentAttendee['id'] . $day . $month . $year;
-
         $details = [
             'subject' => 'Welcome to ' . $this->event->full_name . ' - Your Access Details for GPCA Networking',
             'eventCategory' => $this->event->category,
@@ -122,7 +115,7 @@ class ManageWelcomeEmailNotification extends Component
             'eventDate' => $eventFormattedDate,
             'eventLocation' => $this->event->location,
             'username' => $currentAttendee['username'],
-            'password' => $randomPassword,
+            'email_address' => $currentAttendee['email_address'],
         ];
 
         $is_sent_successfully = false;
@@ -181,14 +174,6 @@ class ManageWelcomeEmailNotification extends Component
 
         foreach ($this->selectedAttendees as $selectedAttendeeIndex) {
             $currentAttendee = $this->finalListOfAttendees[$selectedAttendeeIndex];
-
-            $currentDate = Carbon::parse($currentAttendee['joined_date_time']);
-            $day = $currentDate->format('d');
-            $month = $currentDate->format('m');
-            $year = $currentDate->format('y');
-
-            $randomPassword = $this->event->category . '@' . $currentAttendee['id'] . $day . $month . $year;
-
             $details = [
                 'subject' => 'Welcome to ' . $this->event->full_name . ' - Your Access Details for GPCA Networking',
                 'eventCategory' => $this->event->category,
@@ -198,8 +183,7 @@ class ManageWelcomeEmailNotification extends Component
                 'eventName' => $this->event->full_name,
                 'eventDate' => $eventFormattedDate,
                 'eventLocation' => $this->event->location,
-                'username' => $currentAttendee['username'],
-                'password' => $randomPassword,
+                'email_address' => $currentAttendee['email_address'],
             ];
 
             $is_sent_successfully = false;
@@ -224,7 +208,7 @@ class ManageWelcomeEmailNotification extends Component
             }
         }
 
-        if($error == count($this->selectedAttendees)){
+        if ($error == count($this->selectedAttendees)) {
             $this->dispatchBrowserEvent('swal:success', [
                 'type' => 'error',
                 'message' => 'Welcome email did not send to all selected attendees!',

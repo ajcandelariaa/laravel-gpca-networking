@@ -37,6 +37,8 @@ class NewAttendee extends Mailable
                 $subject =  "Maximize your event experience: Download the 14ᵗʰ GPCA Plastics Conference networking app today!";
             } else if ($this->details['eventCategory'] == "SCC") {
                 $subject =  "Maximize your event experience: Download the 16ᵗʰ GPCA Supply Chain Conference networking app today!";
+            } else if ($this->details['eventCategory'] == "ANC") {
+                $subject =  "Maximize your event experience: Download the 15ᵗʰ GPCA Agri-Nutrients Conference networking app today!";
             } else {
                 $subject =  "Maximize your event experience: Download the networking app today!";
             }
@@ -56,7 +58,7 @@ class NewAttendee extends Mailable
      */
     public function content()
     {
-        
+
         if ($this->details['eventYear'] == "2025") {
             if ($this->details['eventCategory'] == "PC") {
                 return new Content(
@@ -65,6 +67,10 @@ class NewAttendee extends Mailable
             } else if ($this->details['eventCategory'] == "SCC") {
                 return new Content(
                     markdown: 'emails.2025.scc.new-attendee-mail',
+                );
+            } else if ($this->details['eventCategory'] == "ANC") {
+                return new Content(
+                    markdown: 'emails.2025.anc.new-attendee-mail',
                 );
             } else {
                 return new Content(

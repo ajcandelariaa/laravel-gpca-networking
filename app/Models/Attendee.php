@@ -53,6 +53,8 @@ class Attendee extends Model
         
         'firebase_uid',
 
+        'password_set_datetime',
+
         'is_active',
         'joined_date_time',
     ];

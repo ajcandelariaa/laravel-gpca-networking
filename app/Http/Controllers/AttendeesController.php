@@ -372,6 +372,10 @@ class AttendeesController extends Controller
                 return $this->error(null, "Invalid credentials", 401);
             }
 
+            if (empty($attendee->password_set_datetime)) {
+                return $this->error(null, "Account not activated. Please activate via the app before logging in.", 403);
+            }
+
             if (!(Hash::check($request->password, $attendee->password))) {
                 return $this->error(null, "Invalid credentials", 401);
             }
@@ -1258,7 +1262,7 @@ class AttendeesController extends Controller
             if (!$attendee) {
                 return $this->error(null, "Attendee not found", 404);
             }
-            
+
             $request->user()->currentAccessToken()?->delete();
             $attendee->delete();
             return $this->success(null, "Your account has been deleted successfully.", 200);

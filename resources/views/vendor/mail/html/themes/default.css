@@ -76,7 +76,9 @@ p.normal{
 }
 
 img {
-    max-width: 100%;
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
 }
 
 /* Layout */
@@ -139,7 +141,6 @@ img {
 .inner-body {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
-    /* -premailer-width: 570px; */
     -premailer-width: 600px;
     background-color: #ffffff;
     border-color: #e8e5ef;
@@ -148,8 +149,8 @@ img {
     box-shadow: 0 2px 0 rgba(0, 0, 150, 0.025), 2px 4px 0 rgba(0, 0, 150, 0.015);
     margin: 0 auto;
     padding: 0;
-    /* width: 570px; */
-    width: 600px;
+    width: 100% !important;
+    max-width: 600px;
 }
 
 /* Subcopy */

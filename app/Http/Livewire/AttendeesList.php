@@ -42,7 +42,7 @@ class AttendeesList extends Component
             foreach ($attendees as $attendee) {
                 $is_password_resetted = true;
 
-                if($attendee->passwordResets->isEmpty()){
+                if ($attendee->passwordResets->isEmpty()) {
                     $is_password_resetted = false;
                 }
 
@@ -158,12 +158,12 @@ class AttendeesList extends Component
 
             'badge_number' => 'temp',
             'registration_type' => $this->registration_type,
-            
+
             'pass_type' => $this->pass_type,
             'company_name' => $this->company_name,
 
             'username' => $this->username,
-            'password' => 'temp',
+            'password' => Hash::make(env('PASSWORD_TEMP')),
 
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
@@ -185,22 +185,19 @@ class AttendeesList extends Component
         $badgeNumber = $this->event->year . "$getEventcode" . "$lastDigit";
 
         $currentDate = Carbon::now();
-        $day = $currentDate->format('d');
-        $month = $currentDate->format('m');
-        $year = $currentDate->format('y');
+        // $day = $currentDate->format('d');
+        // $month = $currentDate->format('m');
+        // $year = $currentDate->format('y');
 
-        $randomPassword = $this->event->category . '@' . $newAttendee->id . $day . $month . $year;
-        $hashRandomPass = Hash::make($randomPassword);
+        // $randomPassword = $this->event->category . '@' . $newAttendee->id . $day . $month . $year;
+        // $hashRandomPass = Hash::make($randomPassword);
 
-        Attendees::find($newAttendee->id)->fill(
-            [
-                'password' => $hashRandomPass,
-                'badge_number' => $badgeNumber,
-            ],
-        )->save();
+        Attendees::find($newAttendee->id)->fill([
+            'badge_number' => $badgeNumber,
+        ])->save();
 
         $eventFormattedDate = Carbon::parse($this->event->event_start_date)->format('d') . '-' . Carbon::parse($this->event->event_end_date)->format('d M Y');
-        
+
         $details = [
             'subject' => 'Welcome to ' . $this->event->full_name . ' - Your Access Details for GPCA Networking',
             'eventCategory' => $this->event->category,
@@ -210,13 +207,13 @@ class AttendeesList extends Component
             'eventName' => $this->event->full_name,
             'eventDate' => $eventFormattedDate,
             'eventLocation' => $this->event->location,
+            'email_address' => $this->email_address,
             'username' => $this->username,
-            'password' => $randomPassword,
         ];
 
         try {
             Mail::to($this->email_address)->send(new NewAttendee($details));
-            
+
             WelcomeEmailNotifActivity::create([
                 'event_id' => $this->event->id,
                 'attendee_id' => $newAttendee->id,
@@ -224,7 +221,7 @@ class AttendeesList extends Component
             ]);
             $error = '';
         } catch (\Throwable $th) {
-            $error = 'Email error: '. $th->getMessage();
+            $error = 'Email error: ' . $th->getMessage();
         }
 
         array_push($this->finalListOfAttendees, [

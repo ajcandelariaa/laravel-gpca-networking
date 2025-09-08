@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AttendeeAuthController;
 use App\Http\Controllers\AttendeesController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\EventController;
@@ -36,6 +37,10 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
                 Route::post('/forgot-password/send-otp', [AttendeesController::class, 'apiForgotPasswordSendOtp']);
                 Route::post('/forgot-password/verify-otp', [AttendeesController::class, 'apiForgotPasswordVerifyOtp']);
                 Route::post('/forgot-password/reset', [AttendeesController::class, 'apiForgotPasswordReset']);
+
+                Route::post('/activate-account/send-otp', [AttendeeAuthController::class, 'apiActivateAccountSendOtp'])->middleware('throttle:5,1');
+                Route::post('/activate-account/verify-otp', [AttendeeAuthController::class, 'apiActivateAccountVerifyOtp'])->middleware('throttle:10,1');
+                Route::post('/activate-account/set-password', [AttendeeAuthController::class, 'apiActivateAccountSetPassword']);
 
                 Route::middleware("auth:sanctum")->group(function () {
                     Route::group(['middleware' => 'api.check.attendee.exists'], function () {
