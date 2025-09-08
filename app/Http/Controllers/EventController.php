@@ -260,6 +260,20 @@ class EventController extends Controller
             $data = array();
 
             foreach ($events as $event) {
+                $start = Carbon::parse($event->event_start_date);
+                $end   = Carbon::parse($event->event_end_date);
+
+                if ($start->isSameDay($end)) {
+                    $eventDateText = $start->format('d F Y');
+                } elseif ($start->isSameMonth($end) && $start->isSameYear($end)) {
+                    $eventDateText = $start->format('d') . '-' . $end->format('d F Y');
+                } elseif ($start->isSameYear($end)) {
+                    $eventDateText = $start->format('d F') . ' - ' . $end->format('d F Y');
+                } else {
+                    $eventDateText = $start->format('d F Y') . ' - ' . $end->format('d F Y');
+                }
+
+
                 array_push($data, [
                     'id' => $event->id,
                     'category' => $event->category,
@@ -267,7 +281,7 @@ class EventController extends Controller
                     'short_name' => $event->short_name,
                     'edition' => $event->edition,
                     'location' => $event->location,
-                    'event_date' => Carbon::parse($event->event_start_date)->format('d') . '-' . Carbon::parse($event->event_end_date)->format('d F Y'),
+                    'event_date' => $eventDateText,
 
                     'event_logo' => $event->eventLogo->file_url ?? null,
                     'event_splash_screen' => $event->eventSplashScreen->file_url ?? null,
