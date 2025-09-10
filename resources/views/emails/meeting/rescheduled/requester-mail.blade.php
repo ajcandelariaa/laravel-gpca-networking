@@ -1,5 +1,7 @@
 <x-mail::message>
-<p class="normal">Hi {{ $details['requesterName'] }},</p>
+<img src="http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/ANC-banner_540x118-px.jpg">
+
+<p class="normal" style="margin-top: 15px;">Hi {{ $details['requesterName'] }},</p>
 
 <p class="normal">You have successfully rescheduled your meeting with <strong>{{ $details['receiverName'] }}</strong>.</p>
 

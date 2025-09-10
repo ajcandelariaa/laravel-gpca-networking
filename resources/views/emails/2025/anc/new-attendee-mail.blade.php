@@ -19,6 +19,7 @@
     <li>Select 15<sup>th</sup> GPCA Agri-Nutrients Conference from the event list.</li>
     <li>Tap <strong>Activate your account</strong>, then enter your email: <strong>{{ $details['email_address'] }}</strong>.</li>
     <li>We’ll email you a 6-digit OTP. Enter it in the app and set your new password.</li>
+    <li>Then it will redirect you to the login screen, enter your email and password you created.</li>
     <li>Once logged in, you will have access to all event sessions and features.</li>
 </ol>
 

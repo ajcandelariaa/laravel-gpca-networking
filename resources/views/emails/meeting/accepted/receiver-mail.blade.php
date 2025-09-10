@@ -1,5 +1,7 @@
 <x-mail::message>
-<p class="normal">Hi {{ $details['receiverName'] }},</p>
+<img src="http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/ANC-banner_540x118-px.jpg">
+
+<p class="normal" style="margin-top: 15px;">Hi {{ $details['receiverName'] }},</p>
 
 <p class="normal" style="margin-top: 15px;">You have accepted a meeting request from <strong>{{ $details['requesterName'] }}</strong> for the <strong>{{ $details['eventName'] }}</strong> networking event.</p>
 
