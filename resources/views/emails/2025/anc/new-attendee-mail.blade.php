@@ -1,5 +1,8 @@
 <x-mail::message>
-<p class="normal">Dear {{ $details['name'] }},</p>
+    
+<img src="https://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/ANC-banner_540x118-px-v2.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+
+<p class="normal" style="margin-top: 15px;">Dear {{ $details['name'] }},</p>
 
 <p class="normal" style="margin-top: 15px;">Enhance your experience at the 15<sup>th</sup> GPCA Agri-Nutrients Conference with our official networking app. Stay connected with industry leaders, expert speakers, and professionals throughout the three-day event in Abu Dhabi. Plan your meetings in advance and make the most of every networking opportunity with the GPCA Networking App.</p>
 
@@ -26,7 +29,7 @@
     <li>For any assistance and technical issues, please contact <a href="mailto:jhoanna@gpca.org.ae">jhoanna@gpca.org.ae</a></li>
 </ol>
 
-<img src="https://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/ANC-banner_540x118-px-v2.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+<img src="https://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/anc-welcome-email-banner.png" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
 
 <p class="normal" style="margin-top: 15px;">We look forward to welcoming you to Abu Dhabi for the 15ᵗʰ GPCA Agri-Nutrients Conference. With the networking app at your fingertips, you’ll be fully equipped to maximize your time, build meaningful connections, and enjoy a seamless conference experience.</p>
 
