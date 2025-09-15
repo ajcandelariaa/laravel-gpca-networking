@@ -166,7 +166,7 @@ class MeetingController extends Controller
             Log::info($dateAndTime);
 
             return $this->success([
-                "locations" => ["Meeting Room A", "Meeting Room B", "VIP Lounge"],
+                "locations" => ["Business Media Center"],
                 "date_and_time" => $dateAndTime,
             ], "Meeting metadata retrieved successfully", 200);
         } catch (Exception $e) {
