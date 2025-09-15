@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PasswordChangedBy;
 use App\Mail\AttendeeAccountActivatedMail;
 use App\Mail\AttendeeActivationAccountMail;
 use Illuminate\Http\Request;
 use App\Models\Attendee;
 use App\Models\AttendeeOtpCode;
+use App\Models\AttendeePasswordReset;
 use App\Traits\HttpResponses;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -179,6 +181,13 @@ class AttendeeAuthController extends Controller
             $attendee->password = Hash::make($request->password);
             $attendee->password_set_datetime = Carbon::now();
             $attendee->save();
+
+            AttendeePasswordReset::create([
+                'event_id' => $eventId,
+                'attendee_id' => $request->attendee_id,
+                'password_changed_by' => PasswordChangedBy::ATTENDEE->value,
+                'password_changed_date_time' => Carbon::now(),
+            ]);
 
             $details = [
                 'subject' => 'Your Account Has Been Activated - ' . $attendee->event->full_name,

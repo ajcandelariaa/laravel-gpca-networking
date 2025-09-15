@@ -185,14 +185,15 @@ class AttendeesList extends Component
         $badgeNumber = $this->event->year . "$getEventcode" . "$lastDigit";
 
         $currentDate = Carbon::now();
-        // $day = $currentDate->format('d');
-        // $month = $currentDate->format('m');
-        // $year = $currentDate->format('y');
+        $day = $currentDate->format('d');
+        $month = $currentDate->format('m');
+        $year = $currentDate->format('y');
 
-        // $randomPassword = $this->event->category . '@' . $newAttendee->id . $day . $month . $year;
-        // $hashRandomPass = Hash::make($randomPassword);
+        $randomPassword = $this->event->category . '@' . $newAttendee->id . $day . $month . $year;
+        $hashRandomPass = Hash::make($randomPassword);
 
         Attendees::find($newAttendee->id)->fill([
+            'password' => $hashRandomPass,
             'badge_number' => $badgeNumber,
         ])->save();
 

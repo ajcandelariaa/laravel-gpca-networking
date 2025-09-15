@@ -90,7 +90,7 @@ class AddAttendeeFromApi extends Component
 
         foreach ($this->attendeesFromApi as $index => $attendeeFromApi) {
             $selectedAttendee = $attendeeFromApi;
-            
+
             if (!$selectedAttendee['delegateIsAdded']) {
                 $newAttendee = Attendees::create([
                     'event_id' => $this->event->id,
@@ -104,7 +104,7 @@ class AddAttendeeFromApi extends Component
                     'company_phone_number' => $selectedAttendee['delegateCompanyMobileNumber'],
 
                     'username' => $selectedAttendee['delegateEmailAddress'],
-                    'password' => 'temp',
+                    'password' => Hash::make(env('PASSWORD_TEMP')),
 
                     'salutation' => $selectedAttendee['delegateSalutation'],
                     'first_name' => $selectedAttendee['delegateFName'],
