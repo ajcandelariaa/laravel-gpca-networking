@@ -65,7 +65,7 @@ class AttendeeAuthController extends Controller
             ]);
 
             $details = [
-                'subject'   => 'Activate Your Account for ' . $attendee->event->full_name,
+                'subject'   => 'Activate your Networking App Account for the ' . $attendee->event->full_name,
                 'eventCategory' => $attendee->event->category,
                 'eventYear' => $attendee->event->year,
 
@@ -190,7 +190,7 @@ class AttendeeAuthController extends Controller
             ]);
 
             $details = [
-                'subject' => 'Your Account Has Been Activated - ' . $attendee->event->full_name,
+                'subject' => 'Your Networking App Account for the ' . $attendee->event->full_name . ' Has Been Activated',
                 'eventCategory' => $attendee->event->category,
                 'eventYear' => $attendee->event->year,
                 'name' => $attendee->first_name . ' ' . $attendee->last_name,

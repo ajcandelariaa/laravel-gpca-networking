@@ -183,6 +183,7 @@ class ManageWelcomeEmailNotification extends Component
                 'eventName' => $this->event->full_name,
                 'eventDate' => $eventFormattedDate,
                 'eventLocation' => $this->event->location,
+                'username' => $currentAttendee['username'],
                 'email_address' => $currentAttendee['email_address'],
             ];
 
