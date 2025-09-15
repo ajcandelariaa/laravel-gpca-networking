@@ -1,5 +1,8 @@
 <x-mail::message>
-<p class="normal">Dear {{ $details['name'] }},</p>
+
+<img src="https://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/ANC-banner_540x118-px-v2.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+
+<p class="normal" style="margin-top: 15px;">Dear {{ $details['name'] }},</p>
 
 <p class="normal" style="margin-top: 15px;">We hope this email finds you well. This is to inform you that your username associated with the <strong>{{ $details['eventName'] }}</strong> account has been successfully changed. Please find below the updated details for accessing your account:</p>
 
