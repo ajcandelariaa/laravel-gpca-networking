@@ -388,9 +388,11 @@ class EventController extends Controller
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor4.jpg",
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor5.jpg",
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/exhibitor1.jpg",
-                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/exhibitor2.jpg",
-                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/exhibitor3.jpg",
-                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/event1.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/exhibitor2.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/exhibitor3.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/exhibitor4.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/mrp1.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/event1.jpg",
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/event2.jpg",
                 ];
             }
