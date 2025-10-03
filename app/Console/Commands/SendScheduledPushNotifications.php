@@ -18,7 +18,7 @@ class SendScheduledPushNotifications extends Command
     {
         Log::info('Scheduler is running.');
 
-        $eventId = 5;
+        $eventId = 6;
         $notifications = Notification::with('event')->where('event_id', $eventId)->where('is_sent', false)->get();
 
         if ($notifications->isNotEmpty()) {
