@@ -13,26 +13,32 @@
             There are no files yet.
         </div>
     @else
-        <div class="grid grid-cols-10 gap-y-4 mt-5">
+        <div class="grid grid-cols-10 gap-4 mt-5">
             @foreach ($mediaFileList as $mediaFileIndex => $mediaFile)
-                @if (str_starts_with($mediaFile['file_type'], 'image/'))
-                    <div class="col-span-1 w-36 h-36 flex items-center justify-center border border-gray-300 bg-gray-100 cursor-pointer hover:border-1 hover:border-primaryColor" wire:click.prevent="showMediaFileDetails({{ $mediaFileIndex }})" wire:key="showMediaFileDetails">
-                        <img src="{{ $mediaFile['file_url'] }}" class="w-full h-full object-scale-down">
-                    </div>
-                @else
-                    <div class="col-span-1 w-36 h-36 border border-gray-300 bg-gray-100 relative cursor-pointer hover:border-1 hover:border-primaryColor" wire:click.prevent="showMediaFileDetails({{ $mediaFileIndex }})" wire:key="showMediaFileDetails">
-                        <div class="absolute top-6 left-9 z-10">
-                            <img src="{{ asset('assets/icons/document.svg') }}" class="bg-cover p-2">
+                <div class="col-span-1 w-36 cursor-pointer"
+                    wire:click.prevent="showMediaFileDetails({{ $mediaFileIndex }})"
+                    wire:key="media-{{ $mediaFile['id'] ?? $mediaFileIndex }}">
+                    @if (str_starts_with($mediaFile['file_type'], 'image/'))
+                        <div
+                            class="w-36 h-36 flex items-center justify-center border border-gray-300 bg-gray-100 hover:border-primaryColor">
+                            <img src="{{ $mediaFile['file_url'] }}" alt="{{ $mediaFile['file_name'] }}"
+                                class="w-full h-full object-contain">
                         </div>
-                        <p class="bg-white overflow-hidden w-full text-sm h-auto text-gray-600 p-1 absolute z-20 bottom-0 text-center">
-                            {{ $mediaFile['file_name'] }}
-                        </p>
-                    </div>
-                @endif
+                    @else
+                        <div
+                            class="w-36 h-36 border border-gray-300 bg-gray-100 relative flex items-center justify-center hover:border-primaryColor">
+                            <img src="{{ asset('assets/icons/document.svg') }}" alt="document" class="w-10 h-10">
+                        </div>
+                    @endif
+
+                    <p class="mt-1 text-[11px] leading-tight text-gray-700 break-words text-center">
+                        {{ $mediaFile['file_name'] }}
+                    </p>
+                </div>
             @endforeach
         </div>
     @endif
-    
+
     @if ($showMediaModal)
         @include('livewire.home.media.media_details')
     @endif
