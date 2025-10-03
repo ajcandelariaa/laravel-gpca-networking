@@ -397,8 +397,8 @@ class EventController extends Controller
                 ];
             } else {
                 $sponsorsBannerCarousel = [
-                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor1.jpg",
-                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/event1.jpg",
+                    "http://gpca.org.ae/conferences/rcc/wp-content/uploads/2025/10/sponsor1.jpg",
+                    "http://gpca.org.ae/conferences/rcc/wp-content/uploads/2025/10/event1.jpg",
                 ];
             }
 
