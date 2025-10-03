@@ -72,6 +72,10 @@ class NewAttendee extends Mailable
                 return new Content(
                     markdown: 'emails.2025.anc.new-attendee-mail',
                 );
+            } else if ($this->details['eventCategory'] == "RCC") {
+                return new Content(
+                    markdown: 'emails.2025.rcc.new-attendee-mail',
+                );
             } else {
                 return new Content(
                     markdown: 'emails.new-attendee-mail',

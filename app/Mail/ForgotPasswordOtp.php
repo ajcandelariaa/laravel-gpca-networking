@@ -44,9 +44,25 @@ class ForgotPasswordOtp extends Mailable
      */
     public function content()
     {
-        return new Content(
-            markdown: 'emails.forgot-password-otp-mail',
-        );
+        if ($this->details['eventYear'] == "2025") {
+            if ($this->details['eventCategory'] == "ANC") {
+                return new Content(
+                    markdown: 'emails.2025.anc.forgot-password-otp-mail',
+                );
+            } else if ($this->details['eventCategory'] == "RCC") {
+                return new Content(
+                    markdown: 'emails.2025.rcc.forgot-password-otp-mail',
+                );
+            } else {
+                return new Content(
+                    markdown: 'emails.forgot-password-otp-mail',
+                );
+            }
+        } else {
+            return new Content(
+                markdown: 'emails.forgot-password-otp-mail',
+            );
+        }
     }
 
     /**

@@ -52,13 +52,37 @@ class AttendeeMeetingRequestMail extends Mailable
     public function content()
     {
         if ($this->isReceiver) {
-            return new Content(
-                markdown: 'emails.meeting.request.receiver-mail',
-            );
+            if ($this->details['eventYear'] == "2025") {
+                if ($this->details['eventCategory'] == "RCC") {
+                    return new Content(
+                        markdown: 'emails.2025.rcc.meeting.request.receiver-mail',
+                    );
+                } else {
+                    return new Content(
+                        markdown: 'emails.meeting.request.receiver-mail',
+                    );
+                }
+            } else {
+                return new Content(
+                    markdown: 'emails.meeting.request.receiver-mail',
+                );
+            }
         } else {
-            return new Content(
-                markdown: 'emails.meeting.request.requester-mail',
-            );
+            if ($this->details['eventYear'] == "2025") {
+                if ($this->details['eventCategory'] == "RCC") {
+                    return new Content(
+                        markdown: 'emails.2025.rcc.meeting.request.requester-mail',
+                    );
+                } else {
+                    return new Content(
+                        markdown: 'emails.meeting.request.requester-mail',
+                    );
+                }
+            } else {
+                return new Content(
+                    markdown: 'emails.meeting.request.requester-mail',
+                );
+            }
         }
     }
 

@@ -575,6 +575,7 @@ class MeetingController extends Controller
 
                     'eventName' => $event->full_name,
                     'eventCategory' => $event->category,
+                    'eventYear' => $event->year,
                     'eventLink' => $event->event_full_link,
 
                     'meetingTitle' => $request->meeting_title,
@@ -750,6 +751,7 @@ class MeetingController extends Controller
 
                 'eventName' => $event->full_name,
                 'eventCategory' => $event->category,
+                'eventYear' => $event->year,
                 'eventLink' => $event->event_full_link,
 
                 'meetingTitle' => $meeting->meeting_title,
@@ -879,6 +881,7 @@ class MeetingController extends Controller
 
                 'eventName' => $event->full_name,
                 'eventCategory' => $event->category,
+                'eventYear' => $event->year,
                 'eventLink' => $event->event_full_link,
 
                 'meetingTitle' => $meeting->meeting_title,
@@ -1006,6 +1009,7 @@ class MeetingController extends Controller
 
                 'eventName' => $event->full_name,
                 'eventCategory' => $event->category,
+                'eventYear' => $event->year,
                 'eventLink' => $event->event_full_link,
 
                 'meetingTitle' => $meeting->meeting_title,
@@ -1198,6 +1202,7 @@ class MeetingController extends Controller
 
                 'eventName' => $event->full_name,
                 'eventCategory' => $event->category,
+                'eventYear' => $event->year,
                 'eventLink' => $event->event_full_link,
 
                 'meetingTitle' => $newMeeting->meeting_title,

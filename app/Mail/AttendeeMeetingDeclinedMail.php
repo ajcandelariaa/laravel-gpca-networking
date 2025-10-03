@@ -52,13 +52,37 @@ class AttendeeMeetingDeclinedMail extends Mailable
     public function content()
     {
         if ($this->isReceiver) {
-            return new Content(
-                markdown: 'emails.meeting.declined.receiver-mail',
-            );
+            if ($this->details['eventYear'] == "2025") {
+                if ($this->details['eventCategory'] == "RCC") {
+                    return new Content(
+                        markdown: 'emails.2025.rcc.meeting.declined.receiver-mail',
+                    );
+                } else {
+                    return new Content(
+                        markdown: 'emails.meeting.declined.receiver-mail',
+                    );
+                }
+            } else {
+                return new Content(
+                    markdown: 'emails.meeting.declined.receiver-mail',
+                );
+            }
         } else {
-            return new Content(
-                markdown: 'emails.meeting.declined.requester-mail',
-            );
+            if ($this->details['eventYear'] == "2025") {
+                if ($this->details['eventCategory'] == "RCC") {
+                    return new Content(
+                        markdown: 'emails.2025.rcc.meeting.declined.requester-mail',
+                    );
+                } else {
+                    return new Content(
+                        markdown: 'emails.meeting.declined.requester-mail',
+                    );
+                }
+            } else {
+                return new Content(
+                    markdown: 'emails.meeting.declined.requester-mail',
+                );
+            }
         }
     }
 

@@ -141,6 +141,7 @@ class MeetingResponseController extends Controller
 
             'eventName' => $event?->full_name,
             'eventCategory' => $event?->category,
+            'eventYear' => $event?->year,
             'eventLink' => $event?->event_full_link,
 
             'meetingTitle' => $meeting->meeting_title,

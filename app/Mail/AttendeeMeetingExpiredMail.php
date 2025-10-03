@@ -48,7 +48,7 @@ class AttendeeMeetingExpiredMail extends Mailable
     public function content()
     {
         return new Content(
-            markdown: 'emails.meeting.expired.requester-mail',
+            markdown: 'emails.2025.rcc.meeting.expired.requester-mail',
         );
     }
 

@@ -34,9 +34,14 @@ Route::group(['middleware' => 'api.check.secret.code'], function () {
         Route::group(['middleware' => 'api.check.event.exists'], function () {
             Route::prefix('event/{eventCategory}/{eventId}')->group(function () {
                 Route::post('/login', [AttendeesController::class, 'apiAttendeeLogin']);
-                Route::post('/forgot-password/send-otp', [AttendeesController::class, 'apiForgotPasswordSendOtp']);
-                Route::post('/forgot-password/verify-otp', [AttendeesController::class, 'apiForgotPasswordVerifyOtp']);
-                Route::post('/forgot-password/reset', [AttendeesController::class, 'apiForgotPasswordReset']);
+
+                // Route::post('/forgot-password/send-otp', [AttendeesController::class, 'apiForgotPasswordSendOtp']);
+                // Route::post('/forgot-password/verify-otp', [AttendeesController::class, 'apiForgotPasswordVerifyOtp']);
+                // Route::post('/forgot-password/reset', [AttendeesController::class, 'apiForgotPasswordReset']);
+
+                Route::post('/forgot-password/send-otp', [AttendeeAuthController::class, 'apiForgotPasswordSendOtp'])->middleware('throttle:5,1');
+                Route::post('/forgot-password/verify-otp', [AttendeeAuthController::class, 'apiForgotPasswordVerifyOtp'])->middleware('throttle:10,1');
+                Route::post('/forgot-password/set-password', [AttendeeAuthController::class, 'apiForgotPasswordSetPassword'])->middleware('throttle:5,1');
 
                 Route::post('/activate-account/send-otp', [AttendeeAuthController::class, 'apiActivateAccountSendOtp'])->middleware('throttle:5,1');
                 Route::post('/activate-account/verify-otp', [AttendeeAuthController::class, 'apiActivateAccountVerifyOtp'])->middleware('throttle:10,1');
