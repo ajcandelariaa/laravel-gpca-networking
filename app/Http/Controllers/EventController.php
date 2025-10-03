@@ -380,7 +380,7 @@ class EventController extends Controller
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/9.jpg",
                     "https://gpca.org.ae/conferences/scc/wp-content/uploads/2025/05/10.jpg",
                 ];
-            } else {
+            } else if ($eventCategory == "ANC") {
                 $sponsorsBannerCarousel = [
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor1.jpg",
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor2.jpg",
@@ -394,6 +394,11 @@ class EventController extends Controller
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/mrp1.jpg",
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/event1.jpg",
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/event2.jpg",
+                ];
+            } else {
+                $sponsorsBannerCarousel = [
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/sponsor1.jpg",
+                    "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/event1.jpg",
                 ];
             }
 
