@@ -224,6 +224,13 @@ class SessionController extends Controller
                         'url' => 'https://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/15th-GPCA-Agri-Nutrients-Conference-Agenda_17Sep.pdf'
                     ],
                 ];
+            } else if ($eventCategory == "RCC") {
+                $pdf = [
+                    [
+                        'title' => '6th GPCA Responsible Care Conference Agenda (PDF)',
+                        'url' => 'https://gpca.org.ae/conferences/rcc/wp-content/uploads/2025/10/6th-GPCA-Responsible-Care-Conference_Agenda_3Oct.pdf'
+                    ],
+                ];
             } else {
                 $pdf = [];
             }
