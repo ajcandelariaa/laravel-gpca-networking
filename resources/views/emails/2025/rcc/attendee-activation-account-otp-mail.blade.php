@@ -1,5 +1,8 @@
 <x-mail::message>
-<p class="normal">Dear {{ $details['name'] }},</p>
+
+<img src="https://gpca.org.ae/conferences/rcc/wp-content/uploads/2025/10/Eshot-header.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+
+<p class="normal" style="margin-top: 15px;">Dear {{ $details['name'] }},</p>
 
 <p class="normal" style="margin-top: 15px;">Welcome to <strong>{{ $details['eventName'] }}</strong>!</p>
 

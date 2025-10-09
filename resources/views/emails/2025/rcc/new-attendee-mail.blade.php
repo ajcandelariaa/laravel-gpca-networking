@@ -1,5 +1,8 @@
 <x-mail::message>
-<p class="normal">Dear {{ $details['name'] }},</p>
+
+<img src="https://gpca.org.ae/conferences/rcc/wp-content/uploads/2025/10/Eshot-header.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+
+<p class="normal" style="margin-top: 15px;">Dear {{ $details['name'] }},</p>
 
 <p class="normal" style="margin-top: 15px;">Enhance your experience at the 6<sup>th</sup> GPCA Responsible Care Conference with our official networking app. Stay connected with industry leaders, expert speakers, and professionals throughout the three-day event in Bahrain. Plan your meetings in advance and make the most of every networking opportunity with the GPCA Networking App.</p>
 
