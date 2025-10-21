@@ -136,6 +136,16 @@
                                     class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
                             </div>
                         </div>
+
+                        <div class="col-span-2">
+                            <div class="text-primaryColor">
+                                Floorplan Link
+                            </div>
+                            <div>
+                                <input placeholder="" type="text" wire:model.lazy="floorplan_link"
+                                    class="bg-registrationInputFieldsBGColor w-full py-1 px-3 outline-primaryColor rounded-md border border-gray-200">
+                            </div>
+                        </div>
                     </div>
 
                     <hr class="mt-7 my-5">

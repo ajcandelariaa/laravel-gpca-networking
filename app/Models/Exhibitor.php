@@ -29,6 +29,8 @@ class Exhibitor extends Model
         'twitter',
         'instagram',
 
+        'floorplan_link',
+
         'is_active',
         'datetime_added',
     ];

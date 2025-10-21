@@ -50,6 +50,10 @@ class Event extends Model
         'floor_plan_3d_image_link',
         'floor_plan_exhibition_image_link',
 
+        'interactive_map_link',
+
+        'shuttle_bus_schedule_link',
+
         'year',
 
         'is_visible_in_the_app',

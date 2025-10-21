@@ -27,11 +27,11 @@ class EventDetails extends Component
     public $editEventHTMLTextsForm;
 
     // EDIT WebView Links
-    public $delegate_feedback_survey_link, $app_feedback_survey_link, $about_event_link, $venue_link, $press_releases_link, $slido_link;
+    public $delegate_feedback_survey_link, $app_feedback_survey_link, $about_event_link, $venue_link, $press_releases_link, $slido_link, $shuttle_bus_schedule_link;
     public $editEventWebViewLinksForm;
 
     // EDIT Floor Plan image Links
-    public $floor_plan_3d_image_link, $floor_plan_exhibition_image_link;
+    public $floor_plan_3d_image_link, $floor_plan_exhibition_image_link, $interactive_map_link;
     public $editEventFloorPlanLinksForm;
 
     // EDIT ASSETS
@@ -319,6 +319,7 @@ class EventDetails extends Component
         $this->venue_link = $this->eventData['eventWebViewLinks']['venue_link'];
         $this->press_releases_link = $this->eventData['eventWebViewLinks']['press_releases_link'];
         $this->slido_link = $this->eventData['eventWebViewLinks']['slido_link'];
+        $this->shuttle_bus_schedule_link = $this->eventData['eventWebViewLinks']['shuttle_bus_schedule_link'];
         $this->editEventWebViewLinksForm = true;
     }
 
@@ -353,6 +354,7 @@ class EventDetails extends Component
             'venue_link' => $this->venue_link,
             'press_releases_link' => $this->press_releases_link,
             'slido_link' => $this->slido_link,
+            'shuttle_bus_schedule_link' => $this->shuttle_bus_schedule_link,
         ]);
 
         $this->eventData['eventWebViewLinks']['delegate_feedback_survey_link'] = $this->delegate_feedback_survey_link;
@@ -361,6 +363,7 @@ class EventDetails extends Component
         $this->eventData['eventWebViewLinks']['venue_link'] = $this->venue_link;
         $this->eventData['eventWebViewLinks']['press_releases_link'] = $this->press_releases_link;
         $this->eventData['eventWebViewLinks']['slido_link'] = $this->slido_link;
+        $this->eventData['eventWebViewLinks']['shuttle_bus_schedule_link'] = $this->shuttle_bus_schedule_link;
 
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
@@ -378,6 +381,7 @@ class EventDetails extends Component
     {
         $this->floor_plan_3d_image_link = $this->eventData['eventFloorPlanLinks']['floor_plan_3d_image_link'];
         $this->floor_plan_exhibition_image_link = $this->eventData['eventFloorPlanLinks']['floor_plan_exhibition_image_link'];
+        $this->interactive_map_link = $this->eventData['eventFloorPlanLinks']['interactive_map_link'];
         $this->editEventFloorPlanLinksForm = true;
     }
 
@@ -386,6 +390,7 @@ class EventDetails extends Component
         $this->editEventFloorPlanLinksForm = false;
         $this->floor_plan_3d_image_link = null;
         $this->floor_plan_exhibition_image_link = null;
+        $this->interactive_map_link = null;
     }
 
     public function editEventFloorPlanLinksConfirmation()
@@ -404,10 +409,12 @@ class EventDetails extends Component
         Events::where('id', $this->eventData['eventId'])->update([
             'floor_plan_3d_image_link' => $this->floor_plan_3d_image_link,
             'floor_plan_exhibition_image_link' => $this->floor_plan_exhibition_image_link,
+            'interactive_map_link' => $this->interactive_map_link,
         ]);
 
         $this->eventData['eventFloorPlanLinks']['floor_plan_3d_image_link'] = $this->floor_plan_3d_image_link;
         $this->eventData['eventFloorPlanLinks']['floor_plan_exhibition_image_link'] = $this->floor_plan_exhibition_image_link;
+        $this->eventData['eventFloorPlanLinks']['interactive_map_link'] = $this->interactive_map_link;
 
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',

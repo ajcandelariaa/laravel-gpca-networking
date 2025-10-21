@@ -138,10 +138,12 @@ class EventController extends Controller
                     'venue_link' => $event->venue_link,
                     'press_releases_link' => $event->press_releases_link,
                     'slido_link' => $event->slido_link,
+                    'shuttle_bus_schedule_link' => $event->shuttle_bus_schedule_link,
                 ],
                 "eventFloorPlanLinks" => [
                     'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
                     'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
+                    'interactive_map_link' => $event->interactive_map_link,
                 ],
                 "eventAssets" => [
                     'event_logo' => [
@@ -424,11 +426,13 @@ class EventController extends Controller
                     'venue_link' => $event->venue_link,
                     'press_releases_link' => $event->press_releases_link,
                     'slido_link' => $event->slido_link,
+                    'shuttle_bus_schedule_link' => $event->shuttle_bus_schedule_link,
                 ],
 
                 'floor_plan' => [
                     'floor_plan_3d_image_link' => $event->floor_plan_3d_image_link,
                     'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
+                    'interactive_map_link' => $event->interactive_map_link,
                 ],
             ];
             return $this->success($data, "Event Homepage details", 200);

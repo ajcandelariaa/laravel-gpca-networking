@@ -16,7 +16,7 @@ class MeetingRoomPartnerDetails extends Component
     public $assetType, $editMeetingRoomPartnerAssetForm, $image_media_id, $image_placeholder_text;
     public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    public $name, $profile_html_text, $location, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram;
+    public $name, $profile_html_text, $location, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $floorplan_link;
     public $editMeetingRoomPartnerDetailsForm;
 
     protected $listeners = ['editMeetingRoomPartnerDetailsConfirmed' => 'editMeetingRoomPartnerDetails', 'editMeetingRoomPartnerAssetConfirmed' => 'editMeetingRoomPartnerAsset'];
@@ -191,6 +191,7 @@ class MeetingRoomPartnerDetails extends Component
         $this->linkedin = $this->meetingRoomPartnerData['linkedin'];
         $this->twitter = $this->meetingRoomPartnerData['twitter'];
         $this->instagram = $this->meetingRoomPartnerData['instagram'];
+        $this->floorplan_link = $this->meetingRoomPartnerData['floorplan_link'];
         $this->editMeetingRoomPartnerDetailsForm = true;
     }
 
@@ -210,6 +211,7 @@ class MeetingRoomPartnerDetails extends Component
         $this->linkedin = null;
         $this->twitter = null;
         $this->instagram = null;
+        $this->floorplan_link = null;
     }
 
     public function editMeetingRoomPartnerDetailsConfirmation()
@@ -243,6 +245,7 @@ class MeetingRoomPartnerDetails extends Component
             'linkedin' => $this->linkedin == "" ? null : $this->linkedin,
             'twitter' => $this->twitter == "" ? null : $this->twitter,
             'instagram' => $this->instagram == "" ? null : $this->instagram,
+            'floorplan_link' => $this->floorplan_link == "" ? null : $this->floorplan_link,
         ]);
 
         $this->meetingRoomPartnerData['name'] = $this->name;
@@ -258,6 +261,7 @@ class MeetingRoomPartnerDetails extends Component
         $this->meetingRoomPartnerData['linkedin'] = $this->linkedin;
         $this->meetingRoomPartnerData['twitter'] = $this->twitter;
         $this->meetingRoomPartnerData['instagram'] = $this->instagram;
+        $this->meetingRoomPartnerData['floorplan_link'] = $this->floorplan_link;
 
         $this->resetEditMeetingRoomPartnerDetailsFields();
 

@@ -99,6 +99,12 @@
 
         <hr class="my-4">
 
+        <p><span class="font-semibold">Floorplan Link:</span>
+            {{ $exhibitorData['floorplan_link'] }}
+        </p>
+
+        <hr class="my-4">
+
         <p><span class="font-semibold">Published date time:</span>
             {{ $exhibitorData['datetime_added'] }}
         </p>

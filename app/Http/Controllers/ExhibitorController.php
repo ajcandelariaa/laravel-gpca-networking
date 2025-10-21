@@ -61,6 +61,7 @@ class ExhibitorController extends Controller
                 "linkedin" => $exhibitor->linkedin,
                 "twitter" => $exhibitor->twitter,
                 "instagram" => $exhibitor->instagram,
+                "floorplan_link" => $exhibitor->floorplan_link,
 
                 "is_active" => $exhibitor->is_active,
                 "datetime_added" => Carbon::parse($exhibitor->datetime_added)->format('M j, Y g:i A'),
@@ -132,6 +133,7 @@ class ExhibitorController extends Controller
                 'linkedin' => $exhibitor->linkedin,
                 'twitter' => $exhibitor->twitter,
                 'instagram' => $exhibitor->instagram,
+                'floorplan_link' => $exhibitor->floorplan_link ?? null,
                 'is_favorite' => AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('exhibitor_id', $exhibitorId)->exists(),
                 'favorite_count' => AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('exhibitor_id', $exhibitorId)->count(),
             ];

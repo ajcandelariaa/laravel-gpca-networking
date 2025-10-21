@@ -16,7 +16,7 @@ class ExhibitorDetails extends Component
     public $assetType, $editExhibitorAssetForm, $image_media_id, $image_placeholder_text;
     public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
 
-    public $name, $profile_html_text, $stand_number, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram;
+    public $name, $profile_html_text, $stand_number, $country, $contact_person_name, $email_address, $mobile_number, $website, $facebook, $linkedin, $twitter, $instagram, $floorplan_link;
     public $editExhibitorDetailsForm;
 
     protected $listeners = ['editExhibitorDetailsConfirmed' => 'editExhibitorDetails', 'editExhibitorAssetConfirmed' => 'editExhibitorAsset'];
@@ -186,6 +186,7 @@ class ExhibitorDetails extends Component
         $this->linkedin = $this->exhibitorData['linkedin'];
         $this->twitter = $this->exhibitorData['twitter'];
         $this->instagram = $this->exhibitorData['instagram'];
+        $this->floorplan_link = $this->exhibitorData['floorplan_link'];
 
         $this->editExhibitorDetailsForm = true;
     }
@@ -206,6 +207,7 @@ class ExhibitorDetails extends Component
         $this->linkedin = null;
         $this->twitter = null;
         $this->instagram = null;
+        $this->floorplan_link = null;
     }
 
     public function editExhibitorDetailsConfirmation()
@@ -239,6 +241,7 @@ class ExhibitorDetails extends Component
             'linkedin' => $this->linkedin == "" ? null : $this->linkedin,
             'twitter' => $this->twitter == "" ? null : $this->twitter,
             'instagram' => $this->instagram == "" ? null : $this->instagram,
+            'floorplan_link' => $this->floorplan_link == "" ? null : $this->floorplan_link,
         ]);
 
         $this->exhibitorData['name'] = $this->name;
@@ -254,6 +257,7 @@ class ExhibitorDetails extends Component
         $this->exhibitorData['linkedin'] = $this->linkedin;
         $this->exhibitorData['twitter'] = $this->twitter;
         $this->exhibitorData['instagram'] = $this->instagram;
+        $this->exhibitorData['floorplan_link'] = $this->floorplan_link;
 
         $this->resetEditExhibitorDetailsFields();
 

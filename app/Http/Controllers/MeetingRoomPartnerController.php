@@ -61,6 +61,7 @@ class MeetingRoomPartnerController extends Controller
                 "linkedin" => $meetingRoomPartner->linkedin,
                 "twitter" => $meetingRoomPartner->twitter,
                 "instagram" => $meetingRoomPartner->instagram,
+                "floorplan_link" => $meetingRoomPartner->floorplan_link,
 
                 "is_active" => $meetingRoomPartner->is_active,
                 "datetime_added" => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
@@ -132,6 +133,7 @@ class MeetingRoomPartnerController extends Controller
                 'linkedin' => $meetingRoomPartner->linkedin,
                 'twitter' => $meetingRoomPartner->twitter,
                 'instagram' => $meetingRoomPartner->instagram,
+                'floorplan_link' => $meetingRoomPartner->floorplan_link ?? null,
                 'is_favorite' => AttendeeFavoriteMrp::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('meeting_room_partner_id', $meetingRoomPartnerId)->exists(),
                 'favorite_count' => AttendeeFavoriteMrp::where('event_id', $eventId)->where('meeting_room_partner_id', $meetingRoomPartnerId)->count(),
             ];

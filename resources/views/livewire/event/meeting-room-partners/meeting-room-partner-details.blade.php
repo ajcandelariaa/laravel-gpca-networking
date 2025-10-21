@@ -100,6 +100,12 @@
 
         <hr class="my-4">
 
+        <p><span class="font-semibold">Floorplan Link:</span>
+            {{ $meetingRoomPartnerData['floorplan_link'] }}
+        </p>
+
+        <hr class="my-4">
+
         <p><span class="font-semibold">Published date time:</span>
             {{ $meetingRoomPartnerData['datetime_added'] }}
         </p>
