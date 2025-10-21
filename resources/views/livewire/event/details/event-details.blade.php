@@ -160,6 +160,11 @@
             <p class="font-bold text-primaryColor">Slido link: </p>
             <p>{{ $eventData['eventWebViewLinks']['slido_link'] ?? 'N/A' }}</p>
         </div>
+
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Shuttle Bus Schedule link: </p>
+            <p>{{ $eventData['eventWebViewLinks']['shuttle_bus_schedule_link'] ?? 'N/A' }}</p>
+        </div>
     </div>
 
     {{-- EVENT WEBVIEW LINKS --}}
@@ -183,6 +188,11 @@
         <div class="flex gap-3 items-center mt-1">
             <p class="font-bold text-primaryColor">Floor plan exhibition image link: </p>
             <p>{{ $eventData['eventFloorPlanLinks']['floor_plan_exhibition_image_link'] ?? 'N/A' }}</p>
+        </div>
+
+        <div class="flex gap-3 items-center mt-1">
+            <p class="font-bold text-primaryColor">Interactive map link: </p>
+            <p>{{ $eventData['eventFloorPlanLinks']['interactive_map_link'] ?? 'N/A' }}</p>
         </div>
     </div>
 
