@@ -442,7 +442,7 @@ class EventController extends Controller
                 ],
             ];
 
-            $socialNetworking = [
+            $socialNetworkings = [
                 [
                     "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/networking.jpg",
                     "title" => "Networking",
@@ -490,6 +490,9 @@ class EventController extends Controller
                     'floor_plan_exhibition_image_link' => $event->floor_plan_exhibition_image_link,
                     'interactive_map_link' => $event->interactive_map_link,
                 ],
+
+                'event_features' => $eventFeatures,
+                'social_networkings' => $socialNetworkings,
             ];
             return $this->success($data, "Event Homepage details", 200);
         } catch (\Exception $e) {
