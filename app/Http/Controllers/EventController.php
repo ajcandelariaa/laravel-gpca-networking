@@ -404,6 +404,62 @@ class EventController extends Controller
                 ];
             }
 
+            $eventFeatures = [
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/cult-maj.png",
+                    "title" => "Cultural Majlis",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/legacy.png",
+                    "title" => "Legacy Awards",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/nexus.png",
+                    "title" => "GPCA Startup Nexus",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/sol-x.png",
+                    "title" => "Solutions Xchange",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/sus-pav.png",
+                    "title" => "GPCA Sustainability Pavilion",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/vip-maj.png",
+                    "title" => "VIP Majlis",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/youth-forum.png",
+                    "title" => "GPCA Youth Forum",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+            ];
+
+            $socialNetworking = [
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/networking.jpg",
+                    "title" => "Networking",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/welcome_dinner.jpg",
+                    "title" => "Welcome Dinner",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/gala_dinner.jpg",
+                    "title" => "Gala Dinner",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+            ];
+
             $data = [
                 'event_banner' => $event->eventBanner->file_url ?? null,
                 'sponsors_banner_carousel' => $sponsorsBannerCarousel,
