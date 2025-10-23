@@ -1,19 +1,23 @@
 <div>
     <h1 class="text-headingTextColor text-3xl font-bold">Session</h1>
 
-    <div class="flex gap-5 mt-5">
+    <div class="flex gap-5 mt-5 bg-white py-3 sticky top-0 z-20 shadow-md" style="background-color: white;">
         <button type="button" wire:click.prevent="showAddSession" wire:key="showAddSession"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
-            session</button>
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">
+            Add session
+        </button>
         <button type="button" wire:click.prevent="showAddSessionDate" wire:key="showAddSessionDate"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
-            session date</button>
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">
+            Add session date
+        </button>
         <button type="button" wire:click.prevent="showAddSessionDay" wire:key="showAddSessionDay"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
-            session day</button>
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">
+            Add session day
+        </button>
         <button type="button" wire:click.prevent="showAddSessionType" wire:key="showAddSessionType"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
-            session type</button>
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">
+            Add session type
+        </button>
     </div>
 
     @if (count($finalListOfSessions) == 0)
@@ -54,7 +58,7 @@
                     <div class="col-span-1 flex gap-3 items-center justify-center">
                         <a href="{{ route('admin.event.session.view', ['eventCategory' => $event->category, 'eventId' => $event->id, 'sessionId' => $finalListOfSession['id']]) }}"
                             class="cursor-pointer hover:text-gray-600 text-gray-500">
-                            <i class="fa-solid fa-eye"></i> 
+                            <i class="fa-solid fa-eye"></i>
                         </a>
                         <button wire:click="deleteSessionConfirmation({{ $index }})"
                             class="cursor-pointer hover:text-red-600 text-red-500 text-sm ">
