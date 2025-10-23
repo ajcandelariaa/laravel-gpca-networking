@@ -444,17 +444,17 @@ class EventController extends Controller
 
             $socialNetworkings = [
                 [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/networking.jpg",
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/networking-1.jpg",
                     "title" => "Networking",
                     "link" => "https://www.gpcaforum.com/"
                 ],
                 [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/welcome_dinner.jpg",
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/welcome_dinner-1.jpg",
                     "title" => "Welcome Dinner",
                     "link" => "https://www.gpcaforum.com/"
                 ],
                 [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/gala_dinner.jpg",
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/gala_dinner-1.jpg",
                     "title" => "Gala Dinner",
                     "link" => "https://www.gpcaforum.com/"
                 ],
