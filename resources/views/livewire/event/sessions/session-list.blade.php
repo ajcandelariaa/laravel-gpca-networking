@@ -2,7 +2,7 @@
     <h1 class="text-headingTextColor text-3xl font-bold">Session</h1>
 
     <!-- Floating Add Session Button -->
-    <div class="fixed bottom-6 left-6 z-50">
+    <div class="fixed bottom-0 left-6 mb-5 z-50">
         <button type="button" wire:click.prevent="showAddSession"
             class="w-14 h-14 rounded-full bg-primaryColor hover:bg-primaryColorHover text-white shadow-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryColor">
             <i class="fa-solid fa-plus text-xl"></i>
