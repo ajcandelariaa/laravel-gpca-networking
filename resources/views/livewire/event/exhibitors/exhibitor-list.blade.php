@@ -1,5 +1,13 @@
 <div>
     <h1 class="text-headingTextColor text-3xl font-bold">Exhibitors</h1>
+    
+    <!-- Floating Add Session Button -->
+    <div class="fixed bottom-0 left-6 mb-5 z-50">
+        <button type="button" wire:click.prevent="showAddExhibitor"
+            class="w-14 h-14 rounded-full bg-primaryColor hover:bg-primaryColorHover text-white shadow-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryColor">
+            <i class="fa-solid fa-plus text-xl"></i>
+        </button>
+    </div>
 
     <div class="flex justify-between mt-5">
         <button type="button" wire:click.prevent="showAddExhibitor" wire:key="showAddExhibitor"

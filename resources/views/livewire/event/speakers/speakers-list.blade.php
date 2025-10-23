@@ -1,6 +1,14 @@
 <div>
     <h1 class="text-headingTextColor text-3xl font-bold">Speakers Management</h1>
 
+    <!-- Floating Add Session Button -->
+    <div class="fixed bottom-0 left-6 mb-5 z-50">
+        <button type="button" wire:click.prevent="showAddSpeaker"
+            class="w-14 h-14 rounded-full bg-primaryColor hover:bg-primaryColorHover text-white shadow-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryColor">
+            <i class="fa-solid fa-plus text-xl"></i>
+        </button>
+    </div>
+
     <div class="flex gap-5 mt-5">
         <button type="button" wire:click.prevent="showAddSpeaker" wire:key="showAddSpeaker"
             class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
