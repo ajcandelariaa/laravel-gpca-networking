@@ -1,23 +1,27 @@
 <div>
     <h1 class="text-headingTextColor text-3xl font-bold">Session</h1>
+    
+    <!-- Floating Add Session Button -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button type="button" wire:click.prevent="showAddSession"
+            class="w-14 h-14 rounded-full bg-primaryColor hover:bg-primaryColorHover text-white shadow-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primaryColor">
+            <i class="fa-solid fa-plus text-xl"></i>
+        </button>
+    </div>
 
-    <div class="flex gap-5 mt-5 bg-white py-3 sticky top-0 z-20 shadow-md" style="background-color: white;">
+    <div class="flex gap-5 mt-5">
         <button type="button" wire:click.prevent="showAddSession" wire:key="showAddSession"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">
-            Add session
-        </button>
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
+            session</button>
         <button type="button" wire:click.prevent="showAddSessionDate" wire:key="showAddSessionDate"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">
-            Add session date
-        </button>
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
+            session date</button>
         <button type="button" wire:click.prevent="showAddSessionDay" wire:key="showAddSessionDay"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">
-            Add session day
-        </button>
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
+            session day</button>
         <button type="button" wire:click.prevent="showAddSessionType" wire:key="showAddSessionType"
-            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">
-            Add session type
-        </button>
+            class="bg-primaryColor hover:bg-primaryColorHover text-white rounded-lg text-sm w-32 h-10">Add
+            session type</button>
     </div>
 
     @if (count($finalListOfSessions) == 0)
