@@ -397,27 +397,35 @@ class EventController extends Controller
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/event1.jpg",
                     "http://gpca.org.ae/conferences/anc/wp-content/uploads/2025/08/event2.jpg",
                 ];
-            } else {
+            } else if ($eventCategory == "RCC") {
                 $sponsorsBannerCarousel = [
                     "http://gpca.org.ae/conferences/rcc/wp-content/uploads/2025/10/sponsor1.jpg",
                     "http://gpca.org.ae/conferences/rcc/wp-content/uploads/2025/10/event1.jpg",
+                ];
+            } else {
+                $sponsorsBannerCarousel = [
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide1.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide2.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide3.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide4.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide5.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide6.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide7.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide8.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide9.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide10.jpg",
                 ];
             }
 
             $eventFeatures = [
                 [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/cult-maj.png",
-                    "title" => "Cultural Majlis",
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/sus-pav.png",
+                    "title" => "GPCA Sustainability Pavilion",
                     "link" => "https://www.gpcaforum.com/"
                 ],
                 [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/legacy.png",
-                    "title" => "Legacy Awards",
-                    "link" => "https://www.gpcaforum.com/"
-                ],
-                [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/nexus.png",
-                    "title" => "GPCA Startup Nexus",
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/youth-forum.png",
+                    "title" => "GPCA Youth Forum",
                     "link" => "https://www.gpcaforum.com/"
                 ],
                 [
@@ -426,8 +434,8 @@ class EventController extends Controller
                     "link" => "https://www.gpcaforum.com/"
                 ],
                 [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/sus-pav.png",
-                    "title" => "GPCA Sustainability Pavilion",
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/nexus.png",
+                    "title" => "GPCA Startup Nexus",
                     "link" => "https://www.gpcaforum.com/"
                 ],
                 [
@@ -436,8 +444,13 @@ class EventController extends Controller
                     "link" => "https://www.gpcaforum.com/"
                 ],
                 [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/youth-forum.png",
-                    "title" => "GPCA Youth Forum",
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/legacy.png",
+                    "title" => "Legacy Awards",
+                    "link" => "https://www.gpcaforum.com/"
+                ],
+                [
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/cult-maj.png",
+                    "title" => "Cultural Majlis",
                     "link" => "https://www.gpcaforum.com/"
                 ],
             ];
