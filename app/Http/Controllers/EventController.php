@@ -276,6 +276,12 @@ class EventController extends Controller
                 }
 
 
+                if ($event->category == "AF") {
+                    $eventSplashScreenSecond = "https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-splash-screen_2.jpg";
+                } else {
+                    $eventSplashScreenSecond = null;
+                }
+
                 array_push($data, [
                     'id' => $event->id,
                     'category' => $event->category,
@@ -287,6 +293,7 @@ class EventController extends Controller
 
                     'event_logo' => $event->eventLogo->file_url ?? null,
                     'event_splash_screen' => $event->eventSplashScreen->file_url ?? null,
+                    'event_splash_screen_second' => $eventSplashScreenSecond,
 
                     'login_html_text' => $event->login_html_text,
                     'forgot_password_html_text' => $event->forgot_password_html_text,
