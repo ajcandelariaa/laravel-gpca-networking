@@ -32,10 +32,6 @@ class MeetingRoomPartnerController extends Controller
     {
         $meetingRoomPartner = MeetingRoomPartner::with(['event', 'logo', 'banner'])->where('id', $meetingRoomPartnerId)->first();
 
-        $floorplanLinks = $meetingRoomPartner->location
-            ? array_map('trim', explode(',', $meetingRoomPartner->location))
-            : [];
-
         if ($meetingRoomPartner) {
             $meetingRoomPartnerData = [
                 "meetingRoomPartnerId" => $meetingRoomPartner->id,
@@ -65,7 +61,7 @@ class MeetingRoomPartnerController extends Controller
                 "linkedin" => $meetingRoomPartner->linkedin,
                 "twitter" => $meetingRoomPartner->twitter,
                 "instagram" => $meetingRoomPartner->instagram,
-                "floorplan_links" => $floorplanLinks,
+                "floorplan_link" => $meetingRoomPartner->floorplan_link,
 
                 "is_active" => $meetingRoomPartner->is_active,
                 "datetime_added" => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
@@ -121,6 +117,10 @@ class MeetingRoomPartnerController extends Controller
             if (!$meetingRoomPartner) {
                 return $this->error(null, "Meeting room partner doesn't exist", 404);
             }
+            
+            $floorplanLinks = $meetingRoomPartner->location
+                ? array_map('trim', explode(',', $meetingRoomPartner->location))
+                : [];
 
             $data = [
                 'meeting_room_partner_id' => $meetingRoomPartner->id,
@@ -137,7 +137,7 @@ class MeetingRoomPartnerController extends Controller
                 'linkedin' => $meetingRoomPartner->linkedin,
                 'twitter' => $meetingRoomPartner->twitter,
                 'instagram' => $meetingRoomPartner->instagram,
-                'floorplan_link' => $meetingRoomPartner->floorplan_link ?? null,
+                'floorplan_links' => $floorplanLinks,
                 'is_favorite' => AttendeeFavoriteMrp::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('meeting_room_partner_id', $meetingRoomPartnerId)->exists(),
                 'favorite_count' => AttendeeFavoriteMrp::where('event_id', $eventId)->where('meeting_room_partner_id', $meetingRoomPartnerId)->count(),
             ];
