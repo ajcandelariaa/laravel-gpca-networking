@@ -118,6 +118,10 @@ class ExhibitorController extends Controller
                 return $this->error(null, "Exhibitor doesn't exist", 404);
             }
 
+            $floorplanLinks = $exhibitor->stand_number
+                ? array_map('trim', explode(',', $exhibitor->stand_number))
+                : [];
+
             $data = [
                 'exhibitor_id' => $exhibitor->id,
                 'logo' => $exhibitor->logo->file_url ?? null,
@@ -133,7 +137,7 @@ class ExhibitorController extends Controller
                 'linkedin' => $exhibitor->linkedin,
                 'twitter' => $exhibitor->twitter,
                 'instagram' => $exhibitor->instagram,
-                'floorplan_link' => $exhibitor->floorplan_link ?? null,
+                'floorplan_links' => $floorplanLinks,
                 'is_favorite' => AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('attendee_id', $attendeeId)->where('exhibitor_id', $exhibitorId)->exists(),
                 'favorite_count' => AttendeeFavoriteExhibitor::where('event_id', $eventId)->where('exhibitor_id', $exhibitorId)->count(),
             ];
@@ -193,7 +197,7 @@ class ExhibitorController extends Controller
                 return $this->error(null, "No exhibitors and meeting room partners available at the moment.", 404);
             }
 
-            if($exhibitors->isNotEmpty()) {
+            if ($exhibitors->isNotEmpty()) {
                 foreach ($exhibitors as $exhibitor) {
                     array_push($exhibitorsData, [
                         'id' => $exhibitor->id,
@@ -204,7 +208,7 @@ class ExhibitorController extends Controller
                 }
             }
 
-            if($meetingRoomPartners->isNotEmpty()) {
+            if ($meetingRoomPartners->isNotEmpty()) {
                 foreach ($meetingRoomPartners as $meetingRoomPartner) {
                     array_push($meetingRoomPartnersData, [
                         'id' => $meetingRoomPartner->id,

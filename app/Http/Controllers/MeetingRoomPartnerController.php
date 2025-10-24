@@ -32,6 +32,10 @@ class MeetingRoomPartnerController extends Controller
     {
         $meetingRoomPartner = MeetingRoomPartner::with(['event', 'logo', 'banner'])->where('id', $meetingRoomPartnerId)->first();
 
+        $floorplanLinks = $meetingRoomPartner->location
+            ? array_map('trim', explode(',', $meetingRoomPartner->location))
+            : [];
+
         if ($meetingRoomPartner) {
             $meetingRoomPartnerData = [
                 "meetingRoomPartnerId" => $meetingRoomPartner->id,
@@ -61,7 +65,7 @@ class MeetingRoomPartnerController extends Controller
                 "linkedin" => $meetingRoomPartner->linkedin,
                 "twitter" => $meetingRoomPartner->twitter,
                 "instagram" => $meetingRoomPartner->instagram,
-                "floorplan_link" => $meetingRoomPartner->floorplan_link,
+                "floorplan_links" => $floorplanLinks,
 
                 "is_active" => $meetingRoomPartner->is_active,
                 "datetime_added" => Carbon::parse($meetingRoomPartner->datetime_added)->format('M j, Y g:i A'),
