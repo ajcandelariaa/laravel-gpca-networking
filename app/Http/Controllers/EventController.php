@@ -293,7 +293,7 @@ class EventController extends Controller
 
                     'event_logo' => $event->eventLogo->file_url ?? null,
                     'event_splash_screen' => $event->eventSplashScreen->file_url ?? null,
-                    'event_splash_screen_second' => $eventSplashScreenSecond,
+                    'event_splash_screen_secondary' => $eventSplashScreenSecond,
 
                     'login_html_text' => $event->login_html_text,
                     'forgot_password_html_text' => $event->forgot_password_html_text,
