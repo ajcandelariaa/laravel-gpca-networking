@@ -118,8 +118,8 @@ class MeetingRoomPartnerController extends Controller
                 return $this->error(null, "Meeting room partner doesn't exist", 404);
             }
             
-            $floorplanLinks = $meetingRoomPartner->location
-                ? array_map('trim', explode(',', $meetingRoomPartner->location))
+            $floorplanLinks = $meetingRoomPartner->floorplan_link
+                ? array_map('trim', explode(',', $meetingRoomPartner->floorplan_link))
                 : [];
 
             $data = [

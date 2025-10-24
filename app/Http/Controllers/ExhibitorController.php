@@ -118,8 +118,8 @@ class ExhibitorController extends Controller
                 return $this->error(null, "Exhibitor doesn't exist", 404);
             }
 
-            $floorplanLinks = $exhibitor->stand_number
-                ? array_map('trim', explode(',', $exhibitor->stand_number))
+            $floorplanLinks = $exhibitor->floorplan_link
+                ? array_map('trim', explode(',', $exhibitor->floorplan_link))
                 : [];
 
             $data = [
