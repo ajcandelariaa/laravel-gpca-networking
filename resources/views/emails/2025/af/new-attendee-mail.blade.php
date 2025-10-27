@@ -1,15 +1,15 @@
 <x-mail::message>
 
-<img src="https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-email-header.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+<img src="https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-email-header-v2.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
 
 <p class="normal" style="margin-top: 15px;">Dear {{ $details['name'] }},</p>
 
-<p class="normal" style="margin-top: 15px;">Enhance your experience at the 19<sup>th</sup> Annual GPCA Forum with our official networking app. Stay connected with industry leaders, expert speakers, and professionals throughout the three-day event in Bahrain. Plan your meetings in advance and make the most of every networking opportunity with the GPCA Networking App.</p>
+<p class="normal" style="margin-top: 15px;">Enhance your experience at the 19<sup>th</sup> Annual GPCA Forum with our official networking app. Stay connected with industry leaders, expert speakers, and professionals throughout the four-day event in Bahrain. Plan your onsite meetings in advance and make the most of every networking opportunity with the GPCA Networking App.</p>
 
-<p class="normal" style="margin-top: 15px;">Download the app today to connect with leading companies and fellow attendees, and pre-schedule your onsite meetings.</p>
+<p class="normal" style="margin-top: 15px;">Download the app today to connect with leading companies and fellow attendees, and pre-schedule your onsite meetings to maximize your participation at the forum.</p>
 
 <p class="normal" style="margin-top: 15px;"><strong>Event Details:</strong></p>
-<p class="normal">Event Name: {{ $details['eventName'] }}</p>
+<p class="normal">Event Name: 19<sup>th</sup> Annual GPCA Forum</p>
 <p class="normal">Event Date: 8 - 11 December 2025</p>
 <p class="normal">Event Location: {{ $details['eventLocation'] }}</p>
 
@@ -31,7 +31,7 @@
 
 <img src="https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-email-banner.png" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
 
-<p class="normal" style="margin-top: 15px;">We look forward to welcoming you to Bahrain for the 19<sup>th</sup> Annual GPCA Forum. With the networking app at your fingertips, you’ll be fully equipped to maximize your time, build meaningful connections, and enjoy a seamless conference experience.</p>
+<p class="normal" style="margin-top: 15px;">We look forward to welcoming you to Bahrain for the 19<sup>th</sup> Annual GPCA Forum. With the networking app at your fingertips, you’ll be fully equipped to make the most of your time, connect meaningfully with peers and industry leaders, and enjoy a seamless and enriching conference experience.</p>
 
 <p class="normal" style="margin-top: 15px;">Download the app now and get started today!</p>
 
