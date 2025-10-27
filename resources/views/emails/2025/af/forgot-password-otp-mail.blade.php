@@ -1,5 +1,7 @@
 <x-mail::message>
 
+<img src="https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-email-header.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
+
 <p class="normal" style="margin-top: 15px;">Dear {{ $details['name'] }},</p>
 
 <p class="normal" style="margin-top: 15px;">We received a request to reset your password for the <strong>{{ $details['eventName'] }}</strong> account. Please use the following OTP (One-Time Password) to reset your password:</p>

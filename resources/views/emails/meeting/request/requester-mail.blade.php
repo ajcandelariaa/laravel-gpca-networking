@@ -1,7 +1,5 @@
 <x-mail::message>
 
-<img src="https://gpca.org.ae/conferences/anc/wp-content/uploads/2025/09/ANC-banner_540x118-px-v2.jpg" alt="app" width="600" style="margin-top:25px;display:block;max-width:100%;width:100%;height:auto;border:0;outline:none;text-decoration:none;">
-
 <p class="normal" style="margin-top: 15px;">Hi {{ $details['requesterName'] }},</p>
 
 <p class="normal" style="margin-top: 15px;">Your meeting request to <strong>{{ $details['receiverName'] }}</strong> has been successfully submitted via the <strong>{{ $details['eventName'] }}</strong> networking app.</p>
