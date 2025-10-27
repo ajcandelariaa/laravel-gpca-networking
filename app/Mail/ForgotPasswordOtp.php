@@ -53,6 +53,10 @@ class ForgotPasswordOtp extends Mailable
                 return new Content(
                     markdown: 'emails.2025.rcc.forgot-password-otp-mail',
                 );
+            } else if ($this->details['eventCategory'] == "AF") {
+                return new Content(
+                    markdown: 'emails.2025.af.forgot-password-otp-mail',
+                );
             } else {
                 return new Content(
                     markdown: 'emails.forgot-password-otp-mail',

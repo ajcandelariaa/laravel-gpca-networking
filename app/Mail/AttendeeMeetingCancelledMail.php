@@ -59,6 +59,10 @@ class AttendeeMeetingCancelledMail extends Mailable
                     return new Content(
                         markdown: 'emails.2025.rcc.meeting.cancelled.receiver-mail',
                     );
+                } else if ($this->details['eventCategory'] == "AF") {
+                    return new Content(
+                        markdown: 'emails.2025.af.meeting.cancelled.receiver-mail',
+                    );
                 } else {
                     return new Content(
                         markdown: 'emails.meeting.cancelled.receiver-mail',
@@ -74,6 +78,10 @@ class AttendeeMeetingCancelledMail extends Mailable
                 if ($this->details['eventCategory'] == "RCC") {
                     return new Content(
                         markdown: 'emails.2025.rcc.meeting.cancelled.requester-mail',
+                    );
+                } else if ($this->details['eventCategory'] == "AF") {
+                    return new Content(
+                        markdown: 'emails.2025.af.meeting.cancelled.requester-mail',
                     );
                 } else {
                     return new Content(

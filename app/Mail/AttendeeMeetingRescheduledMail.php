@@ -51,12 +51,16 @@ class AttendeeMeetingRescheduledMail extends Mailable
      */
     public function content()
     {
-        
+
         if ($this->isReceiver) {
             if ($this->details['eventYear'] == "2025") {
                 if ($this->details['eventCategory'] == "RCC") {
                     return new Content(
                         markdown: 'emails.2025.rcc.meeting.rescheduled.receiver-mail',
+                    );
+                } else if ($this->details['eventCategory'] == "AF") {
+                    return new Content(
+                        markdown: 'emails.2025.af.meeting.rescheduled.receiver-mail',
                     );
                 } else {
                     return new Content(
@@ -73,6 +77,10 @@ class AttendeeMeetingRescheduledMail extends Mailable
                 if ($this->details['eventCategory'] == "RCC") {
                     return new Content(
                         markdown: 'emails.2025.rcc.meeting.rescheduled.requester-mail',
+                    );
+                } else if ($this->details['eventCategory'] == "AF") {
+                    return new Content(
+                        markdown: 'emails.2025.af.meeting.rescheduled.requester-mail',
                     );
                 } else {
                     return new Content(

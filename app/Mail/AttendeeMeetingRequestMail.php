@@ -33,7 +33,7 @@ class AttendeeMeetingRequestMail extends Mailable
      */
     public function envelope()
     {
-        if($this->isReceiver) {
+        if ($this->isReceiver) {
             $subject = "New Meeting Request from " . $this->details['requesterName'] . " - " . $this->details['eventName'];
         } else {
             $subject = "Meeting Request Sent to " . $this->details['receiverName'] . " - " . $this->details['eventName'];
@@ -57,6 +57,10 @@ class AttendeeMeetingRequestMail extends Mailable
                     return new Content(
                         markdown: 'emails.2025.rcc.meeting.request.receiver-mail',
                     );
+                } else if ($this->details['eventCategory'] == "AF") {
+                    return new Content(
+                        markdown: 'emails.2025.af.meeting.request.receiver-mail',
+                    );
                 } else {
                     return new Content(
                         markdown: 'emails.meeting.request.receiver-mail',
@@ -72,6 +76,10 @@ class AttendeeMeetingRequestMail extends Mailable
                 if ($this->details['eventCategory'] == "RCC") {
                     return new Content(
                         markdown: 'emails.2025.rcc.meeting.request.requester-mail',
+                    );
+                } else if ($this->details['eventCategory'] == "AF") {
+                    return new Content(
+                        markdown: 'emails.2025.af.meeting.request.requester-mail',
                     );
                 } else {
                     return new Content(

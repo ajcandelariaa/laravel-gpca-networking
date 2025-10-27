@@ -39,6 +39,8 @@ class NewAttendee extends Mailable
                 $subject =  "Maximize your event experience: Download the 16ᵗʰ GPCA Supply Chain Conference networking app today!";
             } else if ($this->details['eventCategory'] == "ANC") {
                 $subject =  "Maximize your experience with the 15ᵗʰ GPCA Agri-Nutrients Conference networking app!";
+            } else if ($this->details['eventCategory'] == "AF") {
+                $subject =  "Maximize your experience with the 19ᵗʰ Annual GPCA Forum networking app!";
             } else {
                 $subject =  "Maximize your event experience: Download the networking app today!";
             }
@@ -75,6 +77,10 @@ class NewAttendee extends Mailable
             } else if ($this->details['eventCategory'] == "RCC") {
                 return new Content(
                     markdown: 'emails.2025.rcc.new-attendee-mail',
+                );
+            } else if ($this->details['eventCategory'] == "AF") {
+                return new Content(
+                    markdown: 'emails.2025.af.new-attendee-mail',
                 );
             } else {
                 return new Content(

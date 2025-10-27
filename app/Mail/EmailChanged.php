@@ -44,9 +44,29 @@ class EmailChanged extends Mailable
      */
     public function content()
     {
-        return new Content(
-            markdown: 'emails.email-changed-mail',
-        );
+        if ($this->details['eventYear'] == "2025") {
+            if ($this->details['eventCategory'] == "ANC") {
+                return new Content(
+                    markdown: 'emails.2025.anc.email-changed-mail',
+                );
+            } else if ($this->details['eventCategory'] == "RCC") {
+                return new Content(
+                    markdown: 'emails.2025.rcc.email-changed-mail',
+                );
+            } else if ($this->details['eventCategory'] == "AF") {
+                return new Content(
+                    markdown: 'emails.2025.af.email-changed-mail',
+                );
+            } else {
+                return new Content(
+                    markdown: 'emails.email-changed-mail',
+                );
+            }
+        } else {
+            return new Content(
+                markdown: 'emails.email-changed-mail',
+            );
+        }
     }
 
     /**

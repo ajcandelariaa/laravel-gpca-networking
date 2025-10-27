@@ -53,6 +53,10 @@ class AttendeeResetPassword extends Mailable
                 return new Content(
                     markdown: 'emails.2025.rcc.attendee-reset-password-mail',
                 );
+            } else if ($this->details['eventCategory'] == "AF") {
+                return new Content(
+                    markdown: 'emails.2025.af.attendee-reset-password-mail',
+                );
             } else {
                 return new Content(
                     markdown: 'emails.attendee-reset-password-mail',

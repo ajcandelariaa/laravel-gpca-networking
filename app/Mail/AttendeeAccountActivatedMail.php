@@ -53,6 +53,10 @@ class AttendeeAccountActivatedMail extends Mailable
                 return new Content(
                     markdown: 'emails.2025.rcc.attendee-account-activated-mail',
                 );
+            } else if ($this->details['eventCategory'] == "AF") {
+                return new Content(
+                    markdown: 'emails.2025.af.attendee-account-activated-mail',
+                );
             } else {
                 return new Content(
                     markdown: 'emails.attendee-account-activated-mail',

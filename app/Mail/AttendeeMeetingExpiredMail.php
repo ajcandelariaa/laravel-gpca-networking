@@ -47,9 +47,25 @@ class AttendeeMeetingExpiredMail extends Mailable
      */
     public function content()
     {
-        return new Content(
-            markdown: 'emails.2025.rcc.meeting.expired.requester-mail',
-        );
+        if ($this->details['eventYear'] == "2025") {
+            if ($this->details['eventCategory'] == "RCC") {
+                return new Content(
+                    markdown: 'emails.2025.rcc.meeting.expired.requester-mail',
+                );
+            } else if ($this->details['eventCategory'] == "AF") {
+                return new Content(
+                    markdown: 'emails.2025.af.meeting.expired.requester-mail',
+                );
+            } else {
+                return new Content(
+                    markdown: 'emails.meeting.expired.requester-mail',
+                );
+            }
+        } else {
+            return new Content(
+                markdown: 'emails.meeting.expired.requester-mail',
+            );
+        }
     }
 
     /**

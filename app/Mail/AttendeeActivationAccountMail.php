@@ -53,6 +53,10 @@ class AttendeeActivationAccountMail extends Mailable
                 return new Content(
                     markdown: 'emails.2025.rcc.attendee-activation-account-otp-mail',
                 );
+            } else if ($this->details['eventCategory'] == "AF") {
+                return new Content(
+                    markdown: 'emails.2025.af.attendee-activation-account-otp-mail',
+                );
             } else {
                 return new Content(
                     markdown: 'emails.attendee-activation-account-otp-mail',
