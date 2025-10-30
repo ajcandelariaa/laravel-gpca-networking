@@ -231,6 +231,13 @@ class SessionController extends Controller
                         'url' => 'https://gpca.org.ae/conferences/rcc/wp-content/uploads/2025/10/6th-GPCA-Responsible-Care-Conference_Agenda_3Oct.pdf'
                     ],
                 ];
+            } else if ($eventCategory == "AF") {
+                $pdf = [
+                    [
+                        'title' => '19th Annual GPCA Forum Agenda (PDF)',
+                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/10/19th-Annual-GPCA-Forum-Agenda_28Oct.pdf'
+                    ],
+                ];
             } else {
                 $pdf = [];
             }
