@@ -455,11 +455,11 @@ class EventController extends Controller
                     "title" => "Legacy Awards",
                     "link" => "https://gpcachem.org/gpca-legacy-initiative-awards/"
                 ],
-                [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/cult-maj.png",
-                    "title" => "Cultural Majlis",
-                    "link" => "https://www.gpcaforum.com/cultural-majlis/"
-                ],
+                // [
+                //     "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/cult-maj.png",
+                //     "title" => "Cultural Majlis",
+                //     "link" => "https://www.gpcaforum.com/cultural-majlis/"
+                // ],
             ];
 
             $socialNetworkings = [
