@@ -70,7 +70,7 @@ class MeetingController extends Controller
     public function apiAttendeeMeetingMetadata($apiCode, $eventCategory, $eventId, $attendeeId, $receiverId, $receiverType, $excludeMeetingId = null)
     {
         try {
-            if ($eventCategory !== 'ANC') {
+            if ($eventCategory !== 'AF') {
                 return $this->error([
                     'locations' => [],
                     'dates'     => [],
@@ -78,9 +78,10 @@ class MeetingController extends Controller
             }
 
             $rawDates = [
-                '2025-09-29',
-                '2025-09-30',
-                '2025-10-01',
+                '2025-12-08',
+                '2025-12-09',
+                '2025-12-10',
+                '2025-12-11',
             ];
 
             $blockingStatuses = [MeetingStatus::ACCEPTED->value];
@@ -162,11 +163,19 @@ class MeetingController extends Controller
                 ];
             }
 
-
             Log::info($dateAndTime);
 
+            $locations = [
+                "Company Stand",
+                "Company Meeting room ",
+                "GPCA Stand",
+                "Registration Area",
+                "Plenary Area",
+                "Alberta Networking Lounge",
+            ];
+
             return $this->success([
-                "locations" => ["Business Media Center"],
+                "locations" => $locations,
                 "date_and_time" => $dateAndTime,
             ], "Meeting metadata retrieved successfully", 200);
         } catch (Exception $e) {
