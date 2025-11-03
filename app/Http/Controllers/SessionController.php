@@ -253,7 +253,9 @@ class SessionController extends Controller
                         if ($sessionSpeakersTemp->isNotEmpty()) {
                             foreach ($sessionSpeakersTemp as $sessionSpeakerTemp) {
                                 $speaker = Speaker::with('pfp')->where('event_id', $eventId)->where('id', $sessionSpeakerTemp->speaker_id)->where('is_active', true)->first();
-                                $getSpeakersHeadshot[] = $speaker->pfp->file_url ?? null;
+                                if ($speaker) {
+                                    $getSpeakersHeadshot[] = $speaker->pfp->file_url ?? null;
+                                }
                             }
                         }
 
