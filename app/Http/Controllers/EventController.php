@@ -474,7 +474,7 @@ class EventController extends Controller
                     "link" => "https://www.gpcaforum.com/networking/"
                 ],
                 [
-                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/10/gala_dinner-1.jpg",
+                    "image" => "https://www.gpcaforum.com/wp-content/uploads/2025/11/gala_dinner-v2.jpg",
                     "title" => "Gala Dinner",
                     "link" => "https://www.gpcaforum.com/networking/"
                 ],
