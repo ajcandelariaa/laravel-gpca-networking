@@ -97,7 +97,7 @@ class AttendeeDetails extends Component
         $this->linkedin = $this->attendeeData['linkedin'];
         $this->twitter = $this->attendeeData['twitter'];
         $this->instagram = $this->attendeeData['instagram'];
-        
+
         $this->editAttendeeForm = true;
     }
 
@@ -252,7 +252,7 @@ class AttendeeDetails extends Component
         $this->attendeeData['instagram'] = $this->instagram;
 
         $this->resetEditAttendeeFields();
-        
+
         $this->dispatchBrowserEvent('swal:success', [
             'type' => 'success',
             'message' => 'Attendee updated successfully!',
@@ -407,12 +407,15 @@ class AttendeeDetails extends Component
         $this->resetPFPAttendeeFields();
     }
 
-    public function activateAccount(){
-        Attendees::where('id', $this->attendeeData['attendeeId'])->update([
-            'password_set_datetime' => Carbon::now(),
-        ]);
+    public function activateAccount()
+    {
+        if ($this->attendeeData['password_set_datetime'] == null) {
+            Attendees::where('id', $this->attendeeData['attendeeId'])->update([
+                'password_set_datetime' => Carbon::now(),
+            ]);
 
-        $this->attendeeData['password_set_datetime'] = Carbon::now()->format('M j, Y g:i A');
+            $this->attendeeData['password_set_datetime'] = Carbon::now()->format('M j, Y g:i A');
+        }
     }
 
 
