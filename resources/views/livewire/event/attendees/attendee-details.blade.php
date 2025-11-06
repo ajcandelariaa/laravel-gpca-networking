@@ -92,6 +92,10 @@
 
                         <p class="font-bold">Joined:</p>
                         <p>{{ $attendeeData['joined_date_time'] }}</p>
+                        
+
+                        <p class="font-bold">Account Activated:</p>
+                        <p>{{ $attendeeData['password_set_datetime'] }}</p>
                     </div>
 
                     <div class="grid grid-cols-attendeeDetailGrid3 gap-y-1 items-center">
