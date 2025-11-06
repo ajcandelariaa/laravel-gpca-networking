@@ -5,7 +5,6 @@
     <div class="fixed bottom-0 left-6 mb-5 z-50">
         @if (count($selectedAttendees) > 0)
             <button type="button" wire:click.prevent="sendWelcomeEmailConfirmationBulkConfirmation"
-                wire:key="sendWelcomeEmailConfirmationBulkConfirmation"
                 class="bg-primaryColor hover:bg-primaryColorHover text-white rounded text-sm w-60 h-9">Send to selected
                 attendees ({{ count($selectedAttendees) }})</button>
         @else
