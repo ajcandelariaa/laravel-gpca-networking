@@ -229,5 +229,7 @@ class ManageWelcomeEmailNotification extends Component
                 'text' => $text
             ]);
         }
+
+        $this->selectedAttendees = [];
     }
 }
