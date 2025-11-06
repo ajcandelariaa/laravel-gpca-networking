@@ -1,6 +1,19 @@
 <div>
     <h1 class="text-headingTextColor text-3xl font-bold">Manage welcome email notification</h1>
 
+    <!-- Floating Add Session Button -->
+    <div class="fixed bottom-0 left-6 mb-5 z-50">
+        @if (count($selectedAttendees) > 0)
+            <button type="button" wire:click.prevent="sendWelcomeEmailConfirmationBulkConfirmation"
+                wire:key="sendWelcomeEmailConfirmationBulkConfirmation"
+                class="bg-primaryColor hover:bg-primaryColorHover text-white rounded text-sm w-60 h-9">Send to selected
+                attendees ({{ count($selectedAttendees) }})</button>
+        @else
+            <button type="button" class="bg-gray-400 cursor-not-allowed text-white rounded text-sm w-60 h-9"
+                disabled>Send to selected attendees</button>
+        @endif
+    </div>
+
     <div class="flex gap-3 mt-5 items-center">
         <a href="{{ route('admin.event.attendees.view', ['eventCategory' => $event->category, 'eventId' => $event->id]) }}"
             class="bg-red-500 hover:bg-red-400 text-white font-medium py-2 px-5 rounded inline-flex items-center text-sm">
