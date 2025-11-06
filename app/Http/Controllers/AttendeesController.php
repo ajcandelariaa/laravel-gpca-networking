@@ -115,6 +115,8 @@ class AttendeesController extends Controller
             "twitter" => $attendee->twitter,
             "instagram" => $attendee->instagram,
 
+            "password_set_datetime" => $attendee->password_set_datetime ? Carbon::parse($attendee->password_set_datetime)->format('M j, Y g:i A') : null,
+
             "is_active" => $attendee->is_active,
             "joined_date_time" => Carbon::parse($attendee->joined_date_time)->format('M j, Y g:i A'),
 

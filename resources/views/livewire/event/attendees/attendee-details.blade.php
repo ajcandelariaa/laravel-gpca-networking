@@ -13,7 +13,8 @@
         <div class="grid grid-cols-attendeeDetailGrid gap-14">
             <div class="mt-5">
                 <div class="relative">
-                    <img src="{{ $attendeeData['pfp']['url'] ?? asset('assets/images/pfp-placeholder.jpg') }}" class="w-80 h-80">
+                    <img src="{{ $attendeeData['pfp']['url'] ?? asset('assets/images/pfp-placeholder.jpg') }}"
+                        class="w-80 h-80">
                     <div class="absolute -bottom-4 -right-3 cursor-pointer" wire:click.prevent="showUpdatePFPAttendee"
                         wire:key="showUpdatePFPAttendee">
                         <i class="fa-solid fa-pen bg-primaryColor text-white rounded-full p-3"></i>
@@ -82,11 +83,11 @@
 
                         <p class="font-bold">Active:</p>
                         <p>
-                        @if ($attendeeData['is_active'])
-                            Yes
-                        @else
-                            No
-                        @endif
+                            @if ($attendeeData['is_active'])
+                                Yes
+                            @else
+                                No
+                            @endif
                         </p>
 
                         <p class="font-bold">Joined:</p>
@@ -173,12 +174,23 @@
                     </div>
                 </div>
 
-                <div class="mt-5">
+                <div class="mt-5 flex gap-5">
                     <button wire:click.prevent="showEditAttendee" wire:key="showEditAttendee"
                         class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
                         <span class="mr-2"><i class="fa-solid fa-file-pen"></i></span>
                         <span>Edit profile</span>
                     </button>
+                    @if ($attendeeData['password_set_datetime'] != null)
+                        <button wire:click.prevent="activateAccount" wire:key="activateAccount"
+                            class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
+                            <span>Activate account</span>
+                        </button>
+                    @else
+                        <button disabled
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm cursor-not-allowed">
+                            <span>Activate account</span>
+                        </button>
+                    @endif
                 </div>
 
                 <hr class="my-6">

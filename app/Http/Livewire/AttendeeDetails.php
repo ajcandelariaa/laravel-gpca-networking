@@ -407,6 +407,14 @@ class AttendeeDetails extends Component
         $this->resetPFPAttendeeFields();
     }
 
+    public function activateAccount(){
+        Attendees::where('id', $this->attendeeData['attendeeId'])->update([
+            'password_set_datetime' => Carbon::now(),
+        ]);
+
+        $this->attendeeData['password_set_datetime'] = Carbon::now()->format('M j, Y g:i A');
+    }
+
 
 
 
