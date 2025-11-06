@@ -184,7 +184,7 @@
                         <span class="mr-2"><i class="fa-solid fa-file-pen"></i></span>
                         <span>Edit profile</span>
                     </button>
-                    @if ($attendeeData['password_set_datetime'] != null)
+                    @if ($attendeeData['password_set_datetime'] == null)
                         <button wire:click.prevent="activateAccount" wire:key="activateAccount"
                             class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
                             <span>Activate account</span>
