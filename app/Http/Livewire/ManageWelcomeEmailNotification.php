@@ -230,6 +230,6 @@ class ManageWelcomeEmailNotification extends Component
             ]);
         }
 
-        $this->selectedAttendees = [];
+        $this->selectedAttendees = null;
     }
 }
