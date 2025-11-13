@@ -195,6 +195,11 @@
                             <span>Activate account</span>
                         </button>
                     @endif
+                    <button wire:click.prevent="deleteAccountConfirmation" wire:key="deleteAccountConfirmation"
+                        class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-5 rounded-md inline-flex items-center text-sm">
+                        <span class="mr-2"><i class="fa-solid fa-trash"></i></span>
+                        <span>Delete account</span>
+                    </button>
                 </div>
 
                 <hr class="my-6">
