@@ -37,7 +37,7 @@ class AttendeeDetails extends Component
     public $chooseImageModal, $mediaFileList = array(), $activeSelectedImage;
     public $editAttendeePFPForm;
 
-    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeePFPConfirmed' => 'editPFPAttendee'];
+    protected $listeners = ['editAttendeeConfirmed' => 'editAttendee', 'resetPasswordAttendeeConfirmed' => 'resetPasswordAttendee', 'editAttendeePFPConfirmed' => 'editPFPAttendee', 'deleteAttendeeConfirmed' => 'deleteAccount'];
 
     public function mount($eventId, $eventCategory, $attendeeData)
     {
@@ -416,6 +416,27 @@ class AttendeeDetails extends Component
 
             $this->attendeeData['password_set_datetime'] = Carbon::now()->format('M j, Y g:i A');
         }
+    }
+
+    public function deleteAccountConfirmation(){
+        $this->dispatchBrowserEvent('swal:confirmation', [
+            'type' => 'warning',
+            'message' => 'Are you sure?',
+            'text' => "",
+            'buttonConfirmText' => "Yes, delete it!",
+            'livewireEmit' => "deleteAttendeeConfirmed",
+        ]);
+    }
+
+    public function deleteAccount()
+    {
+        Attendees::where('id', $this->attendeeData['attendeeId'])->delete();
+
+        $this->dispatchBrowserEvent('swal:success', [
+            'type' => 'success',
+            'message' => 'Attendee account deleted successfully!',
+            'text' => ''
+        ]);
     }
 
 
