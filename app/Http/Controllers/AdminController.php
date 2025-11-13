@@ -63,7 +63,7 @@ class AdminController extends Controller
 
         if ($platform === 'ios') {
             return response()->json([
-                'version' => '2.5.0',
+                'version' => '2.5.1',
                 'force_update' => false,
                 'update_url' => 'https://apps.apple.com/us/app/gpca-events-networking/id6639614793',
             ]);
