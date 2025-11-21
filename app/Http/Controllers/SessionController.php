@@ -242,8 +242,8 @@ class SessionController extends Controller
                         'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/11/4th-GPCA-Youth-Fourm-Agenda_24Oct.pdf'
                     ],
                     [
-                        'title' => 'GPCA Solutions Xchange Agenda (PDF)',
-                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/11/GPCA-Solutions-XChange-Agenda_14Nov.pdf'
+                        'title' => 'GPCA Solutions XChange Agenda (PDF)',
+                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/11/GPCA-Solutions-XChange-Agenda_21Nov.pdf'
                     ],
                 ];
             } else {
