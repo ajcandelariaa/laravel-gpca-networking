@@ -239,7 +239,7 @@ class SessionController extends Controller
                     ],
                     [
                         'title' => '4th GPCA Youth Forum Agenda (PDF)',
-                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/11/4th-GPCA-Youth-Fourm-Agenda_24Oct.pdf'
+                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/11/4th-GPCA-Youth-Fourm-Agenda_24-Oct-PDFV1-Copy.pdf'
                     ],
                     [
                         'title' => 'GPCA Solutions XChange Agenda (PDF)',
