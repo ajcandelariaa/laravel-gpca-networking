@@ -418,7 +418,7 @@ class EventController extends Controller
                     "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide5.jpg",
                     "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide6.jpg",
                     "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide7.jpg",
-                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide8.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/11/slide8.jpg",
                     "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide9.jpg",
                     "https://gpcachem.org/wp-content/uploads/2025/11/slide10.jpg",
                 ];
