@@ -243,7 +243,7 @@ class SessionController extends Controller
                     ],
                     [
                         'title' => 'GPCA Solutions XChange Agenda (PDF)',
-                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/11/GPCA-Solutions-XChange-Agenda_21Nov.pdf'
+                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/11/GPCA-Solutions-XChange-Agenda_27Nov.pdf'
                     ],
                     [
                         'title' => 'GPCA Startup Nexus Agenda (PDF)',
