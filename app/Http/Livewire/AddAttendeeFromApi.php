@@ -178,7 +178,7 @@ class AddAttendeeFromApi extends Component
         foreach ($this->attendeesFromApi as $index => $attendeeFromApi) {
             $selectedAttendee = $attendeeFromApi;
 
-            if (!$selectedAttendee['delegateIsAdded'] && $count < 50) {
+            if (!$selectedAttendee['delegateIsAdded'] && $count < 10) {
                 $newAttendee = Attendees::create([
                     'event_id' => $this->event->id,
 
