@@ -10,13 +10,17 @@
         <p>Total added attendees: {{ $totalCountAdded }}</p>
         <p>Total not added attendees: {{ $totalCountNotAdded }}</p>
 
-        <div class="mt-5">
+        <div class="mt-5 flex gap-3">
             @if ($totalCountNotAdded == 0)
                 <button class="cursor-not-allowed bg-gray-400 py-1 px-6 rounded-md" disabled>Add remaining
+                    attendees</button>
+                <button class="cursor-not-allowed bg-gray-400 py-1 px-6 rounded-md" disabled>Add 50
                     attendees</button>
             @else
                 <button class="cursor-pointer bg-primaryColor text-white py-1 px-6 rounded-md"
                     wire:click.prevent="addRemainingAttendeesConfirmation">Add remaining attendees</button>
+                <button class="cursor-pointer bg-primaryColor text-white py-1 px-6 rounded-md"
+                    wire:click.prevent="addFiftyAttendeesConfirmation">Add 50 attendees</button>
             @endif
         </div>
 
