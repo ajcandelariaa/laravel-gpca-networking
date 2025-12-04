@@ -235,7 +235,7 @@ class SessionController extends Controller
                 $pdf = [
                     [
                         'title' => '19th Annual GPCA Forum Agenda (PDF)',
-                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/12/19th-Annual-GPCA-Forum-Agenda_4Dec-v2.pdf'
+                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/12/19th-Annual-GPCA-Forum-Agenda_4Dec-v3.pdf'
                     ],
                     [
                         'title' => '4th GPCA Youth Forum Agenda (PDF)',
