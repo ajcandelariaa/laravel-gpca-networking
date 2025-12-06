@@ -278,6 +278,7 @@ class EventController extends Controller
 
                 if ($event->category == "AF") {
                     $eventSplashScreenSecond = "https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-splash-screen_2.jpg";
+                    // $eventSplashScreenSecond = "https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-splash-screen_2.jpg";
                 } else {
                     $eventSplashScreenSecond = null;
                 }
@@ -411,7 +412,7 @@ class EventController extends Controller
                 ];
             } else {
                 $sponsorsBannerCarousel = [
-                    "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide1.jpg",
+                    "https://www.gpcaforum.com/wp-content/uploads/2025/12/slide1.jpg",
                     "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide2.jpg",
                     "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide3.jpg",
                     "https://www.gpcaforum.com/wp-content/uploads/2025/10/slide4.jpg",
