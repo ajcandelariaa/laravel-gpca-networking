@@ -249,6 +249,10 @@ class SessionController extends Controller
                         'title' => 'GPCA Startup Nexus Agenda (PDF)',
                         'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/11/2nd-GPCA-Startup-Nexus-Agenda_27-Nov-.pdf'
                     ],
+                    [
+                        'title' => 'GPCA Sustainability Pavilion Agenda (PDF)',
+                        'url' => 'https://www.gpcaforum.com/wp-content/uploads/2025/12/GPCA-Sustainability-Pavilion-Agenda_3Dec.pdf'
+                    ],
                 ];
             } else {
                 $pdf = [];
