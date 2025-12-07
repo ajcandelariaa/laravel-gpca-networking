@@ -277,7 +277,7 @@ class EventController extends Controller
 
 
                 if ($event->category == "AF") {
-                    $eventSplashScreenSecond = "https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-splash-screen_2.jpg";
+                    $eventSplashScreenSecond = "https://www.gpcaforum.com/wp-content/uploads/2025/12/AF-side-table-screen_2_temp.png";
                     // $eventSplashScreenSecond = "https://www.gpcaforum.com/wp-content/uploads/2025/10/AF-splash-screen_2.jpg";
                 } else {
                     $eventSplashScreenSecond = null;
