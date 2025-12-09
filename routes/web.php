@@ -13,6 +13,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\SpeakerController;
 use App\Http\Controllers\SponsorController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -104,3 +105,13 @@ Route::group(['middleware' => 'check.event.exists'], function () {
         Route::post('/meeting/{meetingId}/respond', [MeetingResponseController::class, 'meetingRespond'])->middleware('throttle:10,1')->name('meeting.respond.submit');
     });
 });
+
+Route::get('/clear-cache', function () {
+    if (request('key') !== env('CACHE_CLEAR_KEY')) {
+        return "Unauthorized";
+    }
+
+    Artisan::call('cache:clear');
+    return "Cache cleared successfully";
+});
+
